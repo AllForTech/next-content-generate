@@ -9,7 +9,7 @@ import rehypeHighlight from "rehype-highlight";
 const ContentComponent = ({contents}) => {
 
     return (
-        <div id={'markdown'} className={cn(`prose !outline-none prose-lg dark:prose-invert max-w-[700px] h-full !justify-start flex-col !items-start center`)}>
+        <div id={'markdown'} className={cn(`prose !outline-none prose-lg dark:prose-invert max-w-[700px] h-full !justify-start !pb-[30px] flex-col !items-start center`)}>
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeHighlight]}

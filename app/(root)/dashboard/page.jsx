@@ -2,7 +2,7 @@
 import empty_logo from "@/assets/empty-project.png"
 import Image from "next/image";
 import BlogCard from "@/components/BlogCard";
-import React, {useEffect, useState} from "react";
+import React, {use, useEffect, useState} from "react";
 import {getBlogs} from "@/lib/supabase/actions";
 import Link from "next/link";
 import Loader from '@/components/Loader'

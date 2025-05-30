@@ -31,8 +31,7 @@ export function ChatUi() {
       console.log(value)
       const req = await generateContent(value)
       if(req.success){
-        console.log(req.content)
-        router.push(`/dashboard/blog/${req.content[0].blog_id}`)
+        router.push(`/dashboard`)
       }else {
         console.log(req)
       }
