@@ -1,7 +1,7 @@
 
 import React from 'react'
 import {getBlogImageFromDb, getBlogsContentById} from "@/lib/supabase/actions";
-import ContentWrapper from "@/components/ContentWrapper";
+import ContentWrapper from "@/components/content/ContentWrapper";
 import {demoBlog} from "@/constants";
 import {getBlogImage} from "@/lib/unsplash/action";
 

@@ -9,24 +9,28 @@ import Loader from "@/components/Loader";
 
 const BlogCard = ({blog, content, setCount}) => {
     const [isLoading, setIsLoading] = useState(false)
+    // const {image} = blog
+    // const imgUrls = typeof image === 'string' ? JSON.parse(image) : image
+    // console.log(imgUrls)
+    // const url = imgUrls[0]?.urls?.raw
 
     const handleDelete = async () => {
         setIsLoading(true)
         try {
             await deleteBlog(blog.blog_id)
             setCount(prev => prev + 1)
-        }catch (e) {
+        } catch (e) {
             console.log(e)
-        }finally {
+        } finally {
             setIsLoading(false)
         }
     }
 
     return (
-        <div className={`cursor-pointer hover:scale-[1.05] border-purple-600 transition-all duration-300 overflow-hidden rounded-md w-[94%] h-[270px] mx-auto relative center bg-white`}>
-            <Link href={ `/dashboard/blog/${blog?.blog_id}`} className={`rounded-md relative w-full h-full p-[5px] !justify-between gap-[5px] flex-col mx-auto center bg-white `}>
+        <div className={`cursor-pointer hover:scale-[1.05] border-purple-600 transition-all duration-300 overflow-hidden rounded-md w-[94%] h-[270px] mx-auto relative center bg-dark-theme`}>
+            <Link href={ `/dashboard/blog/${blog?.blog_id}`} className={`rounded-md relative w-full h-full p-[5px] !justify-between gap-[5px] flex-col mx-auto center bg-transparent `}>
                 <div className={'w-full h-full rounded-md overflow-hidden center'}>
-                    {/*<Image src={url} alt={'a'} width={300} height={300} objectFit={'cover'} className={'w-full h-fit'}/>*/}
+                    {/*<Image src={url} alt={'a'} width={300} height={300} objectFit={'cover'} priority={true} className={'w-full h-fit'}/>*/}
                 </div>
                 <div className={'w-[97%] h-[50px] px-[5px] center border-b-[1px] border-black'}>
                     <span className={cn(`text-black/90 text-sm m-auto mb-5 font-semibold font-sans`)}>{content?.slice(2,45) + "..."}</span>
