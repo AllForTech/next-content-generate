@@ -21,7 +21,7 @@ const FormField = () => {
     }, [content])
 
     return (
-        <div className={'container-full center flex-col overflow-hidden'}>
+        <div className={'container-full relative center flex-col overflow-hidden'}>
             <StreamMarkdownContainer content={content} setContent={setContent} images={images} setImages={setImages} isLoading={isLoading} setIsLoading={setIsLoading}/>
             <ChatUi setContent={setContent} content={content} isLoading={isLoading}  setIsLoading={setIsLoading} setImages={setImages}/>
         </div>

@@ -19,10 +19,10 @@ const ContentComponent = ({contents, isLoading}) => {
                 {contents}
             </ReactMarkdown>
             {isLoading && (
-                <SkeletonCard className={cn(`w-full h-full rounded-md`)}/>
+                <SkeletonCard className={cn(`!w-full h-full rounded-md`)}/>
             )}
             <div className='w-full h-fit'>
-                <div className={cn(`min-w-[300px] bg-transparent h-[110px]`, !contents & isLoading && 'h-[1px]')}>
+                <div className={cn(`w-[270px] md:min-w-[100%] bg-transparent h-[110px]`, !contents & isLoading && 'h-[1px]')}>
                     
                </div>
             </div>

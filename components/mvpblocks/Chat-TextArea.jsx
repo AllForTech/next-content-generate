@@ -36,7 +36,7 @@ export function ChatUi({setContent, content, isLoading, setIsLoading, setImages}
 
         toast.message("Searching the web...");
         // Step 1: Research
-        const response1 = await  fetch(`http://localhost:3000/api/research`, {
+        const response1 = await  fetch(`/api/research`, {
           method: 'POST',
           body: JSON.stringify(values)
         })
@@ -45,14 +45,14 @@ export function ChatUi({setContent, content, isLoading, setIsLoading, setImages}
 
         // Step 2: Keywords
         toast.message("Generating keywords.");
-       const response2 = await fetch(`http://localhost:3000/api/keywords`,{
+       const response2 = await fetch(`/api/keywords`,{
          method: "POST",
          body: JSON.stringify(research)
        })
         const keywords = await response2.json()
         // Step 3: Images
         toast.message("Generating images.");
-        const response3 = await fetch(`http://localhost:3000/api/unsplash`,{
+        const response3 = await fetch(`/api/unsplash`,{
           method: "POST",
           body: JSON.stringify(keywords)
         })
@@ -65,7 +65,7 @@ export function ChatUi({setContent, content, isLoading, setIsLoading, setImages}
 
         // Step 4: Gemini Streaming
         toast.message("Generating blog...");
-       const response4 = await fetch(`http://localhost:3000/api/generate`, {
+       const response4 = await fetch(`/api/generate`, {
          method: "POST",
          headers: {
            "Content-Type": "application/json",
@@ -110,7 +110,7 @@ export function ChatUi({setContent, content, isLoading, setIsLoading, setImages}
 
   return (
     <div
-      className={cn(`mx-auto fixed w-[300px] group hover:lg:w-[600px] hover:md:w-[500px] h-fit transition-500 pb-[0%] bottom-0 hover:pb-[30px] right-[50%] translate-x-[50%] flex flex-col items-center space-y-4 sm:space-y-8`,
+      className={cn(`mx-auto fixed w-[290px] group hover:lg:w-[600px] hover:md:w-[500px] h-fit transition-500 pb-[0%] bottom-0 hover:pb-[30px] right-[50%] translate-x-[50%] flex flex-col items-center space-y-4 sm:space-y-8`,
           values.trim() ? 'lg:w-[600px]' : 'lg:w-[300px]',
           values.trim() ? 'pb-[30px]' : 'pb-[30px]')}>
       {errorMessage && (
