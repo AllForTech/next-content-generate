@@ -3,6 +3,7 @@ import React, {useState} from 'react'
 import {cn} from "@/lib/utils";
 import {toast} from "sonner";
 import {createClient} from "@/utils/supabase/client";
+import {signInWithGoogle} from "@/lib/supabase/actions";
 
 const AuthForm = () => {
     const [loading, setLoading] = useState(false)
@@ -11,13 +12,19 @@ const AuthForm = () => {
         e.preventDefault()
         try {
             setLoading(true)
-            const supabase = await createClient()
-           const {error} = await supabase.auth.signInWithOAuth({
-               provider: "google",
-               options: {
-                   redirectTo: "http://localhost:3000/dashboard"
-               }
-           })
+           // await signInWithGoogle()
+            const supabase = createClient()
+            const url = process.env.API_ENDPOINT;
+            if(!url){
+                alert("no url")
+                return;
+            }
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'github',
+                    options: {
+                        redirectTo: `${url}/auth/callback`,
+                    },
+                })
         }catch (e) {
             console.log(e)
             toast.error(<p className={"text-xs text-red-400 font-regular"}>error signing in</p>)

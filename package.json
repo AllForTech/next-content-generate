@@ -19,6 +19,7 @@
     "ai": "^4.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.0",
     "framer-motion": "^12.23.6",
     "g-trends": "^0.0.9",
     "google-trends-api": "^4.9.2",
