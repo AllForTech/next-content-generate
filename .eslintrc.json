@@ -1,0 +1,8 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript",
+    // Must be the last entry to disable conflicting formatting rules
+    "prettier"
+  ]
+}
