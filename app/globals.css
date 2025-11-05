@@ -120,3 +120,44 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+@layer utilities {
+    .screen{
+        @apply w-[100dvw] h-[100dvh];
+    }
+    .container-full{
+        @apply w-full h-full;
+    }
+    .center{
+        @apply flex items-center justify-center;
+    }
+    .between{
+        @apply flex items-center justify-between;
+    }
+    .container-fit{
+        @apply w-fit h-fit;
+    }
+    .transition-200{
+        @apply transition-all duration-200 ease-in-out;
+    }
+    .transition-300{
+        @apply transition-all duration-300 ease-in-out;
+    }
+    .transition-400{
+        @apply transition-all duration-400 ease-in-out;
+    }
+}
+
+
+#hide-scrollbar {
+    /* For Internet Explorer and Edge */
+    -ms-overflow-style: none;
+    /* For Firefox */
+    scrollbar-width: none;
+}
+
+/* For Chrome, Safari, and Opera */
+#hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
