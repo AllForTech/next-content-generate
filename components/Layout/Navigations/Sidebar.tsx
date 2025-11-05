@@ -6,6 +6,7 @@ import { PanelLeft, FileText, Globe, MessageSquare, Menu, BookOpen, Settings } f
 
 import { cn } from '@/lib/utils'; // Utility for combining tailwind classes (from shadcn setup)
 import { Button } from '@/components/ui/button';
+import * as VisuallyHiddenPrimitive from '@radix-ui/react-visually-hidden';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -15,16 +16,7 @@ const navigation = [
     {
         title: 'Content Types',
         items: [
-            { href: '/generate/blog-post', icon: BookOpen, label: 'Blog Post' },
-            { href: '/generate/social-media', icon: MessageSquare, label: 'Social Media' },
-            { href: '/generate/document', icon: FileText, label: 'Documents & Docs' },
-        ],
-    },
-    {
-        title: 'Reference Tools',
-        items: [
-            { href: '/generate/from-url', icon: Globe, label: 'Content from URL' },
-            { href: '/generate/from-file', icon: PanelLeft, label: 'Content from File' },
+            { href: '/generate', icon: BookOpen, label: 'Generate' },
         ],
     },
 ];

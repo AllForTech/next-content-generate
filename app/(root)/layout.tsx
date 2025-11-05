@@ -1,6 +1,5 @@
 import React from "react";
 import {cn} from "@/lib/utils";
-import { Sidebar } from '@/components/Layout/Navigations/Sidebar';
 
 export default function Layout({
                            children,
@@ -10,8 +9,6 @@ export default function Layout({
 
     return (
         <div className={cn('screen center flex-row')}>
-          <Sidebar />
-
           <main className={cn('container-full')}>
             {children}
           </main>

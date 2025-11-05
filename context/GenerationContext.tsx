@@ -88,7 +88,7 @@ export function GenerationProvider({ children }: { children: ReactNode }) {
 }
 
 // --- 4. Custom Hook for Consumption ---
-export function useGeneration() {
+export function useContent() {
     const context = useContext(GenerationContext);
     if (context === undefined) {
         throw new Error('useGeneration must be used within a GenerationProvider');
