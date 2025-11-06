@@ -76,6 +76,12 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #1e3a8a; /* Your h2 color */
+    --color-bg-primary: white;
+    --color-border-light: #e5e7eb;
+    --color-code-bg: #f3f4f6;
+    --color-blockquote-border: #9ca3af;
 }
 
 .dark {
@@ -110,6 +116,11 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+    --color-text-primary: #f3f4f6;
+    --color-text-secondary: #93c5fd; /* Light blue for dark mode headings */
+    --color-bg-primary: #1f2937;
+    --color-border-light: #374151;
+    --color-code-bg: #202020;
 }
 
 @layer base {
@@ -160,4 +171,102 @@
 /* For Chrome, Safari, and Opera */
 #hide-scrollbar::-webkit-scrollbar {
     display: none;
+}
+
+
+#markdown {
+    font-family: system-ui, sans-serif;
+    color: var(--color-text-primary);
+    line-height: 1.7;
+    padding: 2rem;
+    box-sizing: border-box; /* Crucial for professional layout */
+    background-color: var(--color-bg-primary); /* Use variable for body bg */
+}
+
+/* --- B. Complete Heading Hierarchy --- */
+
+#markdown h1 {
+    /* ... your styles ... */
+    color: var(--color-text-primary);
+    border-bottom: 2px solid var(--color-border-light);
+}
+
+#markdown h2 {
+    /* ... your styles ... */
+    color: var(--color-text-secondary);
+}
+
+#markdown h3 {
+    font-size: 1.25rem; /* New: h3 level */
+    font-weight: 600;
+    margin-top: 1.5rem;
+    color: var(--color-text-secondary);
+}
+
+#markdown h4, #markdown h5, #markdown h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    color: #4b5563;
+}
+
+
+/* --- C. Blockquotes and Rules (Enhanced Visuals) --- */
+
+#markdown blockquote {
+    /* Blockquote for call-outs and quotes */
+    border-left: 4px solid #93c5fd; /* Soft, professional border */
+    padding: 0.5rem 1.5rem;
+    margin: 2rem 0;
+    color: #4b5563; /* Slightly dimmed text */
+    background-color: #f9fafb;
+    font-style: italic;
+}
+
+.dark #markdown blockquote {
+    background-color: #2b3340;
+    color: #d1d5db;
+}
+
+#markdown hr {
+    /* Horizontal Rule */
+    border: none;
+    border-top: 1px solid var(--color-border-light);
+    margin: 3rem 0;
+}
+
+
+/* --- D. Tables (Responsive and Readable) --- */
+
+#markdown table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+}
+
+#markdown th,
+#markdown td {
+    border: 1px solid var(--color-border-light);
+    padding: 0.75rem;
+    text-align: left;
+}
+
+#markdown th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+}
+
+.dark #markdown th {
+    background-color: #374151;
+}
+
+/* --- E. Inline Formatting --- */
+
+#markdown strong {
+    color: #111827; /* Ensure bold is clearly darker/more prominent */
+    font-weight: 700;
+}
+
+.dark #markdown strong {
+    color: white;
 }

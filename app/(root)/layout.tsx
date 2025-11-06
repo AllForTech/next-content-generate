@@ -8,8 +8,8 @@ export default function Layout({
 }>){
 
     return (
-        <div className={cn('screen center flex-row')}>
-          <main className={cn('container-full')}>
+        <div className={cn('screen bg-white center flex-row')}>
+          <main className={cn('container-full center')}>
             {children}
           </main>
         </div>

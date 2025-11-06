@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from '@/components/Layout/Navigations/Sidebar';
+import { Navbar } from '@/components/Layout/Navigations/Navbar';
 
 export default function Layout({
     children,
@@ -9,10 +10,13 @@ export default function Layout({
 }>) {
 
     return (
-        <div className={cn('w-full h-screen flex flex-row')}>
+        <div className={cn('container-full bg-white center flex-row')}>
             <Sidebar />
-            <main className={cn('flex-1 h-full overflow-y-auto')}>
+            <main className={cn('center container-full flex-col')}>
+              <Navbar/>
+              <div className={'container-full bg-white overflow-hidden rounded-2xl'}>
                 {children}
+              </div>
             </main>
         </div>
     );

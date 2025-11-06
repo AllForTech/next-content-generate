@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export const runtime = 'edge';
+
 // Load the API key from environment variables
 const API_KEY = process.env.GEMINI_API_KEY;
 
@@ -21,11 +23,18 @@ export async function POST(req: Request) {
 
     try {
         // Generate content with the Gemini API
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        const result = await model.generateContentStream(prompt);
 
-        return NextResponse.json({ content: text });
+        const stream = new ReadableStream({
+            async start(controller) {
+                for await (const chunk of result.stream) {
+                    controller.enqueue(chunk.text());
+                }
+                controller.close();
+            },
+        });
+
+        return new Response(stream);
     } catch (error) {
         console.error("Error generating content:", error);
         return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });

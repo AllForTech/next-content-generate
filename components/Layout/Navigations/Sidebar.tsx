@@ -16,7 +16,7 @@ const navigation = [
     {
         title: 'Content Types',
         items: [
-            { href: '/generate', icon: BookOpen, label: 'Generate' },
+            { href: '/dashboard/generate', icon: BookOpen, label: 'Generate' },
         ],
     },
 ];
@@ -30,15 +30,15 @@ interface NavLinkProps {
 }
 
 const NavLink: React.FC<NavLinkProps> = ({ href, icon: Icon, label, pathname }) => {
-    const isActive = pathname.startsWith(href);
+    const isActive = pathname === href;
 
     return (
         <Link href={href} passHref>
             <Button
-                variant={isActive ? 'default' : 'ghost'}
                 className={cn(
-                    'w-full justify-start gap-3 transition-colors',
-                    { 'bg-primary/80 hover:bg-primary': isActive }
+                    'w-full justify-start bg-transparent text-foreground gap-3 transition-300',
+                  'hover:bg-neutral-900 hover:text-white/90',
+                    { 'bg-neutral-900 text-white/90 hover:bg-neutral-900 hover:text-white/90': isActive }
                 )}
             >
                 <Icon className="h-5 w-5" />
@@ -55,7 +55,7 @@ export function Sidebar() {
 
     // The sidebar content rendered in both desktop and mobile
     const sidebarContent = (
-        <ScrollArea className="h-full px-4">
+        <ScrollArea className="h-full  bg-white px-4">
             <div className="py-4">
                 <h2 className="mb-6 px-4 text-lg font-semibold tracking-tight text-primary">
                     AI Creator Hub

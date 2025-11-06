@@ -50,12 +50,13 @@ export function GenerationProvider({ children }: { children: ReactNode }) {
             if (!response.ok) {
                 // If the API route returns a status error (e.g., 400 or 500)
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to generate content from API.');
+              console.error(errorData.error || 'Failed to generate content from API.');
             }
 
             // The response is already the structured JSON object, guaranteed by Zod in the API.
             const data: ContentGenerationResponse = await response.json();
 
+            console.log(data);
             setGeneratedContent(data);
 
         } catch (err) {
