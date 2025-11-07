@@ -191,6 +191,12 @@
     border-bottom: 2px solid var(--color-border-light);
 }
 
+#markdown p {
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    border-bottom: 2px solid var(--color-border-light);
+}
+
 #markdown h2 {
     /* ... your styles ... */
     color: var(--color-text-secondary);

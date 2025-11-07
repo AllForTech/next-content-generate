@@ -36,7 +36,7 @@ const NavLink: React.FC<NavLinkProps> = ({ href, icon: Icon, label, pathname }) 
         <Link href={href} passHref>
             <Button
                 className={cn(
-                    'w-full justify-start bg-transparent text-foreground gap-3 transition-300',
+                    'w-full justify-start bg-transparent text-xs text-foreground gap-3 transition-300',
                   'hover:bg-neutral-900 hover:text-white/90',
                     { 'bg-neutral-900 text-white/90 hover:bg-neutral-900 hover:text-white/90': isActive }
                 )}
@@ -55,18 +55,18 @@ export function Sidebar() {
 
     // The sidebar content rendered in both desktop and mobile
     const sidebarContent = (
-        <ScrollArea className="h-full  bg-white px-4">
-            <div className="py-4">
+        <aside className="h-full  bg-white px-4">
+            <div className="py-4 between flex-col !items-start w-full h-full">
                 <h2 className="mb-6 px-4 text-lg font-semibold tracking-tight text-primary">
-                    AI Creator Hub
+                    Think-Ink
                 </h2>
 
                 {navigation.map((section, index) => (
-                    <div key={index} className="space-y-1 pb-4">
-                        <h3 className="mb-2 px-4 text-sm font-medium tracking-wider text-muted-foreground">
+                    <div key={index} className="space-y-1 w-full pb-4">
+                        <h3 className="mb-2 px-4 text-sm font-medium tracking-wider text-foreground/80">
                             {section.title}
                         </h3>
-                        <div className="space-y-1">
+                        <div className="space-y-1 w-full">
                             {section.items.map((item) => (
                                 <NavLink
                                     key={item.href}
@@ -80,7 +80,13 @@ export function Sidebar() {
                     </div>
                 ))}
 
-                <Separator className="my-4" />
+                <Separator className="my-2" />
+
+                <div className={cn('container-full !h-[40dvh] center')}>
+
+                </div>
+
+                <Separator className="my-2" />
 
                 {/* --- History and Settings Links --- */}
                 <div className="space-y-1">
@@ -98,8 +104,13 @@ export function Sidebar() {
                     />
                 </div>
 
+                <Separator className="my-2" />
+
+                <div className={cn('container-full !h-[40px] bg-stone-300 rounded-md')}>
+
+                </div>
             </div>
-        </ScrollArea>
+        </aside>
     );
 
 

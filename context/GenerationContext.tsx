@@ -7,20 +7,31 @@ import {
     useCallback,
     ReactNode
 } from 'react';
-import { ContentGenerationResponse } from '@/lib/schema';
+import { nanoid } from 'nanoid';
+import { toast } from 'sonner';
+
+export type ChatHistoryType = {
+  id: string;
+  role: 'user' | 'agent',
+  content: string | null,
+}
 
 // --- 1. Define the Context Interface (What components can access) ---
 interface GenerationContextType {
     // The final structured output from the AI
-    generatedContent: ContentGenerationResponse | null;
+    generatedContent: string | null;
 
     // State variables
     isLoading: boolean;
     error: string | null;
 
     // Actions
-    generateContent: (prompt: string, contentType: string) => Promise<void>;
+    generateContent: (prompt: string) => Promise<void>;
     clearContent: () => void;
+
+    chatHistory: ChatHistoryType[];
+
+    replaceCurrentContent: (history: ChatHistoryType) => void;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -29,43 +40,71 @@ const GenerationContext = createContext<GenerationContextType | undefined>(
 );
 
 // --- 3. Create the Provider Component ---
-export function GenerationProvider({ children }: { children: ReactNode }) {
-    const [generatedContent, setGeneratedContent] = useState<ContentGenerationResponse | null>(null);
+export function ContextProvider({ children }: { children: ReactNode }) {
+    const [generatedContent, setGeneratedContent] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [chatHistory, setChatHistory] = useState<ChatHistoryType[]>([]);
     const [error, setError] = useState<string | null>(null);
 
+
     // The function to call the Next.js API Route
-    const generateContent = useCallback(async (prompt: string, contentType: string) => {
-        setIsLoading(true);
-        setError(null);
-        setGeneratedContent(null); // Clear previous content
+  const generateContent = async (prompt: string) => {
+      if (!prompt) {
+        return;
+      }
+      const id = nanoid()
+      setIsLoading(true);
+      setGeneratedContent('');
+      setChatHistory(prev => ([...prev, { id, role: 'user', content: prompt }]))
+      let content = '';
+      try {
+        const response = await fetch('/api/research', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt })
+        });
 
-        try {
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt, contentType }),
-            });
-
-            if (!response.ok) {
-                // If the API route returns a status error (e.g., 400 or 500)
-                const errorData = await response.json();
-              console.error(errorData.error || 'Failed to generate content from API.');
-            }
-
-            // The response is already the structured JSON object, guaranteed by Zod in the API.
-            const data: ContentGenerationResponse = await response.json();
-
-            console.log(data);
-            setGeneratedContent(data);
-
-        } catch (err) {
-            console.error("Content generation failed:", err);
-            setError(err instanceof Error ? err.message : 'An unknown error occurred.');
-        } finally {
-            setIsLoading(false);
+        if (!response.body) {
+          return;
         }
-    }, []);
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+
+        const newId = nanoid()
+
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          done = readerDone;
+          const chunkValue = decoder.decode(value);
+          content += chunkValue;
+          setGeneratedContent((prev) => prev + chunkValue);
+        }
+
+        setChatHistory(prev => ([...prev, { id: newId, role: 'agent', content }]))
+
+      } catch (error) {
+        console.error(error);
+        setError(error.message);
+        toast.error(<p className={'text-xs text-red-400 font-medium'}>{error?.message ?? 'Error connecting to Ai model'}</p>)
+      } finally {
+        setIsLoading(false);
+      }
+  };
+
+    const replaceCurrentContent = (history: ChatHistoryType) => {
+      if (!history || !chatHistory) return;
+      if (history.role !== 'agent') return;
+
+      const selectedMessage = chatHistory.find((hstry) => hstry.id.trim() === history?.id?.trim());
+
+      if (!selectedMessage) return;
+
+      setGeneratedContent(selectedMessage.content);
+    }
 
     // Simple function to reset the state
     const clearContent = useCallback(() => {
@@ -79,6 +118,8 @@ export function GenerationProvider({ children }: { children: ReactNode }) {
         error,
         generateContent,
         clearContent,
+        chatHistory,
+        replaceCurrentContent,
     };
 
     return (

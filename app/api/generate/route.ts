@@ -1,18 +1,12 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { streamText } from 'ai';
+import { GENERATOR_PROMPT, PROFESSIONAL_CONTENT_CREATOR } from '@/lib/AI/ai.system.prompt';
+import { google } from '@ai-sdk/google';
 
 export const runtime = 'edge';
 
-// Load the API key from environment variables
-const API_KEY = process.env.GEMINI_API_KEY;
-
-if (!API_KEY) {
-    throw new Error("GEMINI_API_KEY not found in environment variables.");
-}
-
-// Initialize the GoogleGenerativeAI client
-const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+// gemini-2.5-flash-preview-05-20
+const model = google('gemini-2.5-flash');
 
 export async function POST(req: Request) {
     const { prompt } = await req.json();
@@ -22,17 +16,28 @@ export async function POST(req: Request) {
     }
 
     try {
-        // Generate content with the Gemini API
-        const result = await model.generateContentStream(prompt);
+      const result = streamText({
+        model: model,
+
+        // Pass the detailed system instructions
+        system: GENERATOR_PROMPT,
+
+
+        // Pass the user's specific request
+        prompt: `Generate a comprehensive article on the topic: "${prompt}"`,
+      });
 
         const stream = new ReadableStream({
             async start(controller) {
-                for await (const chunk of result.stream) {
-                    controller.enqueue(chunk.text());
+                for await (const chunk of result.textStream) {
+                  console.log("from api route",chunk);
+                    controller.enqueue(chunk);
                 }
                 controller.close();
             },
         });
+
+
 
         return new Response(stream);
     } catch (error) {
