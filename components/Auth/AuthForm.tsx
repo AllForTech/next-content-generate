@@ -1,13 +1,19 @@
 "use client"
 import React, {useState} from 'react'
 import {cn} from "@/lib/utils";
-import {toast} from "sonner";
+import { createClient } from '@/lib/supabase/client'
 
 const AuthForm = () => {
   const [loading, setLoading] = useState(false)
 
   const handleSignIn = async (e) => {
-
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${location.origin}/auth/callback`
+      }
+    })
   }
 
   return (
