@@ -9,7 +9,7 @@ export const PROFESSIONAL_CONTENT_CREATOR =
   '**Output Requirements (Formatting and Content Structure):**\n' +
   '1.  **Article Format:** The entire output must be presented as a single block of **Markdown text**, ready for direct rendering in a professional documentation environment.\n' +
   '2.  **Hierarchy:**\n' +
-  '    * Start with a prominent H2 heading (`##`) as the main title of the article.\n' +
+  '    * Start with a prominent H1 heading (`#`) as the main title of the article.\n' +
   '    * Use H3 (`###`) and H4 (`####`) headings to create a clear, logical structure and visual hierarchy throughout the guide.\n' +
   '3.  **Content Enhancement and Completeness (CRITICAL INSTRUCTION):**\n' +
   '    * **Always strive to make the content as professional and valuable as possible.**\n' +

@@ -1,6 +1,7 @@
 import React from "react";
 import {cn} from "@/lib/utils";
 import { ContextProvider } from '@/context/GenerationContext';
+import { GlobalStateProvider } from '@/context/GlobalStateContext';
 
 export default function Layout({
                            children,
@@ -9,12 +10,12 @@ export default function Layout({
 }>){
 
     return (
-      <ContextProvider>
-        <div className={cn('screen bg-white center flex-row')}>
-          <main className={cn('container-full center')}>
+      <GlobalStateProvider>
+        <ContextProvider>
+          <div className={cn('screen relative bg-white center flex-row')}>
             {children}
-          </main>
-        </div>
-      </ContextProvider>
+          </div>
+        </ContextProvider>
+      </GlobalStateProvider>
     )
 }

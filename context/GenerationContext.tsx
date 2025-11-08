@@ -9,6 +9,8 @@ import {
 } from 'react';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation'
+import {createClient} from "@/utils/supabase/client";
 
 export type ChatHistoryType = {
   id: string;
@@ -32,6 +34,8 @@ interface GenerationContextType {
     chatHistory: ChatHistoryType[];
 
     replaceCurrentContent: (history: ChatHistoryType) => void;
+
+    handleSelection: Function;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -41,6 +45,8 @@ const GenerationContext = createContext<GenerationContextType | undefined>(
 
 // --- 3. Create the Provider Component ---
 export function ContextProvider({ children }: { children: ReactNode }) {
+    const router = useRouter();
+
     const [generatedContent, setGeneratedContent] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [chatHistory, setChatHistory] = useState<ChatHistoryType[]>([]);
@@ -112,6 +118,29 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setError(null);
     }, []);
 
+    const handleSelection = async (type: string) => {
+        const newId = nanoid();
+        const supabase = createClient();
+
+        const user = await supabase.auth.getUser();
+
+        console.log(user.data.user)
+
+        const { error, data } = await supabase.from('contents').insert({
+            content: '# start tour new document',
+            type,
+            author_id: user.data.user?.id,
+            contentId: newId
+        }).select('*')
+
+        if (error) console.log(error);
+
+        console.log(data)
+        setGeneratedContent(data[0]?.content);
+
+        router.push(`/dashboard/generate/${data[0]?.type}/${data[0]?.contentId}`);
+    }
+
     const value = {
         generatedContent,
         isLoading,
@@ -120,6 +149,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         clearContent,
         chatHistory,
         replaceCurrentContent,
+        handleSelection,
     };
 
     return (

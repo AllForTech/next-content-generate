@@ -10,7 +10,7 @@ export default function Layout({
 }>) {
 
     return (
-        <div className={cn('container-full bg-white center flex-row')}>
+        <div className={cn('screen bg-white center flex-row')}>
             <Sidebar />
             <main className={cn('center container-full flex-col')}>
               <Navbar/>

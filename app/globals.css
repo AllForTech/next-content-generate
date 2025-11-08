@@ -192,7 +192,6 @@
 }
 
 #markdown p {
-    font-size: 1rem;
     color: var(--color-text-primary);
     border-bottom: 2px solid var(--color-border-light);
 }
@@ -203,35 +202,13 @@
 }
 
 #markdown h3 {
-    font-size: 1.25rem; /* New: h3 level */
-    font-weight: 600;
     margin-top: 1.5rem;
     color: var(--color-text-secondary);
 }
 
 #markdown h4, #markdown h5, #markdown h6 {
-    font-size: 1rem;
-    font-weight: 600;
     margin-top: 1.25rem;
     color: #4b5563;
-}
-
-
-/* --- C. Blockquotes and Rules (Enhanced Visuals) --- */
-
-#markdown blockquote {
-    /* Blockquote for call-outs and quotes */
-    border-left: 4px solid #93c5fd; /* Soft, professional border */
-    padding: 0.5rem 1.5rem;
-    margin: 2rem 0;
-    color: #4b5563; /* Slightly dimmed text */
-    background-color: #f9fafb;
-    font-style: italic;
-}
-
-.dark #markdown blockquote {
-    background-color: #2b3340;
-    color: #d1d5db;
 }
 
 #markdown hr {
@@ -243,12 +220,6 @@
 
 
 /* --- D. Tables (Responsive and Readable) --- */
-
-#markdown table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 2rem 0;
-}
 
 #markdown th,
 #markdown td {

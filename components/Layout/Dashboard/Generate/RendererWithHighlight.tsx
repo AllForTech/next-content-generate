@@ -65,17 +65,16 @@ export default function ContentGenerator({content}: { content: string }) {
     '\n' +
     '## 🌍 The Zorin OS Role in Edge Deployment';
 
-  if (!mark) return ;
 
   // Split the content into cards based on H2 (##)
-  const cards = mark.split('\n## ').filter(c => c.trim() !== '');
+  const cards = content ? content.split('\n## ').filter(c => c.trim() !== '') : [];
 
   return (
     <div className="container-full center flex-col">
       {/* ... form and editing logic ... */}
 
       <ScrollArea className="container-full !justify-start flex-col center mt-8">
-        {cards.map((cardContent, index) => {
+        {cards && cards?.map((cardContent, index) => {
           // Re-add the H2 markdown syntax for ReactMarkdown to recognize it
           const content = index === 0 ? cardContent : `## ${cardContent}`;
 

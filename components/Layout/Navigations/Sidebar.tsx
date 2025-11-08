@@ -55,7 +55,7 @@ export function Sidebar() {
 
     // The sidebar content rendered in both desktop and mobile
     const sidebarContent = (
-        <aside className="h-full  bg-white px-4">
+        <aside className="h-full  w-[220px] bg-white px-4">
             <div className="py-4 between flex-col !items-start w-full h-full">
                 <h2 className="mb-6 px-4 text-lg font-semibold tracking-tight text-primary">
                     Think-Ink

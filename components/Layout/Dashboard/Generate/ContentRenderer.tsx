@@ -6,6 +6,20 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from "rehype-highlight";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ContentLoadingSkeleton } from '@/components/ui/ContentLoadingSkeleton';
+import {
+  TypographyBlockquote,
+  TypographyH1,
+  TypographyH2,
+  TypographyH3,
+  TypographyH4,
+  TypographyInlineCode,
+  TypographyLarge,
+  TypographyList,
+  TypographyP,
+  TypographyPre,
+  TypographySmall,
+  TypographyTable,
+} from '@/components/Layout/Dashboard/Generate/Typography';
 
 interface ContentRendererProps {
     content: string;
@@ -41,18 +55,41 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoa
 
 
     return (
-        <div className={cn('w-full h-full rounded-2xl bg-white shadow-md drop-shadow-xl shadow-neutral-300')}>
-          <ScrollArea ref={scrollAreaRef} className={cn('container-full flex-col !justify-start p-7')} id={'hide-scrollbar'}>
+        <div className={cn('w-full h-full center !justify-start flex-col rounded-2xl bg-white shadow-md drop-shadow-xl shadow-neutral-300')}>
+          <ScrollArea ref={scrollAreaRef} className={cn('container-full center flex-col !justify-start p-7',
+            displayedContent && 'max-w-[700px]'
+            )} id={'hide-scrollbar'}>
             {isLoading ? (
               <ContentLoadingSkeleton/>
             ) : (
-              <div className={cn('container-full flex-col !items-start !justify-start', displayedContent && '!max-w-[650px]')} id={'markdown'}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+              <article className={cn('container-full flex flex-col !justify-start',
+                displayedContent && 'max-w-[550px]'
+              )} id={'markdown'}>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+
+                  components={{
+                    h1: TypographyH1,
+                    h2: TypographyH2,
+                    h3: TypographyH3,
+                    h4: TypographyH4,
+                    p: TypographyP,
+                    menuitem: TypographyList,
+                    blockquote: TypographyBlockquote,
+                    code: TypographyInlineCode,
+                    small: TypographySmall,
+                    big: TypographyLarge,
+                    pre: TypographyPre,
+                    table: TypographyTable,
+                  }}
+                >
                   {displayedContent}
                 </ReactMarkdown>
-              </div>
+              </article>
             )}
           </ScrollArea>
         </div>
     );
 };
+

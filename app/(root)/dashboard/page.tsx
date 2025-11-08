@@ -1,16 +1,23 @@
+'use client'
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useGlobalState } from '@/context/GlobalStateContext';
+import { NewContentDialog } from '@/components/Layout/Dashboard/NewContentDialog';
 
 export default function Dashboard() {
+  const { setCreateContentDialogOpen } = useGlobalState();
 
-    return (
+  return (
         <div className={cn('container-full center flex-col gap-4')}>
             <h1 className="text-4xl font-bold">Welcome to AI Content Generator</h1>
             <p className="text-lg text-muted-foreground">Get started by generating some content.</p>
-            <Link href="/generate">
-                <Button>Go to Generator</Button>
-            </Link>
+            <div>
+                <Button
+                  onClick={() => setCreateContentDialogOpen((prev: boolean) => !prev)}
+                >Go to Generator</Button>
+            </div>
+          <NewContentDialog/>
         </div>
     );
 }
