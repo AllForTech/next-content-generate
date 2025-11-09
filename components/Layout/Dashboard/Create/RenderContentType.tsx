@@ -24,7 +24,11 @@ const contentTypes = [
     },
 ];
 
-export default function RenderContentType() {
+interface RenderContentTypeProps {
+    onSelectContentType: (type: string) => void;
+}
+
+export default function RenderContentType({ onSelectContentType }: RenderContentTypeProps) {
     return (
         <div className={cn('container-full center flex-col !justify-start p-12')}>
             <div className={cn('container-full center flex-col !justify-start')}>
@@ -39,6 +43,7 @@ export default function RenderContentType() {
                             type={contentType.type}
                             title={contentType.title}
                             description={contentType.description}
+                            onSelectContentType={onSelectContentType}
                         />
                     ))}
                 </div>
