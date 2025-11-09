@@ -28,14 +28,14 @@ interface GenerationContextType {
     error: string | null;
 
     // Actions
-    generateContent: (prompt: string) => Promise<void>;
+    generateContent: (prompt: string, contentType: string, tags: string[]) => Promise<void>;
     clearContent: () => void;
 
     chatHistory: ChatHistoryType[];
 
     replaceCurrentContent: (history: ChatHistoryType) => void;
 
-    handleSelection: Function;
+    handleSelection: (type: string, tags: string[]) => void;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -54,8 +54,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
 
     // The function to call the Next.js API Route
-  const generateContent = async (prompt: string) => {
-      if (!prompt) {
+  const generateContent = async (prompt: string, contentType: string, tags: string[]) => {
+      if (!prompt || !contentType || !tags) {
         return;
       }
       const id = nanoid()
@@ -64,12 +64,12 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       setChatHistory(prev => ([...prev, { id, role: 'user', content: prompt }]))
       let content = '';
       try {
-        const response = await fetch('/api/research', {
+        const response = await fetch('/api/generate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ prompt })
+          body: JSON.stringify({ prompt, contentType, tags })
         });
 
         if (!response.body) {
@@ -118,7 +118,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setError(null);
     }, []);
 
-    const handleSelection = async (type: string) => {
+    const handleSelection = async (type: string, tags: string[]) => {
         const newId = nanoid();
         const supabase = createClient();
 
@@ -130,7 +130,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
             content: '# start tour new document',
             type,
             author_id: user.data.user?.id,
-            contentId: newId
+            contentId: newId,
+            tags: tags
         }).select('*')
 
         if (error) console.log(error);
