@@ -1,4 +1,3 @@
-import {cn} from "@/lib/utils";
 import AuthForm from '@/components/Auth/AuthForm';
 
 export default function SignIn(){

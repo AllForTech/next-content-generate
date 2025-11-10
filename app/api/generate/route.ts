@@ -1,37 +1,36 @@
 import { NextResponse } from "next/server";
 import { streamText } from 'ai';
-import { GENERATOR_PROMPT, PROFESSIONAL_CONTENT_CREATOR } from '@/lib/AI/ai.system.prompt';
+import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt';
 import { google } from '@ai-sdk/google';
 import { saveGeneratedContent } from '@/lib/db/content';
 import { ContentGenerationResponse } from '@/lib/schema';
+import { z } from "zod";
+import { executeTavilySearch } from "@/lib/tavily/tavily.search";
+import { scrapeUrl } from "@/lib/scraper/scraper";
 
 export const runtime = 'nodejs';
 
-// gemini-2.5-flash-preview-05-20
 const model = google('gemini-2.5-flash');
 
 export async function POST(req: Request) {
-    const { prompt, searchResults, contentType, tags } = await req.json();
+    const { prompt, searchResults, contentType, tags, tone, url } = await req.json();
 
-    if (!prompt || !searchResults || !contentType || !tags) {
+    if (!prompt || !contentType) {
         return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
     }
 
-    const formatedResult = searchResults.map((result, i) =>  `result [${i + 1}]: ${result.snippet} 
- source: ${result.source}
-`);
+    const formatedResult = searchResults?.map((result, i) =>  `result [${i + 1}]: ${result.snippet} \n source: ${result.source}\n`) || [];
 
     try {
       const result = streamText({
         model: model,
 
         // Pass the detailed system instructions
-        system: GENERATOR_PROMPT,
+        system: `${GENERATOR_PROMPT} \n The user wants the content to have a ${tone} tone. ${url ? `The user also provided this URL for reference: ${url}` : ''}`,
 
 
         // Pass the user's specific request
-        prompt: `Hare is the user prompt: "${prompt}" 
- and hare is the search results: ${formatedResult}`,
+        prompt: `Hare is the user prompt: "${prompt}" \n and hare is the search results: ${formatedResult}`,
       });
 
         let fullContent = "";

@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
-import { Prompt } from "@/components/Layout/Dashboard/Generate/Prompt";
+import Prompt from "@/components/Layout/Dashboard/Generate/Prompt";
 import { ContentRenderer } from "@/components/Layout/Dashboard/Generate/ContentRenderer";
 import { useContent } from '@/context/GenerationContext';
 import ContentGenerator from '@/components/Layout/Dashboard/Generate/RendererWithHighlight';

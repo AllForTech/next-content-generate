@@ -1,7 +1,7 @@
-import {cn} from "@/lib/utils";
 import { GenerateContent } from '@/components/Layout/Dashboard/Generate/GenerateContent';
 
-export default function Generate({ params }: { params: { type: string, content_id: string } }) {
+export default async function Generate({ params }: { params: { type: string, content_id: string } }) {
+  const { type, content_id } = await params;
 
-    return <GenerateContent contentType={params.type} contentId={params.content_id} />
+    return <GenerateContent contentType={type} contentId={content_id} />
 }

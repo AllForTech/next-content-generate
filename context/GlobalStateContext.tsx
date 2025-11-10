@@ -4,18 +4,23 @@ import {
     createContext,
     useContext,
     useState,
-    useCallback,
     ReactNode
 } from 'react';
-import { nanoid } from 'nanoid';
 
+export const contentTypes = {
+  blog: 'blog',
+  social: 'social',
+  document: 'document',
+} as const;
+
+export type ContentType = typeof contentTypes[keyof typeof contentTypes];
 
 // --- 1. Define the Context Interface (What components can access) ---
 interface GlobalStateContextType {
     createContentDialogOpen: boolean;
     setCreateContentDialogOpen: (prev: boolean) => void;
-    selectedContentType: any;
-    setSelectedContentType: any;
+    selectedContentType: ContentType | null;
+    setSelectedContentType: (type: ContentType | null) => void;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -23,19 +28,11 @@ const GlobalStateContext = createContext<GlobalStateContextType | undefined>(
     undefined
 );
 
-export const contentType = {
-  blog: 'blog',
-  social: 'social',
-  document: 'document',
-}
-
 // --- 3. Create the Provider Component ---
 export function GlobalStateProvider({ children }: { children: ReactNode }) {
     const [createContentDialogOpen, setCreateContentDialogOpen] = useState(false);
-    const [selectedContentType, setSelectedContentType] = useState({});
+    const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
     
-
-
     const value = {
         createContentDialogOpen,
         setCreateContentDialogOpen,

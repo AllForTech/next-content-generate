@@ -28,14 +28,14 @@ interface GenerationContextType {
     error: string | null;
 
     // Actions
-    generateContent: (prompt: string, contentType: string, tags: string[]) => Promise<void>;
+    generateContent: (prompt: string, contentType: string, tags: string[], tone: string, url: string) => Promise<void>;
     clearContent: () => void;
 
     chatHistory: ChatHistoryType[];
 
     replaceCurrentContent: (history: ChatHistoryType) => void;
 
-    handleSelection: (type: string, tags: string[]) => void;
+    handleSelection: (type: string) => void;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -54,8 +54,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
 
     // The function to call the Next.js API Route
-  const generateContent = async (prompt: string, contentType: string, tags: string[]) => {
-      if (!prompt || !contentType || !tags) {
+  const generateContent = async (prompt: string, contentType: string, tags: string[], tone: string, url: string) => {
+      if (!prompt || !contentType) {
         return;
       }
       const id = nanoid()
@@ -69,7 +69,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ prompt, contentType, tags })
+          body: JSON.stringify({ prompt, contentType, tags, tone, url })
         });
 
         if (!response.body) {
@@ -118,7 +118,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setError(null);
     }, []);
 
-    const handleSelection = async (type: string, tags: string[]) => {
+    const handleSelection = async (type: string) => {
         const newId = nanoid();
         const supabase = createClient();
 
@@ -131,7 +131,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
             type,
             author_id: user.data.user?.id,
             contentId: newId,
-            tags: tags
+            tags: []
         }).select('*')
 
         if (error) console.log(error);

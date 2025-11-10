@@ -1,7 +1,6 @@
 'use client'
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { useGlobalState } from '@/context/GlobalStateContext';
 import { NewContentDialog } from '@/components/Layout/Dashboard/NewContentDialog';
 
