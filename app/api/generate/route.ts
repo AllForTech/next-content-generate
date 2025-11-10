@@ -4,12 +4,11 @@ import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt';
 import { google } from '@ai-sdk/google';
 import { saveGeneratedContent } from '@/lib/db/content';
 import { ContentGenerationResponse } from '@/lib/schema';
-import { urlScraperTool } from '@/lib/AI/tools';
+import { tavilySearchTool, urlScraperTool } from '@/lib/AI/tools';
 
 export const runtime = 'nodejs';
 
 const model = google('gemini-2.5-flash');
-const searchTool = tavilySearchTool;
 
 export async function POST(req: Request) {
     const { prompt, searchResults, contentType, tags, tone, url } = await req.json();
@@ -31,7 +30,7 @@ export async function POST(req: Request) {
 
         tools: {
           scrape: urlScraperTool,
-          webSearch: searchTool,
+          webSearch: tavilySearchTool,
         },
 
         stopWhen: stepCountIs(2),
