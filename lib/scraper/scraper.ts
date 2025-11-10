@@ -4,6 +4,7 @@ import * as cheerio from 'cheerio';
 
 export async function scrapeUrl(url: string) {
     try {
+        console.log(`[Tool Executing] Attempting to scrape: ${url}`);
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
         
@@ -15,10 +16,13 @@ export async function scrapeUrl(url: string) {
         
         // Remove extra whitespace
         const cleanedText = text.replace(/\s\s+/g, ' ').trim();
+
+      console.log('Sc');
         
         return cleanedText;
     } catch (error) {
-        console.error(`Error scraping URL: ${url}`, error);
-        return JSON.stringify({ error: "Failed to scrape the URL." });
+      const errorMessage = `Failed to scrape URL: ${url}. The website may be down, use anti-bot measures, or the URL is invalid.`;
+      console.error(errorMessage, error);
+      return JSON.stringify({ error: errorMessage });
     }
 }

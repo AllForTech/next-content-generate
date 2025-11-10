@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { streamText } from 'ai';
+import { stepCountIs, streamText } from 'ai';
 import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt';
 import { google } from '@ai-sdk/google';
 import { saveGeneratedContent } from '@/lib/db/content';
 import { ContentGenerationResponse } from '@/lib/schema';
-import { z } from "zod";
-import { executeTavilySearch } from "@/lib/tavily/tavily.search";
-import { scrapeUrl } from "@/lib/scraper/scraper";
+import { urlScraperTool } from '@/lib/AI/tools';
+import { tavilySearchTool } from ''
 
 export const runtime = 'nodejs';
 
@@ -19,18 +18,23 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
     }
 
-    const formatedResult = searchResults?.map((result, i) =>  `result [${i + 1}]: ${result.snippet} \n source: ${result.source}\n`) || [];
+    const formatedResult = searchResults?.map((result, i) =>  `result [${i + 1}]: ${result.snippet} 
+ source: ${result.source}
+`) || [];
 
     try {
       const result = streamText({
         model: model,
 
         // Pass the detailed system instructions
-        system: `${GENERATOR_PROMPT} \n The user wants the content to have a ${tone} tone. ${url ? `The user also provided this URL for reference: ${url}` : ''}`,
+        system: `${GENERATOR_PROMPT} \n The user wants the content to have a ${tone} tone.`,
 
+        tools: { scrape: urlScraperTool, tavilySearchTool },
 
+        stopWhen: stepCountIs(2),
         // Pass the user's specific request
-        prompt: `Hare is the user prompt: "${prompt}" \n and hare is the search results: ${formatedResult}`,
+        prompt: `Hare is the user prompt: "${prompt}" 
+ and hare is the search results: ${formatedResult},  ${url ? `The user also provided this URL for reference: ${url}` : ''}`,
       });
 
         let fullContent = "";

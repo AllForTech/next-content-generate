@@ -24,10 +24,10 @@ export function NewContentDialog(){
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className={cn('absolute center p-2.5 between flex-col right-1/2 bottom-1/2 translate-y-1/2 translate-x-1/2 w-[800px] h-[85%] rounded-2xl bg-white drop-shadow-2xl drop-shadow-stone-300 shadow-stone-300')}
+          className={cn('absolute center p-2.5 between flex-col right-1/2 bottom-1/2 translate-y-1/2 translate-x-1/2 w-[800px] h-fit rounded-2xl bg-white drop-shadow-2xl drop-shadow-stone-300 shadow-stone-300')}
         >
           <div className={cn('container-full center flex-col')}>
-            <RenderContentType />
+            <RenderContentType/>
           </div>
           <div className={cn('w-full h-fit center !justify-end gap-2.5 p-2')}>
             <Button

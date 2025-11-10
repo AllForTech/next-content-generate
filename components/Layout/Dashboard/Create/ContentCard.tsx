@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 import { useContent } from '@/context/GenerationContext';
+import {useGlobalState} from "@/context/GlobalStateContext";
 
 interface ContentCardProps {
     icon: LucideIcon;
@@ -12,10 +13,16 @@ interface ContentCardProps {
 
 export default function ContentCard({ icon: Icon, type, title, description }: ContentCardProps) {
     const { handleSelection } = useContent();
+    const { setCreateContentDialogOpen } = useGlobalState();
+
+    const handleClick = () => {
+        handleSelection(type);
+        setCreateContentDialogOpen(false);
+    }
 
     return (
         <div 
-            onClick={() => handleSelection(type)}
+            onClick={handleClick}
             className={cn('bg-stone-100 rounded-lg shadow-md p-6 flex flex-col items-center hover:scale-102 text-center cursor-pointer hover:shadow-xl transition-300')}
         >
             <Icon className={cn('w-12 h-12 text-indigo-500')} />

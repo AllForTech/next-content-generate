@@ -61,7 +61,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       const id = nanoid()
       setIsLoading(true);
       setGeneratedContent('');
-      setChatHistory(prev => ([...prev, { id, role: 'user', content: prompt }]))
+      setChatHistory(prev => ([...prev, { id: 'user', role: 'user', content: prompt }]))
       let content = '';
       try {
         const response = await fetch('/api/generate', {
