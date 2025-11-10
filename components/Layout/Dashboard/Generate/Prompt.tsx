@@ -8,9 +8,10 @@ import {useContent} from "@/context/GenerationContext";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { toast } from 'sonner';
 
 interface PromptProps {
-    onGenerate: (prompt: string, contentType: string, tags: string[], tone: string, url: string) => void;
+    onGenerate: (prompt: string, contentType: string, tags: string[], tone: string, urls: string[]) => void;
     contentType: string;
     contentId: string;
 }
@@ -22,13 +23,14 @@ const Prompt: React.FC<PromptProps> = ({ onGenerate, contentType, contentId }) =
     const [tags, setTags] = useState('');
     const [tone, setTone] = useState('Professional');
     const [url, setUrl] = useState('');
+    const [urls, setUrls] = useState([]);
 
     const { isLoading } = useContent();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-        onGenerate(prompt, contentType, tagsArray, tone, url);
+        onGenerate(prompt, contentType, tagsArray, tone, urls);
     };
 
     return (
@@ -48,8 +50,7 @@ const Prompt: React.FC<PromptProps> = ({ onGenerate, contentType, contentId }) =
                     </NativeSelect>
                 </div>
                 <div className="w-full flex flex-col gap-2">
-                    <Label htmlFor="url">Reference URL</Label>
-                    <Input id="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com" />
+                   <RenderReferenceUrl url={url} setUrl={setUrl} urls={urls} setUrls={setUrls}/>
                 </div>
               <Textarea
                 value={prompt}
@@ -69,3 +70,36 @@ const Prompt: React.FC<PromptProps> = ({ onGenerate, contentType, contentId }) =
 };
 
 export default Prompt;
+
+const RenderReferenceUrl = ({ setUrl, url, urls, setUrls }: { url: string, setUrl: any, urls: string[], setUrls: any}) => {
+
+  const handleAdd = () => {
+    if (!urls || !url){
+      return
+    }
+    const exists = urls?.includes(url);
+    if (exists) {
+      toast.message('Url already added!');
+      return;
+    }
+    setUrls(prev => ([...prev, url]));
+  }
+
+  return (
+    <div className={'center flex-col gap-2.5 w-full h-fit'}>
+      <div className={cn('w-full between')}>
+        <Label htmlFor="url">Reference URL</Label>
+        <Button
+          onClick={handleAdd}
+          type={'button'}
+        >add</Button>
+      </div>
+      <Input id="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com" />
+      <div className={cn('w-full h-fit center flex-col gap-2')}>
+        {urls && urls.map(u => (
+          <div key={u} className={cn('text-xs')}>{u}</div>
+        ))}
+      </div>
+    </div>
+  )
+}

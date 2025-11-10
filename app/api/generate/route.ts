@@ -33,7 +33,7 @@ export async function POST(req: Request) {
           webSearch: tavilySearchTool,
         },
 
-        stopWhen: stepCountIs(2),
+        stopWhen: stepCountIs(4),
         // Pass the user's specific request
         prompt: `Hare is the user prompt: "${prompt}" 
  and hare is the search results: ${formatedResult},  ${url ? `The user also provided this URL for reference: ${url}` : ''}`,

@@ -11,11 +11,12 @@ interface ContentPageProps {
 }
 
 export default async function ContentPage({ params }: ContentPageProps) {
+  const { content_id } = await params;
     const supabase = createClient();
     const { data, error } = await supabase
         .from('generated_content')
         .select('*')
-        .eq('id', params.content_id)
+        .eq('id', content_id)
         .single();
 
     if (error || !data) {
