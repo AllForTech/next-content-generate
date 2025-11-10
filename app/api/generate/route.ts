@@ -5,11 +5,11 @@ import { google } from '@ai-sdk/google';
 import { saveGeneratedContent } from '@/lib/db/content';
 import { ContentGenerationResponse } from '@/lib/schema';
 import { urlScraperTool } from '@/lib/AI/tools';
-import { tavilySearchTool } from ''
 
 export const runtime = 'nodejs';
 
 const model = google('gemini-2.5-flash');
+const searchTool = tavilySearchTool;
 
 export async function POST(req: Request) {
     const { prompt, searchResults, contentType, tags, tone, url } = await req.json();
@@ -29,7 +29,10 @@ export async function POST(req: Request) {
         // Pass the detailed system instructions
         system: `${GENERATOR_PROMPT} \n The user wants the content to have a ${tone} tone.`,
 
-        tools: { scrape: urlScraperTool, tavilySearchTool },
+        tools: {
+          scrape: urlScraperTool,
+          webSearch: searchTool,
+        },
 
         stopWhen: stepCountIs(2),
         // Pass the user's specific request

@@ -17,7 +17,6 @@ export async function scrapeUrl(url: string) {
         // Remove extra whitespace
         const cleanedText = text.replace(/\s\s+/g, ' ').trim();
 
-      console.log('Sc');
         
         return cleanedText;
     } catch (error) {

@@ -29,7 +29,7 @@ export async function makeResearch(query: string, domains: string[]) {
     });
 
     for await (const text of result.textStream){
-        console.log(text)
+        console.log(text);
     }
     // The AI SDK returns the stream directly, ready to be piped to the client
     return result.textStream;
