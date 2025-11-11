@@ -4,7 +4,7 @@ import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt';
 import { google } from '@ai-sdk/google';
 import { saveGeneratedContent } from '@/lib/db/content';
 import { ContentGenerationResponse } from '@/lib/schema';
-import { tavilySearchTool, urlScraperTool } from '@/lib/AI/tools';
+import { tavilySearchTool, unsplashSearchTool, urlScraperTool } from '@/lib/AI/tools';
 
 export const runtime = 'nodejs';
 
@@ -31,6 +31,7 @@ export async function POST(req: Request) {
         tools: {
           scrape: urlScraperTool,
           webSearch: tavilySearchTool,
+          unsplash: unsplashSearchTool,
         },
 
         stopWhen: stepCountIs(4),

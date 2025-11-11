@@ -1,27 +1,40 @@
-
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-export async function scrapeUrl(url: string) {
-    try {
-        console.log(`[Tool Executing] Attempting to scrape: ${url}`);
-        const response = await axios.get(url);
-        const $ = cheerio.load(response.data);
-        
-        // Remove script and style elements
-        $('script, style').remove();
-        
-        // Get the text content of the body
-        const text = $('body').text();
-        
-        // Remove extra whitespace
-        const cleanedText = text.replace(/\s\s+/g, ' ').trim();
+export async function scrapeUrl(urls: string[]) {
+  // Array to hold the scraped content from all URLs
+  const allScrapedContent: string[] = [];
 
-        
-        return cleanedText;
+  // Loop through each URL provided in the input array
+  for (const url of urls) {
+    try {
+      console.log(`[Tool Executing] Attempting to scrape: ${url}`);
+
+      // 🚨 FIX: Call axios.get() with the single URL string inside the loop
+      const response = await axios.get(url);
+      const $ = cheerio.load(response.data);
+
+      // Remove script and style elements
+      $('script, style').remove();
+
+      // Get the text content of the body
+      const text = $('body').text();
+
+      // Remove extra whitespace and newlines
+      const cleanedText = text.replace(/(\r\n|\n|\r)/gm, " ").replace(/\s\s+/g, ' ').trim();
+
+      // Add the cleaned content to our aggregation array
+      allScrapedContent.push(`--- CONTENT FROM: ${url} ---\n${cleanedText}`);
+
     } catch (error) {
       const errorMessage = `Failed to scrape URL: ${url}. The website may be down, use anti-bot measures, or the URL is invalid.`;
       console.error(errorMessage, error);
-      return JSON.stringify({ error: errorMessage });
+
+      // Log the error but continue to the next URL
+      allScrapedContent.push(JSON.stringify({ error: errorMessage, url: url }));
     }
+  }
+
+  // Return a single string where all scraped content is joined together.
+  return allScrapedContent.join('\n\n');
 }

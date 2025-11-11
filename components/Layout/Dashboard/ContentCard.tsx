@@ -44,7 +44,7 @@ export default function ContentCard({ id, title, createdAt, type }: ContentCardP
   return (
     <div
       className={cn(
-        "bg-white rounded-lg shadow-md p-6 flex flex-col justify-between h-full",
+        "bg-white rounded-lg shadow-md p-6 flex flex-col justify-between w-full max-w-[350px overflow-hidden] h-[200px]",
         "hover:shadow-xl transition-shadow duration-300"
       )}
     >

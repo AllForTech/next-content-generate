@@ -2,21 +2,22 @@ import { tool } from 'ai';
 import { scrapeUrl } from '@/lib/scraper/scraper';
 import { z } from 'zod';
 import { executeTavilySearch } from '@/lib/tavily/tavily.search';
+import { searchUnsplashImages } from './ai.image';
 
 export const urlScraperTool = tool({
 
-  description: 'If the user provides a specific, complete URL (e.g., "https://...") for content extraction or summarization, use this tool to retrieve the raw text of the webpage before responding.',
+  description: 'Use this tool to extract text content from one or more specific URLs provided by the user (e.g., "https://source1.com and https://source2.com").',
 
-  // Defines the single input parameter: a URL string
   inputSchema: z.object({
-    // The LLM will look for a valid URL string in the user's message
-    url: z.string().url().describe('The single, valid, full URL to be scraped.'),
+    // The LLM will gather all valid URLs and put them into this array
+    urls: z.array(z.string().url()).describe('An array of all valid URLs provided by the user for scraping.'),
+    // Note: I renamed 'url' to 'urls' for clarity
   }),
 
   // This is the function the AI SDK calls when the LLM requests the tool
-  execute: async ({ url }) => {
+  execute: async ({ urls }) => {
     // We call the actual scraping logic here
-    return scrapeUrl(url);
+    return scrapeUrl(urls);
   },
 });
 
@@ -35,5 +36,22 @@ export const tavilySearchTool = tool({
   execute: async ({ query }) => {
     // We call the actual scraping logic here
     return executeTavilySearch(query);
+  },
+});
+
+
+export const unsplashSearchTool = tool({
+  // 🚨 The description tells the LLM WHEN to use the tool.
+  description: 'Searches the free Unsplash library for high-quality stock photos related to the content topic. Use this to find image URLs for visual elements.',
+
+  // The input schema guides the LLM on what arguments to provide.
+  inputSchema: z.object({
+    query: z.string().describe('The primary search term or keyword to find relevant images (e.g., "AI infrastructure" or "sustainable architecture").'),
+    count: z.number().optional().default(3).describe('The maximum number of image results to return, defaulting to 3.'),
+  }),
+
+  // The execute function calls your core logic
+  execute: async ({ query, count }) => {
+    return searchUnsplashImages(query, count);
   },
 });

@@ -28,7 +28,7 @@ interface GenerationContextType {
     error: string | null;
 
     // Actions
-    generateContent: (prompt: string, contentType: string, tags: string[], tone: string, url: string) => Promise<void>;
+    generateContent: (prompt: string, contentType: string, tags: string[], tone: string, url: string[]) => Promise<void>;
     clearContent: () => void;
 
     chatHistory: ChatHistoryType[];
@@ -54,7 +54,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
 
     // The function to call the Next.js API Route
-  const generateContent = async (prompt: string, contentType: string, tags: string[], tone: string, url: string) => {
+  const generateContent = async (prompt: string, contentType: string, tags: string[], tone: string, url: string[]) => {
       if (!prompt || !contentType) {
         return;
       }

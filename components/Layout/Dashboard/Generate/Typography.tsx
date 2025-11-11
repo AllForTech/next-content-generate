@@ -3,7 +3,7 @@ import {ReactNode} from "react";
 
 export function TypographyH1({children}: {children: ReactNode}) {
     return (
-        <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
+        <h1 className="scroll-m-20 text-center w-full text-4xl mb-3.5 font-extrabold tracking-tight text-balance">
             {children}
         </h1>
     )

@@ -95,9 +95,13 @@ const RenderReferenceUrl = ({ setUrl, url, urls, setUrls }: { url: string, setUr
         >add</Button>
       </div>
       <Input id="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com" />
-      <div className={cn('w-full h-fit center flex-col gap-2')}>
+      <div className={cn('w-full h-fit grid grid-cols-3 flex-col gap-2')}>
         {urls && urls.map(u => (
-          <div key={u} className={cn('text-xs')}>{u}</div>
+          <div
+            key={u}
+            className={cn('text-xs w-full h-fit overflow-hidden text-nowrap p-2 rounded-sm bg-stone-500 text-white/90')}>
+            {u}
+          </div>
         ))}
       </div>
     </div>

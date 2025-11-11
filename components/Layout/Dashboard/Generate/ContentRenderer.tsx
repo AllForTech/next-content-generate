@@ -57,13 +57,13 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoa
     return (
         <div className={cn('w-full h-full center !justify-start flex-col rounded-2xl bg-white shadow-md drop-shadow-xl shadow-neutral-300')}>
           <ScrollArea ref={scrollAreaRef} className={cn('container-full center flex-col !justify-start p-7',
-            displayedContent && 'max-w-[700px]'
+            // displayedContent && 'max-w-[700px]'
             )} id={'hide-scrollbar'}>
             {isLoading ? (
               <ContentLoadingSkeleton/>
             ) : (
-              <article className={cn('container-full flex flex-col !justify-start',
-                displayedContent && 'max-w-[550px]'
+              <article className={cn('container-full flex flex-col !m-0 !justify-start',
+                // displayedContent && 'max-w-[650px]'
               )} id={'markdown'}>
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
