@@ -1,22 +1,24 @@
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  // const supabase = createClient();
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser();
-  // const { pathname } = request.nextUrl;
-  //
-  // if (user) {
-  //   if (pathname === "/sign-in" || pathname === "/sign-up") {
-  //     return NextResponse.redirect(new URL("/dashboard", request.url));
-  //   }
-  // } else {
-  //   if (pathname.startsWith("/dashboard")) {
-  //     return NextResponse.redirect(new URL("/sign-in", request.url));
-  //   }
-  // }
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { pathname } = request.nextUrl;
+
+  console.log(user);
+
+  if (user) {
+    if (pathname === "/sign-in" || pathname === "/sign-up") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+  } else {
+    if (pathname.startsWith("/dashboard")) {
+      return NextResponse.redirect(new URL("/sign-in", request.url));
+    }
+  }
 
   return NextResponse.next();
 }

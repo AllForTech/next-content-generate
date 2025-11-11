@@ -21,6 +21,9 @@ interface GlobalStateContextType {
     setCreateContentDialogOpen: (prev: boolean) => void;
     selectedContentType: ContentType | null;
     setSelectedContentType: (type: ContentType | null) => void;
+    isEditingRaw: boolean;
+    setIsEditingRaw: any;
+    handleToggleEdit: () => void;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -32,12 +35,21 @@ const GlobalStateContext = createContext<GlobalStateContextType | undefined>(
 export function GlobalStateProvider({ children }: { children: ReactNode }) {
     const [createContentDialogOpen, setCreateContentDialogOpen] = useState(false);
     const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
+    const [isEditingRaw, setIsEditingRaw] = useState(false);
+
+
+    const handleToggleEdit = () => {
+        setIsEditingRaw(prev => !prev);
+    };
     
     const value = {
         createContentDialogOpen,
         setCreateContentDialogOpen,
         selectedContentType,
         setSelectedContentType,
+        isEditingRaw,
+        setIsEditingRaw,
+        handleToggleEdit,
     };
 
     return (

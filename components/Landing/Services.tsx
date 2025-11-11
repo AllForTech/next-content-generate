@@ -5,17 +5,17 @@ import { PenTool, Code, Search } from 'lucide-react';
 
 const services = [
   {
-    icon: <PenTool className="h-12 w-12 text-white" />,
+    icon: <PenTool className="h-12 w-12 text-black" />,
     title: 'Content Creation',
     description: 'Generate high-quality articles, blog posts, and more with our AI.',
   },
   {
-    icon: <Code className="h-12 w-12 text-white" />,
+    icon: <Code className="h-12 w-12 text-black" />,
     title: 'Code Generation',
     description: 'Generate code snippets in various programming languages.',
   },
   {
-    icon: <Search className="h-12 w-12 text-white" />,
+    icon: <Search className="h-12 w-12 text-black" />,
     title: 'AI-Powered Research',
     description: 'Conduct research on any topic with our AI-powered search.',
   },
@@ -23,14 +23,14 @@ const services = [
 
 export const Services = () => {
   return (
-    <section className="py-20 bg-gray-900">
+    <section id="services" className="py-20 bg-stone-200/80">
       <div className="container mx-auto px-4">
         <motion.h2
           initial={{ opacity: 0, y: -50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-4xl font-bold text-center mb-12"
+          className="text-4xl font-bold text-center mb-12 text-black"
         >
           Services
         </motion.h2>
@@ -42,11 +42,11 @@ export const Services = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
               viewport={{ once: true }}
-              className="bg-black p-8 rounded-lg text-center"
+              className="bg-white p-8 rounded-lg text-center"
             >
               <div className="flex justify-center mb-4">{service.icon}</div>
-              <h3 className="text-2xl font-bold mb-2">{service.title}</h3>
-              <p className="text-gray-400">{service.description}</p>
+              <h3 className="text-2xl font-bold mb-2 text-black">{service.title}</h3>
+              <p className="text-black">{service.description}</p>
             </motion.div>
           ))}
         </div>

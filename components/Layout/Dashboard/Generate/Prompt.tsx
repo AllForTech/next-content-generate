@@ -71,7 +71,7 @@ const Prompt: React.FC<PromptProps> = ({ onGenerate, contentType, contentId }) =
 
 export default Prompt;
 
-const RenderReferenceUrl = ({ setUrl, url, urls, setUrls }: { url: string, setUrl: any, urls: string[], setUrls: any}) => {
+const RenderReferenceUrl = ({ setUrl, url, urls, setUrls }: { url: string, setUrl: React.Dispatch<React.SetStateAction<string>>, urls: string[], setUrls: React.Dispatch<React.SetStateAction<string[]>>}) => {
 
   const handleAdd = () => {
     if (!urls || !url){

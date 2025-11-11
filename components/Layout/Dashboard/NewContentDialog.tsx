@@ -18,7 +18,7 @@ export function NewContentDialog(){
       <>
         {createContentDialogOpen && <div
           onClick={() => setCreateContentDialogOpen(false)}
-          className={cn('absolute z-5 !screen bg-white/20 backdrop-blur-sm transition-300')}/>}
+          className={cn('absolute !screen bg-white/20 backdrop-blur-sm transition-300')}/>}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

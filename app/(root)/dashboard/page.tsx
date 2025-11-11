@@ -56,7 +56,7 @@ export default async function Dashboard({
 
       <div className="flex justify-between items-center mb-8">
 
-        <h1 className="text-4xl font-bold">Your Content</h1>
+        <h1 className="text-4xl font-bold">Contents</h1>
 
         <GoToGeneratorButton />
 

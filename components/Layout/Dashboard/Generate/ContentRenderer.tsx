@@ -21,94 +21,88 @@ import {
   TypographySmall,
   TypographyTable,
 } from '@/components/Layout/Dashboard/Generate/Typography';
+import { useGlobalState } from '@/context/GlobalStateContext';
 
 interface ContentRendererProps {
-    content: string;
-    isLoading: boolean;
+  content: string;
+  isLoading: boolean;
 }
 
 export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoading }) => {
-    const [displayedContent, setDisplayedContent] = useState(content);
-    const [isEditingRaw, setIsEditingRaw] = useState(false);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
-    const scrollAreaRef = useRef<HTMLDivElement>(null); // Ref for the scrollable area
+  const {  isEditingRaw } = useGlobalState();
+  const [displayedContent, setDisplayedContent] = useState(content);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null); // Ref for the scrollable area
 
-    const handleToggleEdit = () => {
-        setIsEditingRaw(prev => !prev);
+
+  useEffect(() => {
+    if (!isLoading && content && !isEditingRaw) {
+      timerRef.current = setTimeout(() => {
+        setDisplayedContent(content);
+      }, 100)
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
     };
+  }, [content, isLoading, isEditingRaw]);
+
+  // Effect to scroll to bottom when displayedContent changes
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  }, [displayedContent]);
 
 
-    useEffect(() => {
-        if (!isLoading && content && !isEditingRaw) {
-           timerRef.current = setTimeout(() => {
-               setDisplayedContent(content);
-           }, 100)
-        }
+  return (
+    <div className={cn('w-full h-full relative center !justify-start flex-col rounded-2xl bg-white shadow-md drop-shadow-xl shadow-neutral-300')}>
+      {isEditingRaw ? (
+        <textarea
+          className="w-full h-full absolute p-4 font-mono text-xs bg-neutral-800 text-gray-50 rounded-md resize-none focus:outline-none focus:ring-0 focus:ring-none"
+          value={displayedContent}
+          onChange={(e) => setDisplayedContent(e.target.value)}
+          spellCheck="false"
+          id={'hide-scrollbar'}
+        />
+      ) : (
+        <ScrollArea ref={scrollAreaRef} className={cn('container-full center flex-col !justify-start p-7',
+          // displayedContent && 'max-w-[700px]'
+        )} id={'hide-scrollbar'}>
+          {isLoading ? (
+            <ContentLoadingSkeleton/>
+          ): (
+            <article className={cn('container-full flex flex-col !m-0 !justify-start',
+              // displayedContent && 'max-w-[650px]'
+            )} id={'markdown'}>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
 
-        return () => {
-            if (timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
-        };
-    }, [content, isLoading, isEditingRaw]);
-
-    // Effect to scroll to bottom when displayedContent changes
-    useEffect(() => {
-        if (scrollAreaRef.current) {
-            scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-        }
-    }, [displayedContent]);
-
-
-    return (
-        <div className={cn('w-full h-full center !justify-start flex-col rounded-2xl bg-white shadow-md drop-shadow-xl shadow-neutral-300')}>
-            <div className="w-full flex justify-end p-2">
-                <Button onClick={handleToggleEdit} variant="outline" size="sm">
-                    {isEditingRaw ? 'View' : 'Edit'}
-                </Button>
-            </div>
-            <ScrollArea ref={scrollAreaRef} className={cn('container-full center flex-col !justify-start p-7',
-                // displayedContent && 'max-w-[700px]'
-            )} id={'hide-scrollbar'}>
-                {isLoading ? (
-                    <ContentLoadingSkeleton/>
-                ) : isEditingRaw ? (
-                    <textarea
-                        className="w-full h-full min-h-[500px] p-4 font-mono text-xs bg-neutral-800 text-gray-50 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={displayedContent}
-                        onChange={(e) => setDisplayedContent(e.target.value)}
-                        spellCheck="false"
-                        id={'hide-scrollbar'}
-                    />
-                ) : (
-                    <article className={cn('container-full flex flex-col !m-0 !justify-start',
-                        // displayedContent && 'max-w-[650px]'
-                    )} id={'markdown'}>
-                        <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeHighlight]}
-
-                            components={{
-                                h1: TypographyH1,
-                                h2: TypographyH2,
-                                h3: TypographyH3,
-                                h4: TypographyH4,
-                                p: TypographyP,
-                                menuitem: TypographyList,
-                                blockquote: TypographyBlockquote,
-                                code: TypographyInlineCode,
-                                small: TypographySmall,
-                                big: TypographyLarge,
-                                pre: TypographyPre,
-                                table: TypographyTable,
-                            }}
-                        >
-                            {displayedContent}
-                        </ReactMarkdown>
-                    </article>
-                )}
-            </ScrollArea>
-        </div>
-    );
+                components={{
+                  h1: TypographyH1,
+                  h2: TypographyH2,
+                  h3: TypographyH3,
+                  h4: TypographyH4,
+                  p: TypographyP,
+                  menuitem: TypographyList,
+                  blockquote: TypographyBlockquote,
+                  code: TypographyInlineCode,
+                  small: TypographySmall,
+                  big: TypographyLarge,
+                  pre: TypographyPre,
+                  table: TypographyTable,
+                }}
+              >
+                {displayedContent}
+              </ReactMarkdown>
+            </article>
+          )}
+        </ScrollArea>
+      ) }
+    </div>
+  );
 };
 

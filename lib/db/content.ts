@@ -2,7 +2,7 @@ import { createClient } from "@/utils/supabase/client";
 import { ContentGenerationResponse } from "@/lib/schema";
 
 export async function saveGeneratedContent(content: ContentGenerationResponse) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("generated_content")
     .insert([
@@ -26,7 +26,7 @@ export async function saveGeneratedContent(content: ContentGenerationResponse) {
 const ITEMS_PER_PAGE = 6;
 
 export async function getGeneratedContents(query: string, currentPage: number) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   // Base query to select content
@@ -50,4 +50,26 @@ export async function getGeneratedContents(query: string, currentPage: number) {
   }
 
   return { data, count };
+}
+
+export async function getContentById(id: any){
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("generated_content").select().eq('id', id).single();
+  if (error) {
+    console.log("Error fetching content:", error);
+  }
+  return data;
+}
+
+export async function saveContentImages(images: any[], content_id: string){
+  const supabase = createClient();
+  const { data, error } = await supabase.from("content_images").insert({
+    content_id,
+    images
+  })
+
+  if (error) {
+    console.error("Error saving content_images images:", error);
+  }
 }

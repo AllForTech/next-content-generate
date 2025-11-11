@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { cn } from "@/lib/utils";
 import Prompt from "@/components/Layout/Dashboard/Generate/Prompt";
 import { ContentRenderer } from "@/components/Layout/Dashboard/Generate/ContentRenderer";
@@ -11,14 +11,27 @@ import { Button } from '@/components/ui/button';
 interface GenerateContentProps {
     contentType: string;
     contentId: string;
+    content: any;
 }
 
-export const GenerateContent = ({ contentType, contentId }: GenerateContentProps) => {
+export const GenerateContent = ({ contentType, contentId, content }: GenerateContentProps) => {
     const {
       generateContent,
       isLoading,
-      generatedContent
+      generatedContent,
+      setGeneratedContent,
     } = useContent();
+
+  useEffect(() => {
+    if (!content || !contentId) {
+      setGeneratedContent('# No content found.');
+    }
+
+    setGeneratedContent(content?.main_content);
+
+  }, [content, contentId]);
+
+
 
     return (
         <div className={cn('container-full overflow-hidden gap-3.5 p-3.5 relative center flex-row')} id={'hide-scrollbar'}>

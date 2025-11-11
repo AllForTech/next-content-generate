@@ -22,6 +22,7 @@ export type ChatHistoryType = {
 interface GenerationContextType {
     // The final structured output from the AI
     generatedContent: string | null;
+  setGeneratedContent: (content: string) => void;
 
     // State variables
     isLoading: boolean;
@@ -198,7 +199,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         chatHistory,
         replaceCurrentContent,
         handleSelection,
-        handleDocxExport
+        handleDocxExport,
+        setGeneratedContent
     };
 
     return (

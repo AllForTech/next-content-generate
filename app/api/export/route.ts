@@ -31,6 +31,8 @@ export async function POST(req: NextRequest) {
     headers.set('Content-Length', buffer.length.toString());
 
     // 5. Return the DOCX buffer as the response
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     return new NextResponse(buffer, {
       status: 200,
       headers: headers,
