@@ -36,6 +36,7 @@ interface GenerationContextType {
     replaceCurrentContent: (history: ChatHistoryType) => void;
 
     handleSelection: (type: string) => void;
+    handleDocxExport: (markdownContent: string) => void;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -142,6 +143,52 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         router.push(`/dashboard/generate/${data[0]?.type}/${data[0]?.contentId}`);
     }
 
+  // Example Client-Side Function (e.g., in a React Component)
+
+  async function handleDocxExport(markdownContent: string) {
+    const response = await fetch('/api/export', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        markdown: markdownContent,
+        filename: 'Web_Content_Architect_Report' // Customize the name
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Export failed:', await response.json());
+      return;
+    }
+
+    // 1. Get the binary data (Blob) from the response
+    const blob = await response.blob();
+
+    // 2. Extract the filename from the Content-Disposition header (optional but good practice)
+    const contentDisposition = response.headers.get('Content-Disposition');
+    const defaultFilename = 'document.docx';
+    let filename = defaultFilename;
+
+    if (contentDisposition) {
+      // Basic regex to extract filename="X.docx"
+      const matches = contentDisposition.match(/filename="(.+)"/);
+      if (matches && matches[1]) {
+        filename = matches[1];
+      }
+    }
+
+    // 3. Create a temporary link element to trigger the download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url); // Clean up the object URL
+  }
+
     const value = {
         generatedContent,
         isLoading,
@@ -151,6 +198,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         chatHistory,
         replaceCurrentContent,
         handleSelection,
+        handleDocxExport
     };
 
     return (

@@ -1,10 +1,17 @@
-import {cn} from "@/lib/utils";
+import { Hero } from '@/components/Landing/Hero';
+import { Features } from '@/components/Landing/Features';
+import { Services } from '@/components/Landing/Services';
+import { About } from '@/components/Landing/About';
+import { Footer } from '@/components/Landing/Footer';
 
-
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className={cn('screen relative center bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 overflow-hidden')}>
-        <div className={"absolute inset-0 backdrop-blur-sm bg-black/20"}/>
+    <div className="bg-black text-white">
+      <Hero />
+      <Features />
+      <Services />
+      <About />
+      <Footer />
     </div>
   );
 }

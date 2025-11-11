@@ -35,7 +35,7 @@ export async function searchUnsplashImages(query: string, count: number = 3) {
 
     // Map the results to a simplified, clean format for the LLM
     const imageUrls = response.response.results.map(photo => ({
-      url: photo.urls.regular, // A good, general-purpose image size
+      url: `${photo.urls.regular}&fm=jpg&w=1080&h=720`, // A good, general-purpose image size
       alt_description: photo.alt_description,
       photographer: photo.user.name,
     }));

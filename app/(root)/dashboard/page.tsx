@@ -14,6 +14,7 @@ import { GoToGeneratorButton } from './GoToGeneratorButton';
 import Search from "@/components/Layout/Dashboard/Search";
 
 import Pagination from "@/components/Layout/Dashboard/Pagination";
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 
@@ -37,7 +38,7 @@ export default async function Dashboard({
 
 }) {
 
-  const query = searchParams?.query || '';
+  const query = await searchParams?.query || '';
 
   const currentPage = Number(searchParams?.page) || 1;
 
@@ -72,29 +73,29 @@ export default async function Dashboard({
 
 
       {contents && contents.length > 0 ? (
+        <ScrollArea className={cn('container-full center')}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {contents.map((content) => (
 
-          {contents.map((content) => (
+              <ContentCard
 
-            <ContentCard
+                key={content.id}
 
-              key={content.id}
+                id={content.id}
 
-              id={content.id}
+                title={content.content_keyword}
 
-              title={content.content_keyword}
+                createdAt={content.created_at}
 
-              createdAt={content.created_at}
+                type={content.content_type}
 
-              type={content.content_type}
+              />
 
-            />
+            ))}
 
-          ))}
-
-        </div>
-
+          </div>
+        </ScrollArea>
       ) : (
 
         <div className="text-center">
