@@ -22,6 +22,7 @@ import {
   TypographyTable,
 } from '@/components/Layout/Dashboard/Generate/Typography';
 import { useGlobalState } from '@/context/GlobalStateContext';
+import { useContent } from '@/context/GenerationContext';
 
 interface ContentRendererProps {
   content: string;
@@ -31,6 +32,7 @@ interface ContentRendererProps {
 export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoading }) => {
   const {  isEditingRaw } = useGlobalState();
   const [displayedContent, setDisplayedContent] = useState(content);
+  const { setGeneratedContent } = useContent();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null); // Ref for the scrollable area
 
@@ -39,6 +41,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoa
     if (!isLoading && content && !isEditingRaw) {
       timerRef.current = setTimeout(() => {
         setDisplayedContent(content);
+        setGeneratedContent(content);
       }, 100)
     }
 

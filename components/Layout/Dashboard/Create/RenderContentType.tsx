@@ -24,9 +24,7 @@ const contentTypes = [
     },
 ];
 
-interface RenderContentTypeProps {}
-
-export default function RenderContentType({}: RenderContentTypeProps) {
+export default function RenderContentType() {
     return (
         <div className={cn('container-full center flex-col !justify-start p-12')}>
             <div className={cn('container-full center flex-col !justify-start')}>

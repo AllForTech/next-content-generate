@@ -50,9 +50,9 @@ export default function ContentCard({ id, title, createdAt, type }: ContentCardP
       )}
     >
       <Link href={`/dashboard/content/${id}`} className="block container-full center">
-        <div className={cn('container-full rounded-md bg-white p-4 flex flex-col justify-between')}>
+        <div className={cn('container-full overflow-hidden rounded-md bg-white p-4 flex flex-col justify-between')}>
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+            <h3 className="text-lg font-semibold text-gray-800">{title && title?.slice(0, 20)}</h3>
             <p className="text-sm text-gray-500 mt-1">{new Date(createdAt).toLocaleDateString()}</p>
           </div>
           <div className="mt-4">

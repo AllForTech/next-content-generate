@@ -4,6 +4,7 @@ import * as cheerio from 'cheerio';
 export async function scrapeUrl(urls: string[]) {
   // Array to hold the scraped content from all URLs
   const allScrapedContent: string[] = [];
+  const allScrapedData = []
 
   // Loop through each URL provided in the input array
   for (const url of urls) {
@@ -24,6 +25,7 @@ export async function scrapeUrl(urls: string[]) {
       const cleanedText = text.replace(/(\r\n|\n|\r)/gm, " ").replace(/\s\s+/g, ' ').trim();
 
       // Add the cleaned content to our aggregation array
+      allScrapedData.push({ url, text })
       allScrapedContent.push(`--- CONTENT FROM: ${url} ---\n${cleanedText}`);
 
     } catch (error) {
@@ -36,5 +38,8 @@ export async function scrapeUrl(urls: string[]) {
   }
 
   // Return a single string where all scraped content is joined together.
-  return allScrapedContent.join('\n\n');
+  return {
+    content: allScrapedContent.join('\n\n'),
+    allScrapedData,
+  }
 }

@@ -22,7 +22,7 @@
 
 .gemini/*
 GEMINI.md
-.gemini
+/.gemini
 
 # misc
 .DS_Store
@@ -39,6 +39,9 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+/TODO.md
+TODO.md
 
 # typescript
 *.tsbuildinfo

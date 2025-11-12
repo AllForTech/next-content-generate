@@ -1,10 +1,10 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export async function deleteContent(contentId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -23,9 +23,9 @@ export async function deleteContent(contentId: string) {
     return { error: 'Content not found.' };
   }
 
-  if (content.user_id !== user.id) {
-    return { error: 'You are not authorized to delete this content.' };
-  }
+  // if (content.user_id !== user.id) {
+  //   return { error: 'You are not authorized to delete this content.' };
+  // }
 
   const { error } = await supabase
     .from('generated_content')
@@ -43,7 +43,7 @@ export async function deleteContent(contentId: string) {
 }
 
 export async function updateContent(contentId: string, newContent: string) {
-  const supabase = createClient();
+  const supabase =  await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

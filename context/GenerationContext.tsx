@@ -9,13 +9,26 @@ import {
 } from 'react';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import {createClient} from "@/utils/supabase/client";
 
 export type ChatHistoryType = {
   id: string;
   role: 'user' | 'agent',
   content: string | null,
+}
+
+export type PanelTabsStateType = 'prompt' | 'history' | 'source' | 'management'
+
+export type ContentSources = { snippet: string, url: string }
+
+export type UnsplashImagesType = { url: string, alt_description: string, photographer: string }
+
+export const panelTabsState = {
+  prompt: 'prompt',
+  history: 'history',
+  source: 'source',
+  management: 'management'
 }
 
 // --- 1. Define the Context Interface (What components can access) ---
@@ -38,6 +51,14 @@ interface GenerationContextType {
 
     handleSelection: (type: string) => void;
     handleDocxExport: (markdownContent: string) => void;
+
+    panelTabs: PanelTabsStateType;
+    setPanelTabs: (panelTabs: PanelTabsStateType) => void;
+
+    contentSources: ContentSources[],
+    setContentSources: (contentSources: ContentSources[]) => void,
+    unsplashImages: any[],
+    setUnsplashImages: (unsplashImages: any[]) => void,
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -48,25 +69,30 @@ const GenerationContext = createContext<GenerationContextType | undefined>(
 // --- 3. Create the Provider Component ---
 export function ContextProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
+    const { content_id } = useParams();
 
     const [generatedContent, setGeneratedContent] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [chatHistory, setChatHistory] = useState<ChatHistoryType[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [panelTabs, setPanelTabs] = useState<PanelTabsStateType>('prompt');
+    const [contentSources, setContentSources] = useState<ContentSources[]>([]);
+    const [unsplashImages, setUnsplashImages] = useState<UnsplashImagesType[]>([]);
+    const [scrapedData, setScrapedData] = useState([]);
 
 
     // The function to call the Next.js API Route
   const generateContent = async (prompt: string, contentType: string, tags: string[], tone: string, url: string[]) => {
-      if (!prompt || !contentType) {
+      if (!prompt || !contentType || !content_id) {
         return;
       }
       const id = nanoid()
       setIsLoading(true);
       setGeneratedContent('');
-      setChatHistory(prev => ([...prev, { id: 'user', role: 'user', content: prompt }]))
-      let content = '';
+      setChatHistory(prev => ([...prev, { id, role: 'user', content: prompt }]))
+
       try {
-        const response = await fetch('/api/generate', {
+        const response = await fetch(`/api/generate/${content_id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -74,25 +100,19 @@ export function ContextProvider({ children }: { children: ReactNode }) {
           body: JSON.stringify({ prompt, contentType, tags, tone, url })
         });
 
-        if (!response.body) {
-          return;
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.log(errorData.error || 'Failed to generate content due to server error.');
         }
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
+        const newId = nanoid();
+        const resultData = await response.json();
 
-        const newId = nanoid()
+        setGeneratedContent(resultData.mainContent);
+        setContentSources(resultData.searchResults);
+        setUnsplashImages(resultData.unsplashImages);
 
-        while (!done) {
-          const { value, done: readerDone } = await reader.read();
-          done = readerDone;
-          const chunkValue = decoder.decode(value);
-          content += chunkValue;
-          setGeneratedContent((prev) => prev + chunkValue);
-        }
-
-        setChatHistory(prev => ([...prev, { id: newId, role: 'agent', content }]))
+        setChatHistory(prev => ([...prev, { id: newId, role: 'agent', content: resultData.mainContent }]))
 
       } catch (error) {
         console.error(error);
@@ -200,7 +220,13 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         replaceCurrentContent,
         handleSelection,
         handleDocxExport,
-        setGeneratedContent
+        setGeneratedContent,
+        panelTabs,
+        setPanelTabs,
+        contentSources,
+        setContentSources,
+        unsplashImages,
+        setUnsplashImages,
     };
 
     return (

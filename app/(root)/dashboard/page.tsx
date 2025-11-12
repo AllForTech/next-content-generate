@@ -73,8 +73,8 @@ export default async function Dashboard({
 
 
       {contents && contents.length > 0 ? (
-        <ScrollArea className={cn('container-full center')}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ScrollArea className={cn('container-full flex-col center')}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto" is={'hide-scrollbars'}>
 
             {contents.map((content) => (
 
