@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import '@mdxeditor/editor/style.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -174,7 +175,7 @@
 }
 
 
-#markdown {
+.markdown {
     font-family: system-ui, sans-serif;
     color: var(--color-text-primary);
     line-height: 1.7;
@@ -185,33 +186,56 @@
 
 /* --- B. Complete Heading Hierarchy --- */
 
-#markdown h1 {
-    /* ... your styles ... */
+/*
+ * CORE MARKDOWN SCOPE: All styles apply only within the .markdown container
+ */
+
+/* --- A. Headers (H1-H6) --- */
+
+.markdown h1 {
+    /* Primary Header Styling */
     color: var(--color-text-primary);
+    font-size: 2.5rem; /* Explicit size for clarity */
+    padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--color-border-light);
+    margin: 1.5rem 0 1rem 0;
 }
 
-#markdown p {
-    color: var(--color-text-primary);
-    border-bottom: 2px solid var(--color-border-light);
-}
-
-#markdown h2 {
-    /* ... your styles ... */
+.markdown h2 {
+    /* Secondary Header Styling */
     color: var(--color-text-secondary);
+    font-size: 2rem;
+    margin-top: 2rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px dashed var(--color-border-light); /* Added subtle separator */
 }
 
-#markdown h3 {
+.markdown h3 {
+    /* Tertiary Header Styling */
+    color: var(--color-text-secondary);
+    font-size: 1.75rem;
     margin-top: 1.5rem;
-    color: var(--color-text-secondary);
+    font-weight: 400;
 }
 
-#markdown h4, #markdown h5, #markdown h6 {
+/* Consolidated styles for smaller headers */
+.markdown h4,
+.markdown h5,
+.markdown h6 {
     margin-top: 1.25rem;
-    color: #4b5563;
+    color: #4b5563; /* Use a semantic variable if possible */
 }
 
-#markdown hr {
+
+/* --- B. Paragraphs and Horizontal Rules --- */
+
+.markdown p {
+    color: var(--color-text-primary);
+    line-height: 1.7; /* Improved readability */
+    margin-bottom: 1rem;
+}
+
+.markdown hr {
     /* Horizontal Rule */
     border: none;
     border-top: 1px solid var(--color-border-light);
@@ -219,36 +243,72 @@
 }
 
 
-/* --- D. Tables (Responsive and Readable) --- */
+/* --- C. Tables (Responsive and Readable) --- */
 
-#markdown th,
-#markdown td {
+.markdown table {
+    width: 100%; /* Ensure tables fill the container */
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.markdown th,
+.markdown td {
     border: 1px solid var(--color-border-light);
     padding: 0.75rem;
     text-align: left;
 }
 
-#markdown th {
+.markdown th {
     background-color: #f3f4f6;
     font-weight: 600;
 }
 
-.dark #markdown th {
+/* Dark Mode for Table Headers */
+.dark .markdown th {
     background-color: #374151;
+    color: white; /* Ensure text is visible in dark mode */
 }
 
-/* --- E. Inline Formatting --- */
+/* --- D. Inline Formatting and Images --- */
 
-#markdown strong {
-    color: #111827; /* Ensure bold is clearly darker/more prominent */
+.markdown strong {
+    color: #111827;
     font-weight: 700;
 }
 
-#markdown image, img {
-    border-radius: 10px !important;
-    margin-bottom: 20px;
+.dark .markdown strong {
+    color: white;
 }
 
-.dark #markdown strong {
-    color: white;
+/* 🚨 FIX: Corrected the image selector */
+.markdown img {
+    max-width: 100%; /* Ensure images are responsive */
+    height: auto;
+    border-radius: 10px !important;
+    margin-bottom: 20px;
+    display: block; /* Helps center if you add margin: auto */
+}
+
+/* Optional: Code blocks and inline code */
+.markdown pre {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.dark .markdown pre {
+    background-color: #1f2937;
+}
+
+.markdown-content-area {
+    height: 100% !important;
+    overflow-y: auto !important;
+    /* Remove min-height if present */
+}
+
+.toolbar-className {
+    position: fixed;
+    top: 0;
+    left: 0;
 }

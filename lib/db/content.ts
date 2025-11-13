@@ -154,7 +154,7 @@ export async function saveContentScrapedData(results: any[], content_id: string)
     // RECOMMENDATION: Use the user's UUID for linking
     author_id: user.id,
     // Save the entire array of results as a JSONB object
-    results: results,
+    scrapedData: results,
   };
 
   // 4. Use upsert with onConflict for reliable insertion or update

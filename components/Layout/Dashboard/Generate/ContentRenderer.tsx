@@ -6,7 +6,8 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from "rehype-highlight";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ContentLoadingSkeleton } from '@/components/ui/ContentLoadingSkeleton';
-import { Button } from '@/components/ui/button';
+import dynamic from 'next/dynamic'
+import '@mdxeditor/editor/style.css';
 import {
   TypographyBlockquote,
   TypographyH1,
@@ -28,6 +29,11 @@ interface ContentRendererProps {
   content: string;
   isLoading: boolean;
 }
+
+const Editor = dynamic(() => import('./Editor/Editor'), {
+  // Make sure we turn SSR off
+  ssr: false
+})
 
 export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoading }) => {
   const {  isEditingRaw } = useGlobalState();
@@ -62,15 +68,6 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoa
 
   return (
     <div className={cn('w-full h-full relative center !justify-start flex-col rounded-2xl bg-white shadow-md drop-shadow-xl shadow-neutral-300')}>
-      {isEditingRaw ? (
-        <textarea
-          className="w-full h-full absolute p-4 font-mono text-xs bg-neutral-800 text-gray-50 rounded-md resize-none focus:outline-none focus:ring-0 focus:ring-none"
-          value={displayedContent}
-          onChange={(e) => setDisplayedContent(e.target.value)}
-          spellCheck="false"
-          id={'hide-scrollbar'}
-        />
-      ) : (
         <ScrollArea ref={scrollAreaRef} className={cn('container-full center flex-col !justify-start p-7',
           // displayedContent && 'max-w-[700px]'
         )} id={'hide-scrollbar'}>
@@ -79,32 +76,37 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoa
           ): (
             <article className={cn('container-full flex flex-col !m-0 !justify-start',
               // displayedContent && 'max-w-[650px]'
-            )} id={'markdown'}>
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeHighlight]}
+            )}
+                     // id={'markdown'}
+            >
+              {isEditingRaw ? (
+                <Editor markdown={displayedContent} setMarkdown={setDisplayedContent}/>
+              ): (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
 
-                components={{
-                  h1: TypographyH1,
-                  h2: TypographyH2,
-                  h3: TypographyH3,
-                  h4: TypographyH4,
-                  p: TypographyP,
-                  menuitem: TypographyList,
-                  blockquote: TypographyBlockquote,
-                  code: TypographyInlineCode,
-                  small: TypographySmall,
-                  big: TypographyLarge,
-                  pre: TypographyPre,
-                  table: TypographyTable,
-                }}
-              >
-                {displayedContent}
-              </ReactMarkdown>
+                  components={{
+                    h1: TypographyH1,
+                    h2: TypographyH2,
+                    h3: TypographyH3,
+                    h4: TypographyH4,
+                    p: TypographyP,
+                    menuitem: TypographyList,
+                    blockquote: TypographyBlockquote,
+                    code: TypographyInlineCode,
+                    small: TypographySmall,
+                    big: TypographyLarge,
+                    pre: TypographyPre,
+                    table: TypographyTable,
+                  }}
+                >
+                  {displayedContent}
+                </ReactMarkdown>
+              )}
             </article>
           )}
         </ScrollArea>
-      ) }
     </div>
   );
 };

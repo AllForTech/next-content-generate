@@ -12,7 +12,7 @@ import { useGlobalState } from '@/context/GlobalStateContext';
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { handleToggleEdit, isEditingRaw } = useGlobalState();
+  const { setIsEditingRaw, isEditingRaw } = useGlobalState();
 
   const navLinks = [
     { href: '#features', label: 'Features' },
@@ -35,7 +35,7 @@ export const Navbar = () => {
         </div>
         <div className={'center w-full !justify-end gap-5'}>
           <Button
-            onClick={() => handleToggleEdit}
+            onClick={() => setIsEditingRaw(prev => !prev)}
             variant={'ghost'}
 
           >

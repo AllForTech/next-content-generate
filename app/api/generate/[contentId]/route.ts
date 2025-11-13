@@ -128,6 +128,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
         mainContent: fullContent,
         searchResults: searchResults,
         unsplashImages: unsplashImages,
+        scrapedData,
         message: "Content generated and saved successfully."
       }, { status: 200 });
     } catch (error) {

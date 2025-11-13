@@ -34,7 +34,7 @@ const Prompt = ({ onGenerate, contentType, contentId }) => {
     };
 
     return (
-        <div className={cn('w-[470px] bg-white shadow-xl drop-shadow-md shadow-stone-300 rounded-2xl transition-300 !h-full p-[7px] center flex-col',
+        <div className={cn('w-[400px] bg-white shadow-xl drop-shadow-md shadow-stone-300 rounded-2xl transition-300 !h-full p-[7px] center flex-col',
         )}>
 
             <form onSubmit={handleSubmit} className={cn('center w-full h-full  transition-300 rounded-md bg-transparent  p-1.5 flex flex-col gap-4',

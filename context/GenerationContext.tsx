@@ -22,6 +22,8 @@ export type PanelTabsStateType = 'prompt' | 'history' | 'source' | 'management'
 
 export type ContentSources = { snippet: string, url: string }
 
+export type ScrapedDataType = { url: string, content: string }
+
 export type UnsplashImagesType = { url: string, alt_description: string, photographer: string }
 
 export const panelTabsState = {
@@ -59,6 +61,8 @@ interface GenerationContextType {
     setContentSources: (contentSources: ContentSources[]) => void,
     unsplashImages: any[],
     setUnsplashImages: (unsplashImages: any[]) => void,
+    scrapedData: ScrapedDataType[],
+    setScrapedData: (scrapedData: ScrapedDataType) => void,
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -78,7 +82,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const [panelTabs, setPanelTabs] = useState<PanelTabsStateType>('prompt');
     const [contentSources, setContentSources] = useState<ContentSources[]>([]);
     const [unsplashImages, setUnsplashImages] = useState<UnsplashImagesType[]>([]);
-    const [scrapedData, setScrapedData] = useState([]);
+    const [scrapedData, setScrapedData] = useState<ScrapedDataType[]>([]);
 
 
     // The function to call the Next.js API Route
@@ -111,6 +115,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setGeneratedContent(resultData.mainContent);
         setContentSources(resultData.searchResults);
         setUnsplashImages(resultData.unsplashImages);
+        setScrapedData(resultData.scrapedDtate);
 
         setChatHistory(prev => ([...prev, { id: newId, role: 'agent', content: resultData.mainContent }]))
 
@@ -227,6 +232,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setContentSources,
         unsplashImages,
         setUnsplashImages,
+        scrapedData,
+        setScrapedData,
     };
 
     return (
