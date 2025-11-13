@@ -74,7 +74,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoa
           {isLoading ? (
             <ContentLoadingSkeleton/>
           ): (
-            <article className={cn('container-full flex flex-col !m-0 !justify-start',
+            <article className={cn('container-full flex markdown flex-col !m-0 !justify-start',
               // displayedContent && 'max-w-[650px]'
             )}
                      // id={'markdown'}
@@ -86,20 +86,20 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoa
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeHighlight]}
 
-                  components={{
-                    h1: TypographyH1,
-                    h2: TypographyH2,
-                    h3: TypographyH3,
-                    h4: TypographyH4,
-                    p: TypographyP,
-                    menuitem: TypographyList,
-                    blockquote: TypographyBlockquote,
-                    code: TypographyInlineCode,
-                    small: TypographySmall,
-                    big: TypographyLarge,
-                    pre: TypographyPre,
-                    table: TypographyTable,
-                  }}
+                  // components={{
+                  //   h1: TypographyH1,
+                  //   h2: TypographyH2,
+                  //   h3: TypographyH3,
+                  //   h4: TypographyH4,
+                  //   p: TypographyP,
+                  //   menuitem: TypographyList,
+                  //   blockquote: TypographyBlockquote,
+                  //   code: TypographyInlineCode,
+                  //   small: TypographySmall,
+                  //   big: TypographyLarge,
+                  //   pre: TypographyPre,
+                  //   table: TypographyTable,
+                  // }}
                 >
                   {displayedContent}
                 </ReactMarkdown>

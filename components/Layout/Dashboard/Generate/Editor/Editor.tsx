@@ -22,12 +22,14 @@ import {
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 import { cn } from '@/lib/utils';
+import { useContent } from '@/context/GenerationContext';
 
 export default function Editor({ markdown, setMarkdown }) {
+  const { setGeneratedContent } = useContent();
   return (
     <MDXEditor
       markdown={markdown}
-      onChange={setMarkdown}
+      onChange={setGeneratedContent}
       plugins={[
         // Toolbar with basic controls
         toolbarPlugin({
