@@ -23,6 +23,8 @@
 .gemini/*
 GEMINI.md
 /.gemini
+gemini
+gemini/
 
 # misc
 .DS_Store
