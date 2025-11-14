@@ -20,8 +20,9 @@
 # production
 /build
 
-.gemini/*
+.gemini/
 GEMINI.md
+.gemini
 /.gemini
 gemini
 gemini/

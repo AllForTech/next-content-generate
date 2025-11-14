@@ -356,7 +356,7 @@
 }
 
 .toolbar-className {
-    position: fixed;
-    top: 0;
+    position: absolute !important;
+    top: 0 !important;
     left: 0;
 }

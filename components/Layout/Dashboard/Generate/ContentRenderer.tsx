@@ -24,6 +24,7 @@ import {
 } from '@/components/Layout/Dashboard/Generate/Typography';
 import { useGlobalState } from '@/context/GlobalStateContext';
 import { useContent } from '@/context/GenerationContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ContentRendererProps {
   content: string;
@@ -32,7 +33,8 @@ interface ContentRendererProps {
 
 const Editor = dynamic(() => import('./Editor/Editor'), {
   // Make sure we turn SSR off
-  ssr: false
+  ssr: false,
+  loading: () =>  <Skeleton className={'container-full !h-[75dvh]'}/>
 })
 
 export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoading }) => {

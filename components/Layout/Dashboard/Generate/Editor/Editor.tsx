@@ -18,7 +18,7 @@ import {
   directivesPlugin,
   AdmonitionDirectiveDescriptor,
   diffSourcePlugin,
-  markdownShortcutPlugin,
+  markdownShortcutPlugin, tablePlugin, InsertTable, InsertSandpack,
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 import { cn } from '@/lib/utils';
@@ -41,10 +41,18 @@ export default function Editor({ markdown, setMarkdown }) {
               <ListsToggle />
               <CodeToggle />
               <InsertImage />
+              <InsertTable/>
+              <InsertSandpack/>
               {/* You can add more buttons here */}
             </>
           ),
           toolbarClassName: 'toolbar-className',
+        }),
+        imagePlugin({
+          // 🚨 CRITICAL: Use the imageEditor option to inject your custom UI
+
+          // Set the default placeholder if needed (optional)
+          // imageUploadHandler: yourOptionalUploadHandlerFunction,
         }),
         // Core features
         headingsPlugin(),
@@ -58,6 +66,7 @@ export default function Editor({ markdown, setMarkdown }) {
         quotePlugin(),
         imagePlugin(),
         linkPlugin(),
+        tablePlugin(),
       ]}
       contentEditableClassName={cn('container-full !h-[100%] p-2 overflow-y-auto  markdown markdown-content-area')}
       className={cn('container-full rounded-md bg-white overflow-hidden')}

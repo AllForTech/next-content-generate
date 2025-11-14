@@ -51,7 +51,7 @@ export const UserAvatar = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-10 w-10">
             <AvatarImage src={userImage} alt={userName} />
             <AvatarFallback>{userName.charAt(0)}</AvatarFallback>

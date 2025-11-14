@@ -18,7 +18,7 @@ export type ChatHistoryType = {
   content: string | null,
 }
 
-export type PanelTabsStateType = 'prompt' | 'history' | 'source' | 'management'
+export type PanelTabsStateType = 'prompt' | 'history' | 'source' | 'management' | 'images'
 
 export type ContentSources = { snippet: string, url: string }
 
@@ -30,7 +30,8 @@ export const panelTabsState = {
   prompt: 'prompt',
   history: 'history',
   source: 'source',
-  management: 'management'
+  management: 'management',
+  images: 'images',
 }
 
 // --- 1. Define the Context Interface (What components can access) ---
