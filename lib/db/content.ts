@@ -55,7 +55,17 @@ export async function getGeneratedContents(query: string, currentPage: number) {
 export async function getContentById(id: any){
 
   const supabase = await createClient();
-  const { data, error } = await supabase.from("generated_content").select().eq('id', id).single();
+  const { data, error } = await supabase.from("generated_content").select().eq('id', id);
+  if (error) {
+    console.log("Error fetching content:", error);
+  }
+  return data;
+}
+
+export async function getContentHistoryById(id: any){
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("user_contents").select().eq('content_id', id);
   if (error) {
     console.log("Error fetching content:", error);
   }
@@ -166,5 +176,34 @@ export async function saveContentScrapedData(results: any[], content_id: string)
 
   if (error) {
     console.error(`Error saving scraped_data for ID ${content_id}:`, error);
+  }
+}
+
+export async function saveContent(content: string, prompt: string, contentId: string){
+  const supabase = await createClient();
+
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  // 2. Critical: Check for authentication BEFORE proceeding
+  if ( !userData || !userData.user){
+    console.log('Error saving content.');
+    console.error('Error: User not authenticated or user data retrieval failed.', userError);
+    // Exit the function gracefully
+    return;
+  }
+
+  const user = userData.user;
+
+  const saveData = {
+    content,
+    prompt,
+    author_id: user.id,
+    content_id: contentId,
+  }
+
+  const { error } = await supabase.from("user_contents").insert(saveData);
+
+  if (error) {
+    console.error(`Error saving content for ID ${contentId}:`, error);
   }
 }

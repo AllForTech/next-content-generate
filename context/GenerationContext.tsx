@@ -64,6 +64,9 @@ interface GenerationContextType {
     setUnsplashImages: (unsplashImages: any[]) => void,
     scrapedData: ScrapedDataType[],
     setScrapedData: (scrapedData: ScrapedDataType) => void,
+    localImages: any[],
+    setLocalImages: (any) => void;
+  setChatHistory: (history: ChatHistoryType) => void;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -84,25 +87,51 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const [contentSources, setContentSources] = useState<ContentSources[]>([]);
     const [unsplashImages, setUnsplashImages] = useState<UnsplashImagesType[]>([]);
     const [scrapedData, setScrapedData] = useState<ScrapedDataType[]>([]);
+    const [localImages, setLocalImages] = useState([])
 
 
     // The function to call the Next.js API Route
-  const generateContent = async (prompt: string, contentType: string, tags: string[], tone: string, url: string[]) => {
+  const generateContent = async (prompt: string, contentType: string, tags: string[], tone: string, url: string[], attachedFile: any) => {
       if (!prompt || !contentType || !content_id) {
         return;
       }
       const id = nanoid()
+
+    const payload = {
+      prompt: prompt,
+      contentType: contentType,
+      tags: tags,
+      tone: tone,
+      url: url,
+      file: attachedFile
+    };
+
       setIsLoading(true);
       setGeneratedContent('');
       setChatHistory(prev => ([...prev, { id, role: 'user', content: prompt }]))
 
       try {
+        const formData = new FormData();
+
+        // Append standard fields
+        for (const key in payload) {
+          if (key !== 'file') {
+            formData.append(key, JSON.stringify(payload[key]));
+          }
+        }
+
+        // Append the file using Blob conversion
+        if (payload.file) {
+          const file = payload.file;
+          // Convert Base64 string back to a Blob object
+          const blob = await fetch(file.data).then(res => res.blob());
+
+          formData.append('document', blob, file.name); // 'document' is the expected field name on your server
+        }
+
         const response = await fetch(`/api/generate/${content_id}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ prompt, contentType, tags, tone, url })
+          body: formData
         });
 
         if (!response.ok) {
@@ -235,6 +264,9 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setUnsplashImages,
         scrapedData,
         setScrapedData,
+        localImages,
+        setLocalImages,
+      setChatHistory
     };
 
     return (

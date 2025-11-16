@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
-import { stepCountIs, streamText, tool } from 'ai';
+import { convertToModelMessages, ModelMessage, stepCountIs, streamText, tool } from 'ai';
 import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt';
 import { google } from '@ai-sdk/google';
-import { saveContentGoogleSearches, saveContentImages, saveContentScrapedData, saveGeneratedContent } from '@/lib/db/content';
+import { saveContent, saveContentGoogleSearches, saveContentImages, saveContentScrapedData, saveGeneratedContent } from '@/lib/db/content';
 import { ContentGenerationResponse } from '@/lib/schema';
 import { tavilySearchTool, unsplashSearchTool, urlScraperTool } from '@/lib/AI/tools';
 import { searchUnsplashImages } from '@/lib/AI/ai.image';
 import { z } from 'zod';
 import { executeTavilySearch } from '@/lib/tavily/tavily.search';
 import { scrapeUrl } from '@/lib/scraper/scraper';
+import { fileToBase64 } from '@/lib/AI/ai.actions';
 
 export const runtime = 'nodejs';
 
@@ -16,14 +17,82 @@ const model = google('gemini-2.5-flash');
 
 export async function POST(req: Request, {params}: { params: { contentId: string }}) {
     const { contentId } = await params;
-    const { prompt, contentType, tags, tone, url } = await req.json();
 
-    if (!prompt || !contentType || !contentId) {
-        return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
-    }
+  const formData = await req.formData();
+
+  // 2. Extract regular fields (assuming you stringified them on the client)
+  const promptJson = formData.get('prompt');
+  const toneJson = formData.get('tone');
+  const urlJson = formData.get('url');
+  const contentTypeJson = formData.get('contentType');
+  const tagsJson = formData.get('tags');
+
+  // Parse the JSON back
+  const prompt = typeof promptJson === 'string' ? JSON.parse(promptJson) : promptJson;
+  const tone = typeof toneJson === 'string' ? JSON.parse(toneJson) : toneJson;
+  const url = typeof urlJson === 'string' ? JSON.parse(urlJson) : urlJson;
+  const contentType = typeof contentTypeJson === 'string' ? JSON.parse(contentTypeJson) : contentTypeJson;
+  const tags = typeof tagsJson === 'string' ? JSON.parse(tagsJson) : tagsJson;
+
+  // 3. Extract the file (it comes as a Blob object)
+  const uploadedFile = formData.get('document'); // Use the name you append on the client
+
+  let filePayload = null;
+
+  if (uploadedFile && uploadedFile instanceof Blob) {
+    // 4. Convert the Blob to a Base64 string in memory (NO DISK I/O)
+    const base64Data = await fileToBase64(uploadedFile);
+
+    filePayload = {
+      name: uploadedFile.name,
+      type: uploadedFile.type,
+      // The Base64 string is the data the AI needs for analysis
+      base64Data: base64Data,
+    };
+
+    console.log(`File received in memory: ${filePayload.name}, Type: ${filePayload.type}`);
+  }
+
     let searchResults = [];
     let unsplashImages = [];
     let scrapedData = []
+
+  const textPart = {
+    type: 'text',
+    text: `"${prompt}", \n ${url ? `use this URL for reference: ${url}` : ''}, \n ${filePayload ? 'Analyze the attached document and answer the prompt based on its content.' : ''}`,
+  };
+
+  const messages: any[] = [
+    {
+      role: 'user',
+      content: [
+        // 1. Text Part
+        textPart
+      ],
+    },
+  ];
+
+  if (filePayload) {
+    const dataURI = `data:${filePayload.type};base64,${filePayload.base64Data}`;
+
+    if (filePayload.type.startsWith('image/')) {
+      messages[0].content.push({
+        type: 'image',
+        // Pass the Base64 string directly to the 'image' field
+        image: filePayload.base64Data,
+        // Pass the IANA media type explicitly
+        mediaType: filePayload.type,
+      });
+    } else {
+      messages[0].content.push({
+        type: 'file',
+        // Pass the Base64 string directly to the 'data' field
+        data: filePayload.base64Data,
+        // The 'mediaType' field is REQUIRED for FilePart
+        mediaType: filePayload.type,
+      });
+    }
+  }
 
 
     try {
@@ -106,7 +175,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
 
         stopWhen: stepCountIs(4),
         // Pass the user's specific request
-        prompt: `Hare is the user prompt: "${prompt}",  ${url ? `The user also provided this URL for reference: ${url}` : ''}`,
+        messages,
       });
 
         let fullContent = "";
@@ -121,7 +190,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
             mainContent: fullContent,
         };
 
-        await saveGeneratedContent(contentToSave);
+        await saveContent(fullContent, prompt, contentId)
 
       return NextResponse.json({
         contentId: contentId,

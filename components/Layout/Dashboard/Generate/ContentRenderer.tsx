@@ -8,20 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ContentLoadingSkeleton } from '@/components/ui/ContentLoadingSkeleton';
 import dynamic from 'next/dynamic'
 import '@mdxeditor/editor/style.css';
-import {
-  TypographyBlockquote,
-  TypographyH1,
-  TypographyH2,
-  TypographyH3,
-  TypographyH4,
-  TypographyInlineCode,
-  TypographyLarge,
-  TypographyList,
-  TypographyP,
-  TypographyPre,
-  TypographySmall,
-  TypographyTable,
-} from '@/components/Layout/Dashboard/Generate/Typography';
+import rehypeRaw from 'rehype-raw';
 import { useGlobalState } from '@/context/GlobalStateContext';
 import { useContent } from '@/context/GenerationContext';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -86,22 +73,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoa
               ): (
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeHighlight]}
-
-                  // components={{
-                  //   h1: TypographyH1,
-                  //   h2: TypographyH2,
-                  //   h3: TypographyH3,
-                  //   h4: TypographyH4,
-                  //   p: TypographyP,
-                  //   menuitem: TypographyList,
-                  //   blockquote: TypographyBlockquote,
-                  //   code: TypographyInlineCode,
-                  //   small: TypographySmall,
-                  //   big: TypographyLarge,
-                  //   pre: TypographyPre,
-                  //   table: TypographyTable,
-                  // }}
+                  rehypePlugins={[rehypeHighlight, rehypeRaw]}
                 >
                   {displayedContent}
                 </ReactMarkdown>

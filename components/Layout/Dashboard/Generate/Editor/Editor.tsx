@@ -18,7 +18,11 @@ import {
   directivesPlugin,
   AdmonitionDirectiveDescriptor,
   diffSourcePlugin,
-  markdownShortcutPlugin, tablePlugin, InsertTable, InsertSandpack,
+  markdownShortcutPlugin,
+  tablePlugin,
+  InsertTable,
+  InsertSandpack,
+  linkDialogPlugin, imageDialogState$,
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 import { cn } from '@/lib/utils';
@@ -50,12 +54,22 @@ export default function Editor({ markdown, setMarkdown }) {
         }),
         imagePlugin({
           // 🚨 CRITICAL: Use the imageEditor option to inject your custom UI
+          ImageDialog: () => {
+            return (
+              <div className={'w-[500px] h-[300px] bg-white rounded-lg shadow-2xl shadow-stone-500'}>
 
+              </div>
+            )
+          }
           // Set the default placeholder if needed (optional)
           // imageUploadHandler: yourOptionalUploadHandlerFunction,
         }),
         // Core features
         headingsPlugin(),
+        linkDialogPlugin({
+          linkAutocompleteSuggestions: ['https://virtuoso.dev', 'https://mdxeditor.dev'],
+        }),
+        linkPlugin(),
         codeBlockPlugin({ defaultCodeBlockLanguage: 'javaScript' }),
         // sandpackPlugin({ sandpackConfig: virtuosoSampleSandpackConfig }),
         codeMirrorPlugin({ codeBlockLanguages: { js: 'JavaScript', css: 'CSS', txt: 'text', tsx: 'TypeScript' } }),

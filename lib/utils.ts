@@ -5,22 +5,41 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function extractMarkdownImageUrls(markdownString) {
-  // Regex pattern to capture the URL group from Markdown image syntax:
-  // !\[.*?\]\((.*?)\)
-  // Explanation:
-  // !\[.*?\] - Matches ![...something...]
-  // \( - Matches the opening parenthesis
-  // (.*?) - CAPTURE GROUP 1: Lazily captures the URL
-  // \) - Matches the closing parenthesis
-  const regex = /!\[.*?\]\((.*?)\)/g;
-  const urls = [];
+/**
+ * Extracts image URLs from a Markdown string, detecting both standard
+ * Markdown syntax (![...](...)) and HTML img tags (<img src="...">).
+ * @param {string} markdownString
+ * @returns {string[]} Array of unique extracted image URLs.
+ */
+export function extractMarkdownImageUrls(markdownString: string) {
+  if (!markdownString) return [];
+
+  // 1. Regex for standard Markdown images: !\[.*?\]\((.*?)\)
+  const markdownRegex = /!\[.*?\]\((.*?)\)/g;
+
+  // 2. Regex for HTML img tags: <img.*?src=["'](.*?)["'].*?>
+  // This handles the editor output when resizing/modifying is done.
+  const htmlImgRegex = /<img.*?src=["'](.*?)["'].*?>/gi;
+
+  const urls = new Set(); // Use a Set to ensure unique URLs
   let match;
 
-  while ((match = regex.exec(markdownString)) !== null) {
-    // match[1] contains the captured URL
-    urls.push(match[1]);
+  // Extract from Markdown format
+  while ((match = markdownRegex.exec(markdownString)) !== null) {
+    urls.add(match[1].trim());
   }
 
-  return urls;
+  // Extract from HTML img format
+  while ((match = htmlImgRegex.exec(markdownString)) !== null) {
+    urls.add(match[1].trim());
+  }
+
+  // Handle custom MDX <Image> components if necessary (less common, but possible)
+  // Example for <Image src="URL" ...>:
+  // const mdxImageRegex = /<Image\s+src=["'](.*?)["'].*?\/>/gi;
+  // while ((match = mdxImageRegex.exec(markdownString)) !== null) {
+  //   urls.add(match[1].trim());
+  // }
+
+  return Array.from(urls);
 }

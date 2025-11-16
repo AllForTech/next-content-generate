@@ -13,15 +13,28 @@ interface GenerateContentProps {
     contentType: string;
     contentId: string;
     content: any;
+  history: any[]
 }
 
-export const GenerateContent = ({ contentType, contentId, content }: GenerateContentProps) => {
+export const GenerateContent = ({ contentType, history, contentId, content }: GenerateContentProps) => {
     const {
       generateContent,
       isLoading,
       generatedContent,
       setGeneratedContent,
+      setChatHistory
     } = useContent();
+
+  useEffect(() => {
+    if (!content || !history)return;
+
+    const chatHistory = history?.map((hs: any) => ({
+      id: hs.id || '',
+      role: 'agent',
+      content: hs.content || '',
+    }))
+    setChatHistory(chatHistory)
+  }, [history, contentId]);
 
   useEffect(() => {
     if (!content || !contentId) {
