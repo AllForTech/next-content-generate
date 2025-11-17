@@ -63,7 +63,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ content, isLoa
           {isLoading ? (
             <ContentLoadingSkeleton/>
           ): (
-            <article className={cn('container-full flex markdown flex-col !m-0 !justify-start',
+            <article className={cn('container-full flex prose markdown prose flex-col !m-0 !justify-start',
               // displayedContent && 'max-w-[650px]'
             )}
                      // id={'markdown'}

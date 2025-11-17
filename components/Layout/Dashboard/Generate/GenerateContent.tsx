@@ -12,10 +12,11 @@ import { RightSidebarPanel } from '@/components/Layout/Dashboard/Generate/RightS
 interface GenerateContentProps {
     contentId: string;
     content: any;
-  history: any[]
+  history: any;
+  allHistory: any[];
 }
 
-export const GenerateContent = ({ history, contentId, content }: GenerateContentProps) => {
+export const GenerateContent = ({ history, allHistory, contentId, content }: GenerateContentProps) => {
     const {
       generateContent,
       isLoading,
@@ -25,24 +26,24 @@ export const GenerateContent = ({ history, contentId, content }: GenerateContent
     } = useContent();
 
   useEffect(() => {
-    if (!content || !history)return;
+    if (!content || !allHistory)return;
 
-    const chatHistory = history?.map((hs: any) => ({
-      id: hs.id || '',
+    const chatHistory = allHistory?.map((hs: any) => ({
+      id: hs.session_id || '',
       role: 'agent',
       content: hs.content || '',
     }))
     setChatHistory(chatHistory)
-  }, [history, contentId]);
+  }, [allHistory, contentId]);
 
   useEffect(() => {
-    if (!content || !contentId) {
+    if (!history || !contentId) {
       setGeneratedContent('# No content found.');
     }
 
-    setGeneratedContent(content?.content);
+    setGeneratedContent(history?.content);
 
-  }, [content, contentId]);
+  }, [history, contentId]);
 
 
 

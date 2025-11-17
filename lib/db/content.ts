@@ -1,5 +1,14 @@
+'use server'
 import { createClient } from "@/utils/supabase/server";
 import { ContentGenerationResponse } from "@/lib/schema";
+
+type ContentItem = {
+  id: number;
+  content_id: string;
+  author_id: string;
+  created_at: string; // Or Date object
+  // ... other content fields
+};
 
 export async function saveGeneratedContent(content: ContentGenerationResponse) {
   const supabase = await createClient();
@@ -52,7 +61,7 @@ export async function getGeneratedContents(query: string, currentPage: number) {
   return { data, count };
 }
 
-export async function getContentById(id: any){
+export async function getAllContentHistory(id: string) {
 
   const supabase = await createClient();
 
@@ -60,10 +69,9 @@ export async function getContentById(id: any){
 
   // 2. Critical: Check for authentication BEFORE proceeding
   if ( !userData || !userData.user){
-    console.log('Error saving content_google_searches');
+    console.log('Error fetching content history: User not authenticated.');
     console.error('Error: User not authenticated or user data retrieval failed.', userError);
-    // Exit the function gracefully
-    return;
+    return null;
   }
 
   const user = userData.user;
@@ -72,17 +80,15 @@ export async function getContentById(id: any){
     .from("user_contents")
     .select()
     .eq('content_id', id)
-    .eq('author_id', user.id)
-    .order('created_at', { ascending: false }) // Sort by timestamp descending
-    .limit(1); // Get only the first (most recent) result
+    .eq('author_id', user.id);
 
   if (error) {
-    console.error("Error fetching recent content:", error);
+    console.error("Error fetching ALL content history:", error);
     return null;
   }
 
-  // The result is an array of 0 or 1 element, so return the element directly
-  return data ? data[0] : null;
+  // Returns an array of all history items for that content ID
+  return data;
 }
 
 export async function getContentHistoryById(id: any){
@@ -227,10 +233,26 @@ export async function saveContent(content: string, prompt: string, contentId: st
 
   const { error } = await supabase.from("user_contents").upsert(saveData, {
     // If a record with this content_id already exists, update it.
-    onConflict: 'session_id'
+    onConflict: 'session_id, author_id, content_id'
   });
 
   if (error) {
     console.error(`Error saving content for ID ${contentId}:`, error);
   }
+}
+
+export async function getLatestContentHistory(historyArray: ContentItem[] | null) {
+
+  if (!historyArray || historyArray.length === 0) {
+    return null;
+  }
+
+  const sortedHistory = [...historyArray].sort((a, b) => {
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
+
+    return dateB - dateA;
+  });
+
+  return sortedHistory[0];
 }

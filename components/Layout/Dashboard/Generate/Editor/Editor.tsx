@@ -43,7 +43,7 @@ export default function Editor({ markdown, setMarkdown }) {
               <UndoRedo />
               <BlockTypeSelect />
               <BoldItalicUnderlineToggles />
-              <ListsToggle options={["number", "bullet", "number"]} />
+              <ListsToggle options={["number", "bullet", "check"]} />
               <CodeToggle />
               <InsertImage />
               <InsertTable/>
@@ -73,7 +73,7 @@ export default function Editor({ markdown, setMarkdown }) {
         linkPlugin(),
         tablePlugin(),
       ]}
-      contentEditableClassName={cn('container-full !h-[100%] p-2 overflow-y-auto  markdown markdown-content-area')}
+      contentEditableClassName={cn('container-full !h-[100%] p-2 overflow-y-auto prose markdown markdown-content-area')}
       className={cn('container-full rounded-md bg-white overflow-hidden')}
     />
   );

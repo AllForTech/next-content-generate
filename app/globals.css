@@ -247,8 +247,10 @@
 /* --- 4. LISTS AND TABLES --- */
 
 .markdown ul, .markdown ol {
-    margin: 1rem 0;
-    padding-left: 1.5rem;
+    list-style-type: disc;
+    list-style-position: outside;
+    padding-left: 20px; /* Or 1.5em */
+    margin-left: 0;
 }
 
 .markdown li {
@@ -260,6 +262,7 @@
     border-collapse: collapse;
     margin: 1.5rem 0;
     font-size: 0.9rem;
+    border-radius: 10px !important;
 }
 
 .markdown th, .markdown td {
@@ -269,7 +272,7 @@
 }
 
 .markdown th {
-    background-color: #f9fafb; /* Very light background for headers */
+    background-color: #d8d8d8 !important; /* Very light background for headers */
     font-weight: 600;
 }
 
