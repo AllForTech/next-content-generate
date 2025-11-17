@@ -13,7 +13,7 @@ import { Button } from '@mdxeditor/editor';
 import { Upload, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export const RightSidebarPanel = ({ contentType, contentId, onGenerate } :PromptProps) => {
+export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
   const { generateContent } = useContent()
 
   return (
@@ -22,7 +22,7 @@ export const RightSidebarPanel = ({ contentType, contentId, onGenerate } :Prompt
         <PanelTabs/>
         <div className={cn('center container-full')}>
           <TabsContent className={'container-full'} value={panelTabsState.prompt}>
-            <Prompt onGenerate={onGenerate} contentType={contentType} contentId={contentId} />
+            <Prompt onGenerate={onGenerate} contentId={contentId} />
           </TabsContent>
           <TabsContent className={'container-full'} value={panelTabsState.history}>
             <History/>

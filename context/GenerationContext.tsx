@@ -45,7 +45,7 @@ interface GenerationContextType {
     error: string | null;
 
     // Actions
-    generateContent: (prompt: string, contentType: string, tags: string[], tone: string, url: string[]) => Promise<void>;
+    generateContent: (prompt: string, tags: string[], tone: string, url: string[], attachedFile: any) => Promise<void>;
     clearContent: () => void;
 
     chatHistory: ChatHistoryType[];
@@ -91,15 +91,15 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
 
     // The function to call the Next.js API Route
-  const generateContent = async (prompt: string, contentType: string, tags: string[], tone: string, url: string[], attachedFile: any) => {
-      if (!prompt || !contentType || !content_id) {
+  const generateContent = async (prompt: string, tags: string[], tone: string, url: string[], attachedFile: any) => {
+      if (!prompt || !content_id) {
         return;
       }
       const id = nanoid()
+      const sessionId = nanoid()
 
     const payload = {
       prompt: prompt,
-      contentType: contentType,
       tags: tags,
       tone: tone,
       url: url,
@@ -129,7 +129,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
           formData.append('document', blob, file.name); // 'document' is the expected field name on your server
         }
 
-        const response = await fetch(`/api/generate/${content_id}`, {
+        const response = await fetch(`/api/generate/${content_id}/${sessionId}`, {
           method: 'POST',
           body: formData
         });
@@ -175,20 +175,15 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setError(null);
     }, []);
 
-    const handleSelection = async (type: string) => {
+    const handleGenerate = async () => {
         const newId = nanoid();
-        const supabase = createClient();
+        const supabase = await createClient();
 
         const user = await supabase.auth.getUser();
 
-        console.log(user.data.user)
-
         const { error, data } = await supabase.from('contents').insert({
-            content: '# start tour new document',
-            type,
             author_id: user.data.user?.id,
             contentId: newId,
-            tags: []
         }).select('*')
 
         if (error) console.log(error);
@@ -196,7 +191,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         console.log(data)
         setGeneratedContent(data[0]?.content);
 
-        router.push(`/dashboard/generate/${data[0]?.type}/${data[0]?.contentId}`);
+        router.push(`/dashboard/generate/${data[0]?.contentId}`);
     }
 
   // Example Client-Side Function (e.g., in a React Component)
@@ -253,7 +248,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         clearContent,
         chatHistory,
         replaceCurrentContent,
-        handleSelection,
+        handleSelection: handleGenerate,
         handleDocxExport,
         setGeneratedContent,
         panelTabs,

@@ -55,11 +55,34 @@ export async function getGeneratedContents(query: string, currentPage: number) {
 export async function getContentById(id: any){
 
   const supabase = await createClient();
-  const { data, error } = await supabase.from("generated_content").select().eq('id', id);
-  if (error) {
-    console.log("Error fetching content:", error);
+
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  // 2. Critical: Check for authentication BEFORE proceeding
+  if ( !userData || !userData.user){
+    console.log('Error saving content_google_searches');
+    console.error('Error: User not authenticated or user data retrieval failed.', userError);
+    // Exit the function gracefully
+    return;
   }
-  return data;
+
+  const user = userData.user;
+
+  const { data, error } = await supabase
+    .from("user_contents")
+    .select()
+    .eq('content_id', id)
+    .eq('author_id', user.id)
+    .order('created_at', { ascending: false }) // Sort by timestamp descending
+    .limit(1); // Get only the first (most recent) result
+
+  if (error) {
+    console.error("Error fetching recent content:", error);
+    return null;
+  }
+
+  // The result is an array of 0 or 1 element, so return the element directly
+  return data ? data[0] : null;
 }
 
 export async function getContentHistoryById(id: any){
@@ -179,7 +202,7 @@ export async function saveContentScrapedData(results: any[], content_id: string)
   }
 }
 
-export async function saveContent(content: string, prompt: string, contentId: string){
+export async function saveContent(content: string, prompt: string, contentId: string, sessionId: string){
   const supabase = await createClient();
 
   const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -197,11 +220,15 @@ export async function saveContent(content: string, prompt: string, contentId: st
   const saveData = {
     content,
     prompt,
+    session_id: sessionId,
     author_id: user.id,
     content_id: contentId,
   }
 
-  const { error } = await supabase.from("user_contents").insert(saveData);
+  const { error } = await supabase.from("user_contents").upsert(saveData, {
+    // If a record with this content_id already exists, update it.
+    onConflict: 'session_id'
+  });
 
   if (error) {
     console.error(`Error saving content for ID ${contentId}:`, error);

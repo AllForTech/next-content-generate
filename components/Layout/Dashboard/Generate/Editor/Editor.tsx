@@ -27,6 +27,7 @@ import {
 import '@mdxeditor/editor/style.css';
 import { cn } from '@/lib/utils';
 import { useContent } from '@/context/GenerationContext';
+import CustomImageDialog from '@/components/Layout/Dashboard/Generate/Editor/CustomImageDialog';
 
 export default function Editor({ markdown, setMarkdown }) {
   const { setGeneratedContent } = useContent();
@@ -42,7 +43,7 @@ export default function Editor({ markdown, setMarkdown }) {
               <UndoRedo />
               <BlockTypeSelect />
               <BoldItalicUnderlineToggles />
-              <ListsToggle />
+              <ListsToggle options={["number", "bullet", "number"]} />
               <CodeToggle />
               <InsertImage />
               <InsertTable/>
@@ -53,18 +54,8 @@ export default function Editor({ markdown, setMarkdown }) {
           toolbarClassName: 'toolbar-className',
         }),
         imagePlugin({
-          // 🚨 CRITICAL: Use the imageEditor option to inject your custom UI
-          ImageDialog: () => {
-            return (
-              <div className={'w-[500px] h-[300px] bg-white rounded-lg shadow-2xl shadow-stone-500'}>
-
-              </div>
-            )
-          }
-          // Set the default placeholder if needed (optional)
-          // imageUploadHandler: yourOptionalUploadHandlerFunction,
+          ImageDialog: CustomImageDialog,
         }),
-        // Core features
         headingsPlugin(),
         linkDialogPlugin({
           linkAutocompleteSuggestions: ['https://virtuoso.dev', 'https://mdxeditor.dev'],

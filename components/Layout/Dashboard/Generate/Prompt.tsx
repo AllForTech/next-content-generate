@@ -13,7 +13,7 @@ import { motion } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export type PromptProps = {
-  onGenerate: (prompt: string, contentType: string, tags: string[], tone: string, urls: string[], attachedFile: any) => void;
+  onGenerate: (prompt: string, tags?: string[], tone?: string, urls?: string[], attachedFile?: any) => void;
   contentType: string;
   contentId: string;
 }
@@ -47,7 +47,7 @@ const ToneSelector = ({ selectedTone, setTone }) => {
   );
 };
 
-const Prompt = ({ onGenerate, contentType, contentId }: PromptProps) => {
+const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
   const [prompt, setPrompt] = useState('');
   const [tags, setTags] = useState('');
   const [tone, setTone] = useState('Professional');
@@ -60,7 +60,7 @@ const Prompt = ({ onGenerate, contentType, contentId }: PromptProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-    onGenerate(prompt, contentType, tagsArray, tone, urls, attachedFile);
+    onGenerate(prompt, tagsArray, tone, urls, attachedFile);
   };
 
   const handleFileAttach = (event) => {

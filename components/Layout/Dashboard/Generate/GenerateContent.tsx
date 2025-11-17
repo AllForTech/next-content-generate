@@ -10,13 +10,12 @@ import { Button } from '@/components/ui/button';
 import { RightSidebarPanel } from '@/components/Layout/Dashboard/Generate/RightSidebarPanel';
 
 interface GenerateContentProps {
-    contentType: string;
     contentId: string;
     content: any;
   history: any[]
 }
 
-export const GenerateContent = ({ contentType, history, contentId, content }: GenerateContentProps) => {
+export const GenerateContent = ({ history, contentId, content }: GenerateContentProps) => {
     const {
       generateContent,
       isLoading,
@@ -41,7 +40,7 @@ export const GenerateContent = ({ contentType, history, contentId, content }: Ge
       setGeneratedContent('# No content found.');
     }
 
-    setGeneratedContent(content?.main_content);
+    setGeneratedContent(content?.content);
 
   }, [content, contentId]);
 
@@ -50,7 +49,7 @@ export const GenerateContent = ({ contentType, history, contentId, content }: Ge
     return (
         <div className={cn('container-full overflow-hidden gap-2.5 pl-3.5 pr-2 relative center flex-row')} id={'hide-scrollbar'}>
             <ContentRenderer isLoading={isLoading} content={generatedContent} />
-          <RightSidebarPanel onGenerate={generateContent} contentType={contentType} contentId={contentId}/>
+          <RightSidebarPanel onGenerate={generateContent} contentId={contentId}/>
         </div>
     );
 };

@@ -15,8 +15,8 @@ export const runtime = 'nodejs';
 
 const model = google('gemini-2.5-flash');
 
-export async function POST(req: Request, {params}: { params: { contentId: string }}) {
-    const { contentId } = await params;
+export async function POST(req: Request, {params}: { params: { contentId: string, sessionId: string }}) {
+    const { contentId, sessionId } = await params;
 
   const formData = await req.formData();
 
@@ -190,7 +190,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
             mainContent: fullContent,
         };
 
-        await saveContent(fullContent, prompt, contentId)
+        await saveContent(fullContent, prompt, contentId, sessionId)
 
       return NextResponse.json({
         contentId: contentId,

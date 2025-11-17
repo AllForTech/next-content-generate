@@ -102,9 +102,6 @@ export default async function Dashboard({
             {/* MAINTAINED: Pagination logic */}
             {totalPages > 1 && <Pagination totalPages={totalPages} />}
           </div>
-
-          {/* MAINTAINED: NewContentDialog */}
-          <NewContentDialog />
         </div>
       </div>
     </div>

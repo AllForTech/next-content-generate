@@ -18,7 +18,7 @@ export const Navbar = () => {
   ];
 
   // Variants for the mobile menu animation
-  const menuVariants = {
+  const menuVariants: any = {
     open: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
     closed: { opacity: 0, y: -20, transition: { duration: 0.3 } },
   };
@@ -63,7 +63,7 @@ export const Navbar = () => {
 
         {/* Desktop CTA Button */}
         <div className="hidden md:block">
-          <Link href="/dashboard">
+          <Link href="/sign-up">
             <Button size="sm" className="bg-black text-white hover:bg-stone-800 transition-colors duration-300">
               Get Started
             </Button>
@@ -97,7 +97,7 @@ export const Navbar = () => {
             </Link>
           ))}
           <div className="pt-3">
-            <Link href="/dashboard">
+            <Link href="/sign-up">
               <Button size="lg" className="w-full bg-black text-white hover:bg-stone-800 transition-colors duration-300">
                 Get Started
               </Button>
