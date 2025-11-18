@@ -197,9 +197,9 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
       setCurrentSessionId(selectedMessage?.id);
       setGeneratedContent(selectedMessage?.content);
-      setUnsplashImages(history.images);
-      setContentSources(history.searchResults);
-      setScrapedData(history.scrapedData);
+      setUnsplashImages(selectedMessage.images);
+      setContentSources(selectedMessage.searchResults);
+      setScrapedData(selectedMessage.scrapedData);
     }
 
     const clearContent = useCallback(() => {

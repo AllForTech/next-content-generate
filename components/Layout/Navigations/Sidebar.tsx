@@ -14,18 +14,16 @@ import { nanoid } from 'nanoid';
 // --- 1. Define Navigation Routes ---
 const navigation = [
   {
-    title: 'Core Routes',
+    title: ' ',
     items: [
-      { href: '/dashboard', icon: Home, label: 'Dashboard' }, // Added Dashboard
-      { href: '/dashboard/generate', icon: BookOpen, label: 'Generate Content' }, // Modified label
-      { href: '/dashboard/history', icon: FileText, label: 'Content History' }, // Moved/Added History
+      { href: '/dashboard', icon: Home, label: 'Dashboard' },
+      { href: '/dashboard/generate', icon: BookOpen, label: 'Generate Content' },
     ],
   },
   {
     title: 'Other',
     items: [
-      { href: '/dashboard/chats', icon: MessageSquare, label: 'AI Chat' }, // Added Chat
-      { href: '/dashboard/explore', icon: Globe, label: 'Explore Tools' }, // Added Explore
+      { href: '/dashboard/explore', icon: Globe, label: 'Explore Tools' },
     ],
   },
 ];
