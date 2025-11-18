@@ -17,6 +17,9 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       setGeneratedContent,
       setChatHistory,
       setCurrentSessionId,
+      setUnsplashImages,
+      setContentSources,
+      setScrapedData,
     } = useContent();
 
   useEffect(() => {
@@ -26,7 +29,14 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       id: hs.session_id || '',
       role: 'agent' as 'agent' | 'user',
       content: hs.content || '',
+      searchResults: hs.source || [],
+      scrapedData: hs.screpedData || [],
+      images: hs.images || [],
+      attachedFile: hs.attachedFIle
     }))
+    setUnsplashImages(history.images);
+    setContentSources(history.searchResults);
+    setScrapedData(history.scrapedData);
     setChatHistory(chatHistory)
   }, [allHistory, contentId]);
 

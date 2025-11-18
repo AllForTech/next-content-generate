@@ -5,11 +5,16 @@ import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { useAuth } from '@/context/AuthContext';
 
 export type ChatHistoryType = {
   id: string;
   role: 'user' | 'agent',
   content: string | null,
+  images?: any[] | null,
+  scrapedData?: any[] | null,
+  searchResults?: any[] | null,
+  attachedFile?: any | null
 }
 
 export type PanelTabsStateType = 'prompt' | 'history' | 'source' | 'management' | 'images'
@@ -71,7 +76,7 @@ interface GenerationContextType {
   setScrapedData: (scrapedData: ScrapedDataType[]) => void;
   localImages: any[];
   setLocalImages: (image: any[]) => void;
-  setChatHistory: (history: { id: string; role: 'user' | 'agent'; content: string }[]) => void;
+  setChatHistory: (history: ChatHistoryType[]) => void;
 
   updateCurrentContent: () => void,
   isUpdating: boolean,
@@ -91,6 +96,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
     const { content_id } = useParams();
 
+    const { user } = useAuth();
+
     const [generatedContent, setGeneratedContent] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [chatHistory, setChatHistory] = useState<ChatHistoryType[]>([]);
@@ -99,7 +106,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const [contentSources, setContentSources] = useState<ContentSources[]>([]);
     const [unsplashImages, setUnsplashImages] = useState<UnsplashImagesType[]>([]);
     const [scrapedData, setScrapedData] = useState<ScrapedDataType[]>([]);
-    const [localImages, setLocalImages] = useState([])
+    const [localImages, setLocalImages] = useState([]);
     const [currentSessionId, setCurrentSessionId] = useState('');
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -160,7 +167,15 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setUnsplashImages(resultData.unsplashImages);
         setScrapedData(resultData.scrapedDtate);
 
-        setChatHistory(prev => ([...prev, { id: sessionId, role: 'agent', content: resultData.mainContent }]))
+        setChatHistory(prev => ([...prev, {
+          id: sessionId,
+          role: 'agent',
+          content: resultData.mainContent,
+          scrapedData: resultData.scrapedData,
+          images: resultData.unsplashImages,
+          searchResults: resultData.searchResults,
+          attachedFile: null
+        }]))
         setCurrentSessionId(sessionId);
 
       } catch (error) {
@@ -176,15 +191,17 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       if (!history || !chatHistory) return;
       if (history.role !== 'agent') return;
 
-      const selectedMessage = chatHistory.find((hstry) => hstry.id.trim() === history?.id?.trim());
+      const selectedMessage = chatHistory.find((hstry: ChatHistoryType) => hstry.id.trim() === history?.id?.trim());
 
       if (!selectedMessage) return;
 
       setCurrentSessionId(selectedMessage?.id);
       setGeneratedContent(selectedMessage?.content);
+      setUnsplashImages(history.images);
+      setContentSources(history.searchResults);
+      setScrapedData(history.scrapedData);
     }
 
-    // Simple function to reset the state
     const clearContent = useCallback(() => {
         setGeneratedContent(null);
         setError(null);
@@ -192,18 +209,18 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
     const handleGenerate = async () => {
         const newId = nanoid();
+        if(!user) return;
+
         const supabase = await createClient();
 
-        const user = await supabase.auth.getUser();
-
         const { error, data } = await supabase.from('contents').insert({
-            author_id: user.data.user?.id,
+            author_id: user.id,
             contentId: newId,
-        }).select('*')
+        }).select('*');
 
         if (error) console.log(error);
 
-        console.log(data)
+        console.log(data);
         setGeneratedContent(data[0]?.content);
 
         router.push(`/dashboard/generate/${data[0]?.contentId}`);
@@ -256,18 +273,17 @@ export function ContextProvider({ children }: { children: ReactNode }) {
   }
 
   const updateCurrentContent = async () => {
-      if (!currentSessionId) return;
+      if (!currentSessionId || !user) return;
 
       setIsUpdating(true)
 
       const supabase = await createClient();
-      const user = await supabase.auth.getUser();
 
       try {
         const { error } = await supabase.from('user_contents').update({
           content: generatedContent
         }).eq('session_id', currentSessionId)
-          .eq('author_id', user.data.user?.id)
+          .eq('author_id', user.id)
           .eq('content_id', content_id)
 
         if (error) console.log(error);

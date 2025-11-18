@@ -68,21 +68,20 @@ const History = () => {
   )
 }
 
-const Source = () => {
+export const Source = () => {
   const { contentSources, scrapedData, unsplashImages } = useContent();
 
-  console.log(contentSources, scrapedData, unsplashImages);
 
   return (
-    <ScrollArea className={cn('center container-full flex-col gap-2.5 !w-[400px] bg-white h-full p-4')}>
+    <ScrollArea className={cn('center container-full absolute inset-0 flex-col gap-2.5 bg-white p-4')}>
       <h3 className="text-lg font-bold text-black mb-3 border-b border-black/10 w-full pb-2">
         Content Sources & Snippets
       </h3>
       {/* Refactored source snippet style for black/white theme */}
-      {contentSources && contentSources.map(source => (
-        <div key={source?.url} className={cn('w-full h-fit p-4 text-black text-xs mb-2.5 bg-white border border-black/20 rounded-md shadow-sm')}>
-          <p className="font-semibold text-sm mb-1">{source?.url?.substring(0, 40)}...</p>
-          <p className="text-black/80 italic">{source?.snippet}</p>
+      {contentSources && contentSources.map((source: any, index) => (
+        <div key={index} className={cn('w-full h-fit p-4 text-black text-xs gap-3 mb-2.5 overflow-hidden bg-white border border-black/20 rounded-md shadow-sm')}>
+          <p className="font-semibold text-sm mb-1">{source?.source?.substring(0, 70)}...</p>
+          {/*<p className="text-black/90 text-xs text-wrap font-medium italic">{source?.snippet}</p>*/}
         </div>
       ))}
       {contentSources.length === 0 && (

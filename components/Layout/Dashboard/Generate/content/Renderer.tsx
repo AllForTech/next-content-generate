@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
 import { Content } from '@/components/Layout/Dashboard/Generate/ContentRenderer';
 import { MarkdownViewer } from '@/components/Layout/Dashboard/Generate/content/MarkdownViewer';
+import { Source } from '../RightSidebarPanel';
 
 
 const Editor = dynamic(() => import('../Editor/Editor'), {
@@ -34,8 +35,8 @@ export default function Renderer(){
           <TabsContent className={'container-full relative'} value={contentRendererTabsState.editor}>
             <Editor/>
           </TabsContent>
-          <TabsContent className={'container-full'} value={contentRendererTabsState.sources}>
-
+          <TabsContent className={'container-full relative'} value={contentRendererTabsState.sources}>
+            <Source/>
           </TabsContent>
           <TabsContent className={'container-full overflow-hidden'} value={contentRendererTabsState.markdown}>
             <MarkdownViewer/>
