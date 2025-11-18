@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { convertToModelMessages, ModelMessage, stepCountIs, streamText, tool } from 'ai';
 import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt';
 import { google } from '@ai-sdk/google';
-import { saveContent, saveContentGoogleSearches, saveContentImages, saveContentScrapedData, saveGeneratedContent } from '@/lib/db/content';
+import { saveContent, saveContentGoogleSearches, saveContentImages, saveContentScrapedData, saveGeneratedContent,
+  saveNewContent
+} from '@/lib/db/content';
 import { ContentGenerationResponse } from '@/lib/schema';
 import { tavilySearchTool, unsplashSearchTool, urlScraperTool } from '@/lib/AI/tools';
 import { searchUnsplashImages } from '@/lib/AI/ai.image';
@@ -24,15 +26,11 @@ export async function POST(req: Request, {params}: { params: { contentId: string
   const promptJson = formData.get('prompt');
   const toneJson = formData.get('tone');
   const urlJson = formData.get('url');
-  const contentTypeJson = formData.get('contentType');
-  const tagsJson = formData.get('tags');
 
   // Parse the JSON back
   const prompt = typeof promptJson === 'string' ? JSON.parse(promptJson) : promptJson;
   const tone = typeof toneJson === 'string' ? JSON.parse(toneJson) : toneJson;
   const url = typeof urlJson === 'string' ? JSON.parse(urlJson) : urlJson;
-  const contentType = typeof contentTypeJson === 'string' ? JSON.parse(contentTypeJson) : contentTypeJson;
-  const tags = typeof tagsJson === 'string' ? JSON.parse(tagsJson) : tagsJson;
 
   // 3. Extract the file (it comes as a Blob object)
   const uploadedFile = formData.get('document'); // Use the name you append on the client
@@ -183,14 +181,8 @@ export async function POST(req: Request, {params}: { params: { contentId: string
             fullContent += chunk;
         }
 
-        const contentToSave: ContentGenerationResponse = {
-            contentType: contentType,
-            contentKeyword: prompt,
-            tags: tags,
-            mainContent: fullContent,
-        };
-
         await saveContent(fullContent, prompt, contentId, sessionId)
+        await saveNewContent(contentId);
 
       return NextResponse.json({
         contentId: contentId,

@@ -37,7 +37,6 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     const [selectedContentType, setSelectedContentType] = useState<ContentType | null>(null);
     const [isEditingRaw, setIsEditingRaw] = useState(false);
 
-
     const handleToggleEdit = () => {
         setIsEditingRaw(prev => !prev);
     };

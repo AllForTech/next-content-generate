@@ -34,19 +34,13 @@ export async function saveGeneratedContent(content: ContentGenerationResponse) {
 
 const ITEMS_PER_PAGE = 6;
 
-export async function getGeneratedContents(query: string, currentPage: number) {
+export async function getGeneratedContents(currentPage: number) {
   const supabase = await createClient();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  // Base query to select content
-  let queryBuilder = supabase
-    .from("generated_content")
+  const queryBuilder = supabase
+    .from("contents")
     .select("*", { count: "exact" });
-
-  // Apply search filter if a query is provided
-  if (query) {
-    queryBuilder = queryBuilder.ilike("content_keyword", `%${query}%`);
-  }
 
   // Apply pagination and ordering
   const { data, error, count } = await queryBuilder
@@ -235,6 +229,35 @@ export async function saveContent(content: string, prompt: string, contentId: st
     // If a record with this content_id already exists, update it.
     onConflict: 'session_id, author_id, content_id'
   });
+
+  if (error) {
+    console.error(`Error saving content for ID ${contentId}:`, error);
+  }
+}
+
+export async function saveNewContent(contentId: string){
+  const supabase = await createClient();
+
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  // 2. Critical: Check for authentication BEFORE proceeding
+  if ( !userData || !userData.user){
+    console.log('Error saving content.');
+    console.error('Error: User not authenticated or user data retrieval failed.', userError);
+    // Exit the function gracefully
+    return;
+  }
+
+  const user = userData.user;
+
+  const saveData = {
+    content_id: contentId,
+    author_id: user.id,
+  }
+
+  const { error } = await supabase.from("contents").upsert(saveData, {
+    onConflict: 'content_id, author_id'
+  })
 
   if (error) {
     console.error(`Error saving content for ID ${contentId}:`, error);

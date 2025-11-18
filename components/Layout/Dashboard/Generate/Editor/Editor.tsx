@@ -28,53 +28,56 @@ import '@mdxeditor/editor/style.css';
 import { cn } from '@/lib/utils';
 import { useContent } from '@/context/GenerationContext';
 import CustomImageDialog from '@/components/Layout/Dashboard/Generate/Editor/CustomImageDialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
-export default function Editor({ markdown, setMarkdown }) {
-  const { setGeneratedContent } = useContent();
+export default function Editor() {
+  const { setGeneratedContent, generatedContent } = useContent();
   return (
-    <MDXEditor
-      markdown={markdown}
-      onChange={setGeneratedContent}
-      plugins={[
-        // Toolbar with basic controls
-        toolbarPlugin({
-          toolbarContents: () => (
-            <>
-              <UndoRedo />
-              <BlockTypeSelect />
-              <BoldItalicUnderlineToggles />
-              <ListsToggle options={["number", "bullet", "check"]} />
-              <CodeToggle />
-              <InsertImage />
-              <InsertTable/>
-              <InsertSandpack/>
-              {/* You can add more buttons here */}
-            </>
-          ),
-          toolbarClassName: 'toolbar-className',
-        }),
-        imagePlugin({
-          ImageDialog: CustomImageDialog,
-        }),
-        headingsPlugin(),
-        linkDialogPlugin({
-          linkAutocompleteSuggestions: ['https://virtuoso.dev', 'https://mdxeditor.dev'],
-        }),
-        linkPlugin(),
-        codeBlockPlugin({ defaultCodeBlockLanguage: 'javaScript' }),
-        // sandpackPlugin({ sandpackConfig: virtuosoSampleSandpackConfig }),
-        codeMirrorPlugin({ codeBlockLanguages: { js: 'JavaScript', css: 'CSS', txt: 'text', tsx: 'TypeScript' } }),
-        directivesPlugin({ directiveDescriptors: [ AdmonitionDirectiveDescriptor] }),
-        diffSourcePlugin({ viewMode: 'rich-text', diffMarkdown: 'boo' }),
-        markdownShortcutPlugin(),
-        listsPlugin(),
-        quotePlugin(),
-        imagePlugin(),
-        linkPlugin(),
-        tablePlugin(),
-      ]}
-      contentEditableClassName={cn('container-full !h-[100%] p-2 overflow-y-auto prose markdown markdown-content-area')}
-      className={cn('container-full rounded-md bg-white overflow-hidden')}
-    />
+    <ScrollArea className={cn('container-full center')}>
+      <MDXEditor
+        markdown={generatedContent}
+        onChange={setGeneratedContent}
+        plugins={[
+          // Toolbar with basic controls
+          toolbarPlugin({
+            toolbarContents: () => (
+              <>
+                <UndoRedo />
+                <BlockTypeSelect />
+                <BoldItalicUnderlineToggles />
+                <ListsToggle options={["number", "bullet", "check"]} />
+                <CodeToggle />
+                <InsertImage />
+                <InsertTable/>
+                <InsertSandpack/>
+                {/* You can add more buttons here */}
+              </>
+            ),
+            toolbarClassName: 'toolbar-className',
+          }),
+          imagePlugin({
+            ImageDialog: CustomImageDialog,
+          }),
+          headingsPlugin(),
+          linkDialogPlugin({
+            linkAutocompleteSuggestions: ['https://virtuoso.dev', 'https://mdxeditor.dev'],
+          }),
+          linkPlugin(),
+          codeBlockPlugin({ defaultCodeBlockLanguage: 'javaScript' }),
+          // sandpackPlugin({ sandpackConfig: virtuosoSampleSandpackConfig }),
+          codeMirrorPlugin({ codeBlockLanguages: { js: 'JavaScript', css: 'CSS', txt: 'text', tsx: 'TypeScript' } }),
+          directivesPlugin({ directiveDescriptors: [ AdmonitionDirectiveDescriptor] }),
+          diffSourcePlugin({ viewMode: 'rich-text', diffMarkdown: 'boo' }),
+          markdownShortcutPlugin(),
+          listsPlugin(),
+          quotePlugin(),
+          imagePlugin(),
+          linkPlugin(),
+          tablePlugin(),
+        ]}
+        contentEditableClassName={cn('container-full !h-full p-2 overflow-y-auto prose markdown markdown-content-area')}
+        className={cn('container-full rounded-md bg-white overflow-hidden')}
+      />
+    </ScrollArea>
   );
 }

@@ -22,12 +22,10 @@ import { useState } from "react";
 
 interface ContentCardProps {
   id: string;
-  title: string;
   createdAt: string;
-  type: string;
 }
 
-export default function ContentCard({ id, title, createdAt, type }: ContentCardProps) {
+export default function ContentCard({ id, createdAt }: ContentCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -45,25 +43,25 @@ export default function ContentCard({ id, title, createdAt, type }: ContentCardP
   return (
     <div
       className={cn(
-        "bg-gradient-to-br from-stone-300 transition-300 to-stone-100 rounded-lg shadow-md p-2 flex flex-col justify-between w-full max-w-[350px] overflow-hidden h-[250px]",
+        "bg-gradient-to-br from-stone-400 transition-300 to-stone-200 rounded-lg shadow-md p-2 flex flex-col justify-between w-full max-w-[350px] overflow-hidden h-[250px]",
         "transition-shadow duration-300"
       )}
     >
       <Link href={`/dashboard/content/${id}`} className="block container-full center">
         <div className={cn('container-full overflow-hidden rounded-md bg-white p-4 flex flex-col justify-between')}>
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">{title && title?.slice(0, 20)}</h3>
+            <h3 className="text-lg font-semibold text-gray-800"></h3>
             <p className="text-sm text-gray-500 mt-1">{new Date(createdAt).toLocaleDateString()}</p>
           </div>
           <div className="mt-4">
             <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
-              {type}
+              
             </span>
           </div>
         </div>
       </Link>
       <div className="mt-4 flex justify-end items-center gap-2">
-        <Link href={`/dashboard/generate/${type}/${id}`}>
+        <Link href={`/dashboard/generate/${id}`}>
           <Button variant="ghost" size="sm">
             Edit
           </Button>

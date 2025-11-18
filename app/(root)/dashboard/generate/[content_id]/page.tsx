@@ -7,5 +7,5 @@ export default async function Generate({ params }: { params: { content_id: strin
   const allHistory = await getContentHistoryById(content_id);
   const history = await getLatestContentHistory(allHistory);
 
-    return <GenerateContent contentId={content_id} allHistory={allHistory} history={history}  content={content}/>
+    return <GenerateContent contentId={content_id} allHistory={allHistory} history={history} />
 }

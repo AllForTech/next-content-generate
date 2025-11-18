@@ -5,45 +5,16 @@ import { cn } from "@/lib/utils";
 import { UserAvatar } from './UserAvatar';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Menu, X, BookOpen, Search, Eye, Code } from 'lucide-react';
+import { Menu, X, Eye, Code } from 'lucide-react';
 import { useGlobalState } from '@/context/GlobalStateContext';
 import { useContent } from '@/context/GenerationContext'
 import { motion } from 'framer-motion';
 
-// --- NEW: Top Bar for System Functions ---
-const TopBar = ({ isEditingRaw, setIsEditingRaw }) => {
-  return (
-    <div className="w-full h-10 bg-black text-white/90">
-      <div className="container mx-auto px-4 h-full flex items-center justify-between text-xs font-medium">
-        {/* Left: Status / Info */}
-        <div className="flex items-center space-x-2">
-          <span className="text-indigo-400">STATUS:</span>
-          <span>Dashboard Active</span>
-        </div>
 
-        {/* Right: Raw Editor Toggle (Creative Toggle Button) */}
-        <Button
-          onClick={() => setIsEditingRaw(prev => !prev)}
-          className={cn(
-            "text-xs px-3 py-1 h-auto rounded-full transition-colors",
-            isEditingRaw
-              ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30"
-              : "bg-white text-black hover:bg-white/80"
-          )}
-        >
-          {isEditingRaw ? <Code className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
-          {isEditingRaw ? 'Editing Raw' : 'View Mode'}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-// --- Main Navbar Component (Refined) ---
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { setIsEditingRaw, isEditingRaw } = useGlobalState();
-  const { generatedContent } = useContent();
+  const { generatedContent, handleDocxExport } = useContent();
 
   return (
     <motion.div
@@ -53,7 +24,7 @@ export const Navbar = () => {
       className="w-full shadow-lg shadow-black/5"
     >
 
-      <nav className="w-full h-14 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+      <nav className="w-full h-[35px] bg-white/95 backdrop-blur-xl border-b border-gray-100">
         <div className="container mx-auto px-4 flex items-center justify-between h-full">
 
           {/* Center/Main Links (Empty as per original) */}
@@ -76,6 +47,19 @@ export const Navbar = () => {
               >
                 {isEditingRaw ? <Code className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
                 {isEditingRaw ? 'Editing' : 'View Mode'}
+              </Button>
+            )}
+
+            {/* DocX Export*/}
+            {generatedContent && (
+              <Button
+                onClick={() => handleDocxExport(generatedContent)}
+                className={cn(
+                  "text-xs px-3 py-3 h-auto rounded-full transition-colors",
+                  "bg-white text-black hover:bg-white/80"
+                )}
+              >
+                Export
               </Button>
             )}
 

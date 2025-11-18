@@ -29,10 +29,11 @@ export default async function Dashboard({
   };
 }) {
   const query = await searchParams?.query || '';
-  const currentPage = Number(searchParams?.page) || 1;
+  const page = await searchParams?.page
+  const currentPage = Number(page) || 1;
 
   // MAINTAINED: Original async data fetching logic
-  const { data: contents, count } = await getGeneratedContents(query, currentPage);
+  const { data: contents, count } = await getGeneratedContents(currentPage);
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
   const hasContent = contents && contents.length > 0;
@@ -75,13 +76,11 @@ export default async function Dashboard({
             /* MAINTAINED: ScrollArea logic and ContentCard mapping */
             <ScrollArea className={cn('w-full h-[62dvh]')}>
               <div className="grid grid-cols-1 overflow-hidden md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {contents.map((content) => (
+                {contents && contents.map((content) => (
                   <ContentCard
-                    key={content.id}
-                    id={content.id}
-                    title={content.content_keyword}
-                    createdAt={content.created_at}
-                    type={content.content_type}
+                    key={content?.content_id}
+                    id={content?.content_id}
+                    createdAt={content?.created_at}
                   />
                 ))}
               </div>

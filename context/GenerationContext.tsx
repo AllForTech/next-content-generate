@@ -1,16 +1,10 @@
 'use client';
 
-import {
-    createContext,
-    useContext,
-    useState,
-    useCallback,
-    ReactNode
-} from 'react';
+import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
-import { useRouter, useParams } from 'next/navigation'
-import {createClient} from "@/utils/supabase/client";
+import { useParams, useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 
 export type ChatHistoryType = {
   id: string;
@@ -34,39 +28,52 @@ export const panelTabsState = {
   images: 'images',
 }
 
+export const contentRendererTabsState = {
+  content: 'content',
+  editor: 'editor',
+  sources: 'sources',
+  markdown: 'markdown',
+}
+
 // --- 1. Define the Context Interface (What components can access) ---
 interface GenerationContextType {
-    // The final structured output from the AI
-    generatedContent: string | null;
+  // The final structured output from the AI
+  generatedContent: string | null;
   setGeneratedContent: (content: string) => void;
 
-    // State variables
-    isLoading: boolean;
-    error: string | null;
+  // State variables
+  isLoading: boolean;
+  error: string | null;
 
-    // Actions
-    generateContent: (prompt: string, tags: string[], tone: string, url: string[], attachedFile: any) => Promise<void>;
-    clearContent: () => void;
+  // Actions
+  generateContent: (
+    prompt: string,
+    tags: string[],
+    tone: string,
+    url: string[],
+    attachedFile: any,
+  ) => Promise<void>;
+  clearContent: () => void;
 
-    chatHistory: ChatHistoryType[];
+  chatHistory: ChatHistoryType[];
 
-    replaceCurrentContent: (history: ChatHistoryType) => void;
+  replaceCurrentContent: (history: ChatHistoryType) => void;
 
-    handleSelection: (type: string) => void;
-    handleDocxExport: (markdownContent: string) => void;
+  handleSelection: (type: string) => void;
+  handleDocxExport: (markdownContent: string) => void;
 
-    panelTabs: PanelTabsStateType;
-    setPanelTabs: (panelTabs: PanelTabsStateType) => void;
+  panelTabs: PanelTabsStateType;
+  setPanelTabs: (panelTabs: PanelTabsStateType) => void;
 
-    contentSources: ContentSources[],
-    setContentSources: (contentSources: ContentSources[]) => void,
-    unsplashImages: any[],
-    setUnsplashImages: (unsplashImages: any[]) => void,
-    scrapedData: ScrapedDataType[],
-    setScrapedData: (scrapedData: ScrapedDataType) => void,
-    localImages: any[],
-    setLocalImages: (any) => void;
-  setChatHistory: (history: ChatHistoryType) => void;
+  contentSources: ContentSources[];
+  setContentSources: (contentSources: ContentSources[]) => void;
+  unsplashImages: any[];
+  setUnsplashImages: (unsplashImages: any[]) => void;
+  scrapedData: ScrapedDataType[];
+  setScrapedData: (scrapedData: ScrapedDataType[]) => void;
+  localImages: any[];
+  setLocalImages: (image: any[]) => void;
+  setChatHistory: (history: { id: string; role: 'user' | 'agent'; content: string }[]) => void;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -139,7 +146,6 @@ export function ContextProvider({ children }: { children: ReactNode }) {
           console.log(errorData.error || 'Failed to generate content due to server error.');
         }
 
-        const newId = nanoid();
         const resultData = await response.json();
 
         setGeneratedContent(resultData.mainContent);
@@ -147,7 +153,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setUnsplashImages(resultData.unsplashImages);
         setScrapedData(resultData.scrapedDtate);
 
-        setChatHistory(prev => ([...prev, { id: newId, role: 'agent', content: resultData.mainContent }]))
+        setChatHistory(prev => ([...prev, { id: sessionId, role: 'agent', content: resultData.mainContent }]))
 
       } catch (error) {
         console.error(error);
@@ -218,8 +224,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
     // 2. Extract the filename from the Content-Disposition header (optional but good practice)
     const contentDisposition = response.headers.get('Content-Disposition');
-    const defaultFilename = 'document.docx';
-    let filename = defaultFilename;
+
+    let filename = 'document.docx';
 
     if (contentDisposition) {
       // Basic regex to extract filename="X.docx"

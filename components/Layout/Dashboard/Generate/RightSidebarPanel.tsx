@@ -22,7 +22,7 @@ export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
         <PanelTabs/>
         <div className={cn('center container-full')}>
           <TabsContent className={'container-full'} value={panelTabsState.prompt}>
-            <Prompt onGenerate={onGenerate} contentId={contentId} />
+            <Prompt contentType={''} onGenerate={onGenerate} contentId={contentId} />
           </TabsContent>
           <TabsContent className={'container-full'} value={panelTabsState.history}>
             <History/>
@@ -52,7 +52,7 @@ const PanelTabs = () => {
           <TabsTrigger
             key={tab}
             value={tab}
-            className={cn('text-xs font-semibold transition-300',
+            className={cn('text-xs font-semibold data-[state=active]:bg-black data-[state=active]:text-white transition-300',
             )}
           >
             {tab}
@@ -135,6 +135,8 @@ const Images = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64Url = reader.result;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         setLocalImages(prev => [base64Url, ...prev]);
         toast.success("Image uploaded locally.");
         event.target.value = null; // Reset file input
@@ -145,7 +147,9 @@ const Images = () => {
 
   // MAINTAINED LOGIC: Handler to remove a local image
   const handleRemoveLocalImage = useCallback((urlToRemove: string) => {
-    setLocalImages(prev => prev.filter(url => url !== urlToRemove));
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    setLocalImages((image: any[]) => image.filter(url => url !== urlToRemove));
   }, [setLocalImages]);
 
 
