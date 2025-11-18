@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
-import { convertToModelMessages, ModelMessage, stepCountIs, streamText, tool } from 'ai';
+import { stepCountIs, streamText, tool } from 'ai';
 import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt';
 import { google } from '@ai-sdk/google';
-import { saveContent, saveContentGoogleSearches, saveContentImages, saveContentScrapedData, saveGeneratedContent,
-  saveNewContent
-} from '@/lib/db/content';
-import { ContentGenerationResponse } from '@/lib/schema';
-import { tavilySearchTool, unsplashSearchTool, urlScraperTool } from '@/lib/AI/tools';
+import { saveContent, saveContentGoogleSearches, saveContentImages, saveContentScrapedData, saveNewContent } from '@/lib/db/content';
+
 import { searchUnsplashImages } from '@/lib/AI/ai.image';
 import { z } from 'zod';
 import { executeTavilySearch } from '@/lib/tavily/tavily.search';
@@ -117,7 +114,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
               const { content, allScrapedData } = await scrapeUrl(urls);
 
               scrapedData = allScrapedData;
-              await saveContentScrapedData(allScrapedData, contentId);
+              await saveContentScrapedData(allScrapedData, contentId, sessionId);
 
               return content;
             },
@@ -140,7 +137,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
                 return results;
               }
               searchResults = results;
-              await saveContentGoogleSearches(results, contentId);
+              await saveContentGoogleSearches(results, contentId, sessionId);
               return results;
             },
           }),
@@ -163,7 +160,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
                   return images;
                 }
                 unsplashImages = parsedImage;
-                await saveContentImages(parsedImage, contentId);
+                await saveContentImages(parsedImage, contentId, sessionId);
                 return images;
               }
               return images;

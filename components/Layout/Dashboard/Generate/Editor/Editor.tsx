@@ -29,9 +29,21 @@ import { cn } from '@/lib/utils';
 import { useContent } from '@/context/GenerationContext';
 import CustomImageDialog from '@/components/Layout/Dashboard/Generate/Editor/CustomImageDialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCallback, useEffect } from 'react';
 
 export default function Editor() {
-  const { setGeneratedContent, generatedContent } = useContent();
+  const { setGeneratedContent, generatedContent, updateCurrentContent } = useContent();
+  
+  useEffect(() => {
+    let timer = null
+
+    timer = setTimeout(() => {
+      updateCurrentContent()
+    }, 1000)
+
+    return () => clearTimeout(timer);
+  }, [generatedContent, setGeneratedContent]);
+
   return (
     <ScrollArea className={cn('container-full center')}>
       <MDXEditor

@@ -1,63 +1,69 @@
-// import { NextResponse } from 'next/server';
-// import { fetchTrendingTopics } from '@/lib/trend-discovery';
-// import { generateStructuredKeywords } from '@/lib/ai-services';
-// import { generateAndSaveContent } from '@/lib/content-pipeline';
-//
-// // Define the expected structure of the structured output from the AI
-// interface KeywordTopic {
-//   topic: string;
-//   keyword: string;
-//   title: string;
-// }
-//
-// export async function GET(request: Request) {
-//  
-//   // to ensure only your scheduled service can trigger this.
-//   const secret = request.headers.get('Authorization');
-//
-//   // Replace 'MY_CRON_SECRET' with an actual environment variable
-//   if (secret !== `Bearer ${process.env.CRON_JOB_SECRET}`) {
-//     console.warn('Unauthorized access attempt to scheduled research route.');
-//     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-//   }
-//
-//   try {
-//     // --- STEP 1: Trend Discovery ---
-//     console.log('1. Fetching raw trending topics...');
-//     const rawTrends = await fetchTrendingTopics();
-//
-//     if (!rawTrends || rawTrends.length === 0) {
-//       return NextResponse.json({ message: 'No trends found to process.' }, { status: 200 });
-//     }
-//
-//     // --- STEP 2: Keyword Selection & Structuring via AI ---
-//     console.log('2. Asking AI to structure and select keywords...');
-//     const structuredKeywords: KeywordTopic[] = await generateStructuredKeywords(rawTrends);
-//
-//     if (!structuredKeywords || structuredKeywords.length === 0) {
-//       console.warn('AI failed to return structured keywords.');
-//       return NextResponse.json({ message: 'AI failed to select keywords.' }, { status: 500 });
-//     }
-//
-//     // --- STEP 3: Content Generation Loop ---
-//     console.log(`3. Generating and saving content for ${structuredKeywords.length} topics...`);
-//     const generationPromises = structuredKeywords.map(topicData =>
-//       // This function should call your existing content generation logic
-//       // and save the final result to the database (e.g., as a 'Scheduled_Draft').
-//       generateAndSaveContent(topicData.topic, topicData.title)
-//     );
-//
-//     const results = await Promise.all(generationPromises);
-//
-//     console.log(`Scheduled content generation complete. Successes: ${results.filter(r => r.success).length}`);
-//
-//     return NextResponse.json({
-//       message: 'Scheduled content generation completed successfully.',
-//       topicsGenerated: structuredKeywords.length
-//     }, { status: 200 });
-//
-//   } catch (error) {
-//     console.error('Scheduled research route failed:', error);
-//     return NextResponse.json({ error: 'Internal Server Error during scheduled job.' }, { status: 500 });
-//   }
-// }
+import { getTrendingTopics } from "@/lib/tavily/tavily.search";
+import { generateText } from "ai"; // Vercel AI SDK for text generation
+import { google } from "@ai-sdk/google";
+import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt'; // Using the Google provider
+
+// Set the cron job's user ID (You should replace this with a real admin UUID from your DB)
+const CRON_AUTHOR_ID = process.env.CRON_AUTHOR_ID || '00000000-0000-0000-0000-000000000000';
+
+/**
+ * Vercel Cron Job API Endpoint: Automatically generates blog posts based on trending topics.
+ */
+export async function GET(request: Request) {
+  const authHeader = request.headers.get('Authorization');
+
+  // --- 1. Security Check ---
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new Response('Unauthorized: Invalid secret.', { status: 401 });
+  }
+
+  // --- 2. Fetch Trending Topics using Tavily ---
+  let topics = [];
+  try {
+    const tavilyResults = await getTrendingTopics();
+    topics = tavilyResults.map(result => ({
+      title: result.title,
+      url: result.url,
+      content: result.content
+    }));
+
+    if (topics.length === 0) {
+      console.log('Tavily returned no trending topics.');
+      return Response.json({ message: 'No topics found.', status: 'success' });
+    }
+
+  } catch (error) {
+    console.error("Failed to fetch trending topics:", error);
+    return Response.json({ message: 'Tavily search failed.', status: 'error' }, { status: 500 });
+  }
+
+  let generatedCount = 0;
+
+  // --- 3. Iterate, Generate, and Save ---
+  for (const topic of topics) {
+    const generationPrompt = `Write a professional, 800-word blog post on the topic: "${topic.title}". The tone should be insightful and expert-level. Incorporate key facts from this search snippet: "${topic.content}". Focus on actionable advice or a detailed analysis of the trend.`;
+
+    try {
+      // Vercel AI SDK call using generateText (non-streaming, ideal for server tasks)
+      const result = await generateText({
+        model: google('gemini-2.5-flash'),
+        system: GENERATOR_PROMPT,
+        prompt: generationPrompt,
+      });
+
+      console.log(result.text);
+
+      generatedCount++;
+
+    } catch (error) {
+      console.error(`Generation or saving failed for topic: ${topic.title}`, error);
+      // Continue to the next topic even if one fails
+    }
+  }
+
+  // --- 5. Final Response ---
+  return Response.json({
+    message: `Cron Job completed. Generated and saved ${generatedCount} blog posts.`,
+    status: 'success'
+  });
+}

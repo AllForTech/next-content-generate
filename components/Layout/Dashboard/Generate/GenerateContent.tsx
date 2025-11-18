@@ -15,7 +15,8 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
     const {
       generateContent,
       setGeneratedContent,
-      setChatHistory
+      setChatHistory,
+      setCurrentSessionId,
     } = useContent();
 
   useEffect(() => {
@@ -34,6 +35,8 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       setGeneratedContent('# No content found.');
     }
 
+    setCurrentSessionId(history?.session_id)
+    console.log(history?.session_id);
     setGeneratedContent(history?.content);
 
   }, [history, contentId]);

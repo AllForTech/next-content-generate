@@ -14,7 +14,6 @@ import { Upload, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
-  const { generateContent } = useContent()
 
   return (
     <div className={'container-full shadow-md shadow-stone-400 rounded-lg !max-w-[410px] flex-col gap-2.5 center'}>
@@ -27,15 +26,12 @@ export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
           <TabsContent className={'container-full'} value={panelTabsState.history}>
             <History/>
           </TabsContent>
-          <TabsContent className={'container-full'} value={panelTabsState.source}>
-            <Source/>
-          </TabsContent>
           <TabsContent className={'container-full'} value={panelTabsState.images}>
             <Images/>
           </TabsContent>
-          <TabsContent className={'container-full'} value={panelTabsState.management}>
-            <Management/>
-          </TabsContent>
+          {/*<TabsContent className={'container-full'} value={panelTabsState.management}>*/}
+          {/*  <Management/>*/}
+          {/*</TabsContent>*/}
         </div>
       </Tabs>
 

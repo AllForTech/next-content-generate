@@ -52,7 +52,7 @@ const RendererTabs = ( ) => {
   return (
     <div className={'w-full h-fit flex-col gap-2.5 center'}>
       <TabsList className={cn('w-full bg-stone-200 center gap-2')}>
-        {Object.values(contentRendererTabsState).map(tab => !generatedContent && tab === contentRendererTabsState.editor ? null : (
+        {Object.values(contentRendererTabsState).map(tab => (
           <TabsTrigger
             key={tab}
             value={tab}

@@ -23,8 +23,6 @@ export type UnsplashImagesType = { url: string, alt_description: string, photogr
 export const panelTabsState = {
   prompt: 'prompt',
   history: 'history',
-  source: 'source',
-  management: 'management',
   images: 'images',
 }
 
@@ -74,6 +72,13 @@ interface GenerationContextType {
   localImages: any[];
   setLocalImages: (image: any[]) => void;
   setChatHistory: (history: { id: string; role: 'user' | 'agent'; content: string }[]) => void;
+
+  updateCurrentContent: () => void,
+  isUpdating: boolean,
+  setIsUpdating: (prev: boolean) => void;
+
+  currentSessionId: string,
+  setCurrentSessionId: (id: string) => void;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -95,6 +100,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const [unsplashImages, setUnsplashImages] = useState<UnsplashImagesType[]>([]);
     const [scrapedData, setScrapedData] = useState<ScrapedDataType[]>([]);
     const [localImages, setLocalImages] = useState([])
+    const [currentSessionId, setCurrentSessionId] = useState('');
+    const [isUpdating, setIsUpdating] = useState(false);
 
 
     // The function to call the Next.js API Route
@@ -154,6 +161,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setScrapedData(resultData.scrapedDtate);
 
         setChatHistory(prev => ([...prev, { id: sessionId, role: 'agent', content: resultData.mainContent }]))
+        setCurrentSessionId(sessionId);
 
       } catch (error) {
         console.error(error);
@@ -172,7 +180,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
       if (!selectedMessage) return;
 
-      setGeneratedContent(selectedMessage.content);
+      setCurrentSessionId(selectedMessage?.id);
+      setGeneratedContent(selectedMessage?.content);
     }
 
     // Simple function to reset the state
@@ -246,6 +255,29 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     window.URL.revokeObjectURL(url); // Clean up the object URL
   }
 
+  const updateCurrentContent = async () => {
+      if (!currentSessionId) return;
+
+      setIsUpdating(true)
+
+      const supabase = await createClient();
+      const user = await supabase.auth.getUser();
+
+      try {
+        const { error } = await supabase.from('user_contents').update({
+          content: generatedContent
+        }).eq('session_id', currentSessionId)
+          .eq('author_id', user.data.user?.id)
+          .eq('content_id', content_id)
+
+        if (error) console.log(error);
+      }catch (e) {
+        console.error(e);
+      }finally {
+        setIsUpdating(false);
+      }
+  }
+
     const value = {
         generatedContent,
         isLoading,
@@ -267,7 +299,12 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         setScrapedData,
         localImages,
         setLocalImages,
-      setChatHistory
+      setChatHistory,
+      updateCurrentContent,
+      isUpdating,
+      setIsUpdating,
+      currentSessionId,
+      setCurrentSessionId
     };
 
     return (

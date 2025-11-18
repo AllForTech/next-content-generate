@@ -31,3 +31,13 @@ export async function executeTavilySearch(query: string) {
         return JSON.stringify({ error: "Failed to perform web search." });
     }
 }
+
+export async function getTrendingTopics() {
+  // This search is designed to find current, trending content for blog posts
+  const response = await tavilyClient.search("latest high-impact business and tech trends for blog posts",{
+    searchDepth: "basic",
+    maxResults: 5, // Get 5 top results to generate 5 blog posts
+  });
+
+  return response.results;
+}

@@ -11,7 +11,7 @@ const basicMarkdownTheme = EditorView.theme({
   // Sets the overall background and text color to match your dark theme
   "&": {
     backgroundColor: "#1e1e1e", // A dark gray for the background
-    color: "#f3f4f6",           // Light text color
+    color: "#efefef",           // Light text color
     fontSize: "11px",           // text-xs equivalent
     height: "100%",             // Ensures full height within parent
     width: "100%",              // Ensures full width
@@ -41,18 +41,18 @@ const basicMarkdownTheme = EditorView.theme({
 });
 
 export default function EditorHighlight(){
-  const { generatedContent } = useContent();
+  const { generatedContent, setGeneratedContent } = useContent();
 
   const editorRef = useRef(null);
   const editorViewRef = useRef<EditorView | null>(null);
-  const [markdownText, setMarkdownText] = useState(generatedContent);
 
   // Function to get the current content for copying
   const getCurrentContent = () => {
-    return editorViewRef.current?.state.doc.toString() || markdownText;
+    return editorViewRef.current?.state.doc.toString() || generatedContent;
   };
 
   useEffect(() => {
+    let timer = null;
     // --- 1. Define Extensions ---
     const extensions = [
       // Provides essential editing features (line numbers, history, cursor)
@@ -67,7 +67,9 @@ export default function EditorHighlight(){
       // Use a listener to keep React state updated with editor changes
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
-          setMarkdownText(update.state.doc.toString());
+          timer = setTimeout(() => {
+            setGeneratedContent(update.state.doc.toString());
+          }, 1000)
         }
       })
     ];
@@ -89,6 +91,7 @@ export default function EditorHighlight(){
     return () => {
       view.destroy();
       editorViewRef.current = null;
+      if (timer) clearTimeout(timer);
     };
   }, [generatedContent]); // Re-initialize only if initial text changes
 
@@ -98,6 +101,7 @@ export default function EditorHighlight(){
   return (
     <div
       ref={editorRef}
+      id={'hide-scrollbar'}
       className="w-full h-full absolute inset-0 border border-gray-700 rounded-md overflow-hidden"
     />
   );
