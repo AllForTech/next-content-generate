@@ -13,7 +13,7 @@ const AnimatedBlob = () => (
 
 export const Hero = () => {
   return (
-    <section className="relative h-screen flex items-center justify-center bg-white overflow-hidden">
+    <section className="relative h-screen flex items-center justify-center bg-transparent overflow-hidden">
 
       {/* 1. Enhanced Background */}
       <div className="absolute inset-0 bg-grid-black/[0.05] [mask-image:linear-gradient(to_bottom,white_50%,transparent_100%)]" />

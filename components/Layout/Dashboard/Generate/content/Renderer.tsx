@@ -1,22 +1,23 @@
 'use client'
 
-import React, { useCallback, useEffect, useRef } from 'react'
+import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import {
   contentRendererTabsState, useContent,
 } from '@/context/GenerationContext';
-import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 import { Content } from '@/components/Layout/Dashboard/Generate/ContentRenderer';
 import { MarkdownViewer } from '@/components/Layout/Dashboard/Generate/content/MarkdownViewer';
 import { Source } from '../RightSidebarPanel';
+import EditorLoader from '@/components/Layout/Dashboard/Generate/Editor/EditorLoader';
 
 
 const Editor = dynamic(() => import('../Editor/Editor'), {
   // Make sure we turn SSR off
   ssr: false,
-  loading: () =>  <Skeleton className={'container-full !h-[75dvh]'}/>
+  loading: () =>  <EditorLoader className={'container-full !h-[75dvh]'}/>
 })
 
 export default function Renderer(){
@@ -50,8 +51,13 @@ export default function Renderer(){
 const RendererTabs = ( ) => {
   const { generatedContent } = useContent();
 
-  return (
-    <div className={'w-full h-fit flex-col gap-2.5 center'}>
+  return generatedContent && (
+    <motion.div
+      initial={{ opacity: 0, y: 100 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: 'easeInOut' }}
+      className={'w-full h-fit flex-col gap-2.5 center'}>
       <TabsList className={cn('w-full bg-stone-200 center gap-2')}>
         {Object.values(contentRendererTabsState).map(tab => (
           <TabsTrigger
@@ -64,6 +70,6 @@ const RendererTabs = ( ) => {
           </TabsTrigger>
         ))}
       </TabsList>
-    </div>
+    </motion.div>
   )
 }

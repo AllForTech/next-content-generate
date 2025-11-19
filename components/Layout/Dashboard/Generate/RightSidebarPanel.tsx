@@ -12,32 +12,57 @@ import { toast } from 'sonner';
 import { Button } from '@mdxeditor/editor';
 import { Upload, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import MobileSheetWrapper from '@/components/Layout/Dashboard/Generate/MobileSheetWrapper';
+
+const useMediaQuery = (query: string) => {
+  const [matches, setMatches] = useState(false);
+  React.useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    window.addEventListener('resize', listener);
+    return () => window.removeEventListener('resize', listener);
+  }, [matches, query]);
+  return matches;
+};
 
 export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)');
+
+  // The actual Tabs content block, which remains unchanged
+  const SidebarContent = (
+    <Tabs defaultValue={panelTabsState.prompt} className={'container-full p-1.5 center flex-col gap-2'}>
+      <PanelTabs/>
+      <div className={cn('center container-full')}>
+        <TabsContent className={'container-full'} value={panelTabsState.prompt}>
+          <Prompt contentType={''} onGenerate={onGenerate} contentId={contentId} />
+        </TabsContent>
+        <TabsContent className={'container-full'} value={panelTabsState.history}>
+          <History/>
+        </TabsContent>
+        <TabsContent className={'container-full'} value={panelTabsState.images}>
+          <Images/>
+        </TabsContent>
+        {/*<TabsContent className={'container-full'} value={panelTabsState.management}>*/}
+        {/* <Management/>*/}
+        {/*</TabsContent>*/}
+      </div>
+    </Tabs>
+  );
 
   return (
-    <div className={'container-full shadow-md shadow-stone-400 rounded-lg !max-w-[410px] flex-col gap-2.5 center'}>
-      <Tabs defaultValue={panelTabsState.prompt} className={'container-full p-1.5 center flex-col gap-2'}>
-        <PanelTabs/>
-        <div className={cn('center container-full')}>
-          <TabsContent className={'container-full'} value={panelTabsState.prompt}>
-            <Prompt contentType={''} onGenerate={onGenerate} contentId={contentId} />
-          </TabsContent>
-          <TabsContent className={'container-full'} value={panelTabsState.history}>
-            <History/>
-          </TabsContent>
-          <TabsContent className={'container-full'} value={panelTabsState.images}>
-            <Images/>
-          </TabsContent>
-          {/*<TabsContent className={'container-full'} value={panelTabsState.management}>*/}
-          {/*  <Management/>*/}
-          {/*</TabsContent>*/}
-        </div>
-      </Tabs>
-
-    </div>
-  )
-}
+    <MobileSheetWrapper
+      isMobile={isMobile}
+      isOpen={isSheetOpen}
+      setIsOpen={setIsSheetOpen}
+    >
+      {SidebarContent}
+    </MobileSheetWrapper>
+  );
+};
 
 const PanelTabs = () => {
 

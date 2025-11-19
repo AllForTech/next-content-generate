@@ -179,7 +179,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
         }
 
         await saveContent(fullContent, prompt, contentId, sessionId)
-        await saveNewContent(contentId);
+        await saveNewContent(contentId, fullContent, prompt);
 
       return NextResponse.json({
         contentId: contentId,

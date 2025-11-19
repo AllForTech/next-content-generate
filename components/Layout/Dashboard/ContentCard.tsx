@@ -1,7 +1,7 @@
 
 'use client';
 
-import { cn } from "@/lib/utils";
+import { cn, extractMarkdownImageUrls } from "@/lib/utils";
 import Link from "next/link";
 import {
   AlertDialog,
@@ -15,18 +15,23 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Delete } from 'lucide-react'
+import { Delete, Trash } from 'lucide-react';
 import { deleteContent } from "@/lib/actions/content.actions";
 import { toast } from "sonner";
-import { useState } from "react";
+import { use, useEffect, useState } from 'react';
+import { getContentHistoryById } from '@/lib/db/content';
 
 interface ContentCardProps {
   id: string;
   createdAt: string;
+  content: string;
+  prompt: string;
 }
 
-export default function ContentCard({ id, createdAt }: ContentCardProps) {
+export default function ContentCard({ id, createdAt, content, prompt }: ContentCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const extractedUrls = content ? extractMarkdownImageUrls(content) : [];
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -47,15 +52,17 @@ export default function ContentCard({ id, createdAt }: ContentCardProps) {
         "transition-shadow duration-300"
       )}
     >
-      <Link href={`/dashboard/content/${id}`} className="block container-full center">
-        <div className={cn('container-full overflow-hidden rounded-md bg-white p-4 flex flex-col justify-between')}>
+      <Link href={`/dashboard/generate/${id}`} className="block container-full center">
+        <div
+          style={{ backgroundImage: `url(${extractedUrls && extractedUrls[0]})` }}
+          className={cn('container-full overflow-hidden rounded-md bg-white p-4 flex flex-col justify-between')}>
           <div>
             <h3 className="text-lg font-semibold text-gray-800"></h3>
             <p className="text-sm text-gray-500 mt-1">{new Date(createdAt).toLocaleDateString()}</p>
           </div>
           <div className="mt-4">
             <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
-              
+              {content && content?.slice(0, 20) || prompt && prompt?.slice(0, 20)}
             </span>
           </div>
         </div>
@@ -69,7 +76,7 @@ export default function ContentCard({ id, createdAt }: ContentCardProps) {
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="ghost" size="sm" disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : ( <Delete size={15} className={cn('text-red-500')}/>)}
+              {isDeleting ? "Deleting..." : ( <Trash size={15} className={cn('text-red-500')}/>)}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>

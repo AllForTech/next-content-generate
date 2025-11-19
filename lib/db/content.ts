@@ -176,6 +176,7 @@
 'use server'
 import { createClient } from "@/utils/supabase/server";
 import { ContentGenerationResponse } from "@/lib/schema";
+import { revalidatePath } from 'next/cache';
 
 type ContentItem = {
   id: number;
@@ -211,11 +212,24 @@ const ITEMS_PER_PAGE = 6;
 
 export async function getGeneratedContents(currentPage: number) {
   const supabase = await createClient();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  // 2. Critical: Check for authentication BEFORE proceeding
+  if ( !userData || !userData.user){
+    console.log('Error saving content_google_searches');
+    console.error('Error: User not authenticated or user data retrieval failed.', userError);
+    // Exit the function gracefully
+    return;
+  }
+
+  const user = userData.user;
+
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   const queryBuilder = supabase
     .from("contents")
-    .select("*", { count: "exact" });
+    .select("*", { count: "exact" })
+    .eq('author_id', user.id);
 
   // Apply pagination and ordering
   const { data, error, count } = await queryBuilder
@@ -383,7 +397,7 @@ export async function saveContentScrapedData(results: any[], content_id: string,
   }
 }
 
-export async function saveContent(content: string, prompt: string, contentId: string, sessionId: string){
+export async function saveContent(content: string, prompt = '', contentId: string, sessionId: string){
   const supabase = await createClient();
 
   const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -414,9 +428,13 @@ export async function saveContent(content: string, prompt: string, contentId: st
   if (error) {
     console.error(`Error saving content for ID ${contentId}:`, error);
   }
+
+  revalidatePath(`/dashboard/generate/${contentId}`);
+  revalidatePath('/dashboard');
 }
 
-export async function saveNewContent(contentId: string){
+
+export async function saveNewContent(contentId: string, content: string, prompt: string){
   const supabase = await createClient();
 
   const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -434,6 +452,8 @@ export async function saveNewContent(contentId: string){
   const saveData = {
     content_id: contentId,
     author_id: user.id,
+    content,
+    prompt
   }
 
   const { error } = await supabase.from("contents").upsert(saveData, {

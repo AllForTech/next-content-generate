@@ -5,7 +5,7 @@ ThinkInk is a powerful, **AI-driven content generation platform** designed for c
 ## ✨ Features
 
 * **Fact-Grounded Generation (RAG):** Utilizes the **Tavily Search API** within an AI tool-calling workflow to gather real-time data, ensuring all generated content is highly accurate and up-to-date.
-* **Structured, Presentation-Ready Output:** The AI is meticulously prompted to generate content in a **Gamma.app-style Markdown structure**, complete with strict formatting rules, clear headings, and visual placeholders for easy frontend rendering.
+* **Structured, Presentation-Ready Output:** The AI is meticulously prompted to generate content, complete with strict formatting rules, clear headings, and visual placeholders for easy frontend rendering.
 * **Real-time Streaming:** Content is streamed instantly from the server using the **Vercel AI SDK**, providing a dynamic and highly responsive user experience.
 * **Professional Styling:** Markdown is rendered using the **Tailwind Typography plugin**, offering polished, magazine-quality styling for all text and data elements (tables, lists, code).
 * **Secure Authentication:** **Supabase** is used for robust, scalable user authentication, including support for **Google OAuth**.

@@ -36,10 +36,10 @@ export function extractMarkdownImageUrls(markdownString: string) {
 
   // Handle custom MDX <Image> components if necessary (less common, but possible)
   // Example for <Image src="URL" ...>:
-  // const mdxImageRegex = /<Image\s+src=["'](.*?)["'].*?\/>/gi;
-  // while ((match = mdxImageRegex.exec(markdownString)) !== null) {
-  //   urls.add(match[1].trim());
-  // }
+  const mdxImageRegex = /<Image\s+src=["'](.*?)["'].*?\/>/gi;
+  while ((match = mdxImageRegex.exec(markdownString)) !== null) {
+    urls.add(match[1].trim());
+  }
 
   return Array.from(urls);
 }

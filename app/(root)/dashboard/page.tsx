@@ -30,7 +30,7 @@ export default async function Dashboard({
 }) {
   const query = await searchParams?.query || '';
   const page = await searchParams?.page
-  const currentPage = Number(page) || 1;
+  const currentPage = await Number(page) || 1;
 
   // MAINTAINED: Original async data fetching logic
   const { data: contents, count } = await getGeneratedContents(currentPage);
@@ -44,10 +44,6 @@ export default async function Dashboard({
 
       {/* The Floating Dashboard Card */}
       <div
-        // Animation for a clean entrance
-        // initial={{ opacity: 0, y: 30 }}
-        // animate={{ opacity: 1, y: 0 }}
-        // transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
         className={cn(
           "w-full h-full max-w-7xl mx-4 lg:mx-auto px-8 py-2.5 md:px-12",
           "bg-white/95 backdrop-blur-xl border border-gray-100",
@@ -79,6 +75,8 @@ export default async function Dashboard({
                 {contents && contents.map((content) => (
                   <ContentCard
                     key={content?.content_id}
+                    content={content?.content}
+                    prompt={content?.prompt}
                     id={content?.content_id}
                     createdAt={content?.created_at}
                   />

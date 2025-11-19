@@ -29,13 +29,13 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       id: hs.session_id || '',
       role: 'agent' as 'agent' | 'user',
       content: hs.content || '',
-      searchResults: hs.source || [],
-      scrapedData: hs.screpedData || [],
+      searchResults: hs.scrapedData || [],
+      scrapedData: hs.scrapedData || [],
       images: hs.images || [],
       attachedFile: hs.attachedFIle
     }))
     console.log(allHistory);
-    setChatHistory(chatHistory)
+    setChatHistory(chatHistory);
   }, [allHistory, contentId]);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       setGeneratedContent('# No content found.');
     }
 
-    setCurrentSessionId(history?.session_id)
+    setCurrentSessionId(history?.session_id);
     console.log(history?.session_id);
     setGeneratedContent(history?.content);
     setUnsplashImages(history?.images);

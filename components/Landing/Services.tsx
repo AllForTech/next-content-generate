@@ -32,7 +32,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: any = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
@@ -42,10 +42,10 @@ const itemVariants = {
 };
 
 export const Services = () => {
-  // @ts-ignore
+
   return (
     // Section background is light gray to make the white cards pop
-    <section id="services" className="py-24 bg-gray-50 relative">
+    <section id="services" className="py-24 bg-transparent relative">
       <div className="container mx-auto px-4 max-w-7xl">
 
         {/* Kicker and Main Headline */}

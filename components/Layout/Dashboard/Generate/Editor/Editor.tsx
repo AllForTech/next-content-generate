@@ -68,11 +68,11 @@ export default function Editor() {
             toolbarClassName: 'toolbar-className',
           }),
           imagePlugin({
-            ImageDialog: CustomImageDialog,
+
           }),
           headingsPlugin(),
           linkDialogPlugin({
-            linkAutocompleteSuggestions: ['https://virtuoso.dev', 'https://mdxeditor.dev'],
+
           }),
           linkPlugin(),
           codeBlockPlugin({ defaultCodeBlockLanguage: 'javaScript' }),

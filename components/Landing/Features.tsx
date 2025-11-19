@@ -40,19 +40,8 @@ const itemVariants = {
 export const Features = () => {
   return (
     // Added a subtle gradient background to enhance the glass effect on cards
-    <section id="features" className="py-24 bg-gradient-to-br from-white via-indigo-50/50 to-white">
-      <div className="container mx-auto px-4">
-
-        {/* Kicker Text */}
-        {/*<motion.p*/}
-        {/*  initial={{ opacity: 0, y: -20 }}*/}
-        {/*  whileInView={{ opacity: 1, y: 0 }}*/}
-        {/*  transition={{ duration: 0.5 }}*/}
-        {/*  viewport={{ once: true }}*/}
-        {/*  className="text-sm font-semibold text-center text-indigo-600 uppercase tracking-wider mb-2"*/}
-        {/*>*/}
-        {/*  The Future of Content*/}
-        {/*</motion.p>*/}
+    <section id="features" className="py-24 bg-black/5 backdrop-blur-md">
+      <div className="container bg-transparent mx-auto px-4">
 
         <motion.h2
           initial={{ opacity: 0, y: -50 }}

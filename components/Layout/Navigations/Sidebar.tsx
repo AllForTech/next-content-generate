@@ -10,6 +10,8 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react'; // Import useState for collapse state
 import { nanoid } from 'nanoid';
+import { UserAvatar } from '@/components/Layout/Navigations/UserAvatar';
+import { useAuth } from '@/context/AuthContext';
 
 // --- 1. Define Navigation Routes ---
 const navigation = [
@@ -86,6 +88,9 @@ const NavLink: React.FC<NavLinkProps> = ({ href, icon: Icon, label, pathname, is
 // --- 3. Main Sidebar Component ---
 export function Sidebar() {
   const pathname = usePathname();
+
+  const {user} = useAuth();
+
   // New state for toggling the collapsed status
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -166,9 +171,12 @@ export function Sidebar() {
 
         <Separator className="my-2" />
 
-        <div className={cn('w-full !h-[40px] bg-stone-300 rounded-md center')}>
+        <div className={cn('w-full !h-[50px] between p-2.5 space-y-1.5 flex-col bg-stone-300 rounded-md center')}>
           {/* Placeholder for user profile or status */}
-          {!isCollapsed && <span className='text-xs text-black/80'>User Status</span>}
+          <p className="text-sm font-medium leading-none">{user && user?.user_metadata?.full_name || user && user?.email?.split('@')[0] || 'User'}</p>
+          <p className="text-[10px] leading-none font-normal text-black/80">
+            {user && user?.email}
+          </p>
         </div>
       </div>
     </aside>

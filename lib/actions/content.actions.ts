@@ -14,27 +14,35 @@ export async function deleteContent(contentId: string) {
   }
 
   const { data: content, error: fetchError } = await supabase
-    .from('generated_content')
-    .select('user_id')
-    .eq('id', contentId)
+    .from('contents')
+    .select('*')
+    .eq('content_id', contentId)
     .single();
 
   if (fetchError || !content) {
     return { error: 'Content not found.' };
   }
 
-  // if (content.user_id !== user.id) {
-  //   return { error: 'You are not authorized to delete this content.' };
-  // }
-
   const { error } = await supabase
-    .from('generated_content')
+    .from('contents')
     .delete()
-    .eq('id', contentId);
+    .eq('content_id', contentId)
+    .eq('author_id', user.id);
 
   if (error) {
     console.error('Error deleting content:', error);
     return { error: 'Failed to delete content.' };
+  }
+
+  const { error: sessionsError } = await supabase
+    .from('user_contents')
+    .delete()
+    .eq('content_id', contentId)
+    .eq('author_id', user.id);
+
+  if (sessionsError) {
+    console.error('Error deleting content history:', error);
+    return { error: 'Failed to delete content history.' };
   }
 
   revalidatePath('/dashboard');
@@ -53,7 +61,7 @@ export async function updateContent(contentId: string, newContent: string) {
   }
 
   const { data: content, error: fetchError } = await supabase
-    .from('generated_content')
+    .from('contents')
     .select('user_id')
     .eq('id', contentId)
     .single();
@@ -76,7 +84,7 @@ export async function updateContent(contentId: string, newContent: string) {
     return { error: 'Failed to update content.' };
   }
 
-  revalidatePath(`/dashboard/content/${contentId}`);
+  revalidatePath(`/dashboard/generate/${contentId}`);
   revalidatePath('/dashboard');
 
   return { success: 'Content updated successfully.' };

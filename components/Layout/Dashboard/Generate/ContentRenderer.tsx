@@ -39,7 +39,7 @@ export const Content: React.FC<ContentRendererProps> = ({ isLoading }: { isLoadi
 
   return (
     <div className={cn('w-full h-full relative center !justify-start flex-col rounded-2xl bg-white')}>
-        <ScrollArea ref={scrollAreaRef} className={cn('container-full center flex-col !justify-start')}
+        <ScrollArea ref={scrollAreaRef} className={cn('container-full center px-1 md:px-3 flex-col !justify-start')}
                     id={'hide-scrollbar'}
         >
 

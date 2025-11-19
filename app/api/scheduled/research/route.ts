@@ -12,6 +12,8 @@ const CRON_AUTHOR_ID = process.env.CRON_AUTHOR_ID || '00000000-0000-0000-0000-00
 export async function GET(request: Request) {
   const authHeader = request.headers.get('Authorization');
 
+  const { user_id } = await request.json();
+
   // --- 1. Security Check ---
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response('Unauthorized: Invalid secret.', { status: 401 });

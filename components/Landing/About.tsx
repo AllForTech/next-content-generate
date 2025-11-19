@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export const About = () => {
   return (
-    <section id="about" className="py-24 bg-white relative overflow-hidden">
+    <section id="about" className="py-24 bg-black/5 backdrop-blur-md relative overflow-hidden">
       <div className="container mx-auto px-4 max-w-7xl">
         <motion.div
           initial={{ opacity: 0 }}
