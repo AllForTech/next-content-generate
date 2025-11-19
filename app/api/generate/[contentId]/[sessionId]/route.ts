@@ -178,8 +178,8 @@ export async function POST(req: Request, {params}: { params: { contentId: string
             fullContent += chunk;
         }
 
+      await saveNewContent(contentId, fullContent, prompt);
         await saveContent(fullContent, prompt, contentId, sessionId)
-        await saveNewContent(contentId, fullContent, prompt);
 
       return NextResponse.json({
         contentId: contentId,
