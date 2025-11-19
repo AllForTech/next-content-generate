@@ -59,13 +59,13 @@ export default function ContentCard({ id, createdAt, content, prompt }: ContentC
             backgroundSize: 'cover',
             backgroundPosition: 'center',
         }}
-          className={cn('container-full overflow-hidden rounded-md bg-white p-4 flex flex-col justify-between')}>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800"></h3>
-            <p className="text-sm text-gray-500 mt-1">{formatDatabaseDate(Number(createdAt))}</p>
+          className={cn('container-full overflow-hidden rounded-md bg-white flex flex-col justify-between')}>
+          <div className={cn('w-full between py-3 px-3 bg-white/5 rounded-md backdrop-blur-sm')}>
+            <h3 className="text-lg font-semibold text-black"></h3>
+            <p className="text-xs font-semibold text-neutral-950 mt-1">{formatDatabaseDate(createdAt)}</p>
           </div>
-          <div className="mt-4">
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+          <div className="mt-4 px-3 mb-3">
+            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700">
               {content && content?.slice(1, 20) || prompt && prompt?.slice(0, 20)}
             </span>
           </div>

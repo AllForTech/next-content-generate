@@ -98,10 +98,20 @@ export async function getAllContentHistory(id: string) {
 // --- 4. getContentHistoryById ---
 // Fetches a specific version of content by its session ID (and content ID for precision).
 export async function getContentHistoryById(contentId: string) {
+  const supabase = await createClient();
+
   try {
-    const data = await db.query.userContents.findFirst({
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      console.error('Error fetching content history: User not authenticated.');
+      return null;
+    }
+
+    const data = await db.query.userContents.findMany({
       where: and(
-         eq(userContents.contentId, contentId)
+         eq(userContents.contentId, contentId),
+        eq(userContents.authorId, user.id)
       ),
     });
     return data;
@@ -236,9 +246,9 @@ export async function getLatestContentHistory(historyArray: any[]) {
     return null;
   }
 
-  const sortedHistory = [...historyArray].sort((a, b) => {
-    const dateA = new Date(a.created_at).getTime();
-    const dateB = new Date(b.created_at).getTime();
+  const sortedHistory = historyArray.sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
     return dateB - dateA;
   });
 

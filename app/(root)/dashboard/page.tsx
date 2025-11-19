@@ -75,11 +75,11 @@ export default async function Dashboard({
               <div className="grid grid-cols-1 overflow-hidden md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {contents && contents.map((content: any) => (
                   <ContentCard
-                    key={content?.content_id}
+                    key={content?.contentId}
                     content={content?.content}
                     prompt={content?.prompt}
-                    id={content?.content_id}
-                    createdAt={content?.created_at}
+                    id={content?.contentId}
+                    createdAt={content?.createdAt}
                   />
                 ))}
               </div>

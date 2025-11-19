@@ -94,7 +94,7 @@ const History = () => {
 }
 
 export const Source = () => {
-  const { contentSources, scrapedData, unsplashImages } = useContent();
+  const { contentSources } = useContent();
 
 
   return (
@@ -103,13 +103,13 @@ export const Source = () => {
         Content Sources & Snippets
       </h3>
       {/* Refactored source snippet style for black/white theme */}
-      {contentSources && contentSources.map((source: any, index) => (
+      {contentSources && contentSources?.map((source: any, index) => (
         <div key={index} className={cn('w-full h-fit p-4 text-black text-xs gap-3 mb-2.5 overflow-hidden bg-white border border-black/20 rounded-md shadow-sm')}>
           <p className="font-semibold text-sm mb-1">{source?.source?.substring(0, 70)}...</p>
           {/*<p className="text-black/90 text-xs text-wrap font-medium italic">{source?.snippet}</p>*/}
         </div>
       ))}
-      {contentSources.length === 0 && (
+      {contentSources?.length === 0 && (
         <div className="text-center p-6 text-black/70">
           No sources found.
         </div>
