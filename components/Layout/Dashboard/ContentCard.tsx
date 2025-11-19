@@ -1,7 +1,7 @@
 
 'use client';
 
-import { cn, extractMarkdownImageUrls } from "@/lib/utils";
+import { cn, extractMarkdownImageUrls, formatDatabaseDate } from "@/lib/utils";
 import Link from "next/link";
 import {
   AlertDialog,
@@ -54,15 +54,19 @@ export default function ContentCard({ id, createdAt, content, prompt }: ContentC
     >
       <Link href={`/dashboard/generate/${id}`} className="block container-full center">
         <div
-          style={{ backgroundImage: `url(${extractedUrls && extractedUrls[0]})` }}
+          style={{
+            backgroundImage: `url(${extractedUrls && extractedUrls[0]})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+        }}
           className={cn('container-full overflow-hidden rounded-md bg-white p-4 flex flex-col justify-between')}>
           <div>
             <h3 className="text-lg font-semibold text-gray-800"></h3>
-            <p className="text-sm text-gray-500 mt-1">{new Date(createdAt).toLocaleDateString()}</p>
+            <p className="text-sm text-gray-500 mt-1">{formatDatabaseDate(Number(createdAt))}</p>
           </div>
           <div className="mt-4">
             <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
-              {content && content?.slice(0, 20) || prompt && prompt?.slice(0, 20)}
+              {content && content?.slice(1, 20) || prompt && prompt?.slice(0, 20)}
             </span>
           </div>
         </div>

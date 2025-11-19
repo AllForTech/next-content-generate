@@ -36,8 +36,6 @@ export async function getGeneratedContents(currentPage: number) {
     .from(contents)
     .where(eq(contents.authorId, user.id));
 
-  console.log("contents", countPromise);
-
   try {
     const [data, countResult] = await Promise.all([dataPromise, countPromise]);
     const count = countResult[0]?.count || 0;

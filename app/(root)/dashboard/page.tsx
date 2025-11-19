@@ -34,6 +34,7 @@ export default async function Dashboard({
 
   // MAINTAINED: Original async data fetching logic
   const { data: contents, count } = await getGeneratedContents(currentPage);
+  console.log(contents);
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
   const hasContent = contents && contents.length > 0;

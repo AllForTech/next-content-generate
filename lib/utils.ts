@@ -43,3 +43,18 @@ export function extractMarkdownImageUrls(markdownString: string) {
 
   return Array.from(urls);
 }
+
+
+export function formatDatabaseDate(timestamp: string): string {
+  if (!timestamp) return 'N/A';
+
+  // 1. Create a Date object from the string
+  const date = new Date(timestamp);
+
+  // 2. Use the built-in toLocaleDateString for safe, localized formatting
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
