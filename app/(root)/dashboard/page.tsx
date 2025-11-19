@@ -72,7 +72,7 @@ export default async function Dashboard({
             /* MAINTAINED: ScrollArea logic and ContentCard mapping */
             <ScrollArea className={cn('w-full h-[62dvh]')}>
               <div className="grid grid-cols-1 overflow-hidden md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {contents && contents.map((content) => (
+                {contents && contents.map((content: any) => (
                   <ContentCard
                     key={content?.content_id}
                     content={content?.content}

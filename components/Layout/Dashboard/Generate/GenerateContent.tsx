@@ -29,10 +29,10 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       id: hs.session_id || '',
       role: 'agent' as 'agent' | 'user',
       content: hs.content || '',
-      searchResults: hs.scrapedData || [],
-      scrapedData: hs.scrapedData || [],
+      searchResults: hs.scraped_data || [],
+      scrapedData: hs.scraped_data || [],
       images: hs.images || [],
-      attachedFile: hs.attachedFIle
+      attachedFile: hs.attached_fIle
     }))
     console.log(allHistory);
     setChatHistory(chatHistory);
@@ -47,8 +47,8 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
     console.log(history?.session_id);
     setGeneratedContent(history?.content);
     setUnsplashImages(history?.images);
-    setContentSources(history?.searchResults);
-    setScrapedData(history?.scrapedData);
+    setContentSources(history?.search_results);
+    setScrapedData(history?.scraped_data);
 
   }, [history, contentId]);
 

@@ -1,472 +1,239 @@
-// 'use server'
-// import { createClient } from "@/utils/supabase/server";
-// import { ContentGenerationResponse } from "@/lib/schema";
-// import { db } from "@/db/index"; // Drizzle client
-// import { contents, userContents } from "@/drizzle/schema"; // Drizzle schema tables
-// import { eq, desc, sql } from "drizzle-orm"; // Drizzle operators
-//
-// type ContentItem = typeof userContents.$inferSelect & {
-//   created_at: string;
-// };
-//
-// const ITEMS_PER_PAGE = 6;
-//
-// // --- 2. getGeneratedContents ---
-// export async function getGeneratedContents(currentPage: number) {
-//   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-//
-//   // 1. Drizzle SELECT query
-//   const dataPromise = db
-//     .select()
-//     .from(contents)
-//     .orderBy(desc(contents.createdAt))
-//     .limit(ITEMS_PER_PAGE)
-//     .offset(offset);
-//
-//   // 2. Drizzle COUNT query
-//   const countPromise = db
-//     .select({ count: sql<number>`count(*)` })
-//     .from(contents);
-//
-//   try {
-//     const [data, countResult] = await Promise.all([dataPromise, countPromise]);
-//     const count = countResult[0]?.count || 0;
-//
-//     return { data, count };
-//
-//   } catch (error) {
-//     console.error("Error fetching generated content:", error);
-//     throw error;
-//   }
-// }
-//
-// // --- 3. getAllContentHistory ---
-// export async function getAllContentHistory(id: string) {
-//
-//   const supabase = await createClient(); // Needed for Auth check
-//
-//   const { data: userData, error: userError } = await supabase.auth.getUser();
-//
-//   if ( !userData || !userData.user){
-//     console.log('Error fetching content history: User not authenticated.');
-//     console.error('Error: User not authenticated or user data retrieval failed.', userError);
-//     return null;
-//   }
-//
-//   const user = userData.user;
-//
-//   try {
-//     // Drizzle SELECT query with filtering
-//     const data = await db
-//       .select()
-//       .from(userContents)
-//       .where(eq(userContents.contentId, id))
-//       .where(eq(userContents.authorId, user.id));
-//
-//     return data;
-//   } catch (error) {
-//     console.error("Error fetching ALL content history:", error);
-//     return null;
-//   }
-// }
-//
-// // --- 4. getContentHistoryById ---
-// export async function getContentHistoryById(id: string) {
-//
-//   try {
-//     // Drizzle SELECT query
-//     const data = await db
-//       .select()
-//       .from(userContents)
-//       .where(eq(userContents.contentId, id));
-//
-//     return data;
-//   } catch (error) {
-//     console.error("Error fetching content:", error);
-//     return null;
-//   }
-// }
-//
-// // --- 5. saveContent ---
-// export async function saveContent(content: string, prompt: string, contentId: string, sessionId: string){
-//   const supabase = await createClient(); // Needed for Auth check
-//
-//   const { data: userData, error: userError } = await supabase.auth.getUser();
-//
-//   if ( !userData || !userData.user){
-//     console.log('Error saving content.');
-//     console.error('Error: User not authenticated or user data retrieval failed.', userError);
-//     return;
-//   }
-//
-//   const user = userData.user;
-//
-//   const saveData = {
-//     content: content,
-//     prompt: prompt,
-//     sessionId: sessionId,
-//     authorId: user.id,
-//     contentId: contentId,
-//   }
-//
-//   try {
-//     // Drizzle UPSERT (Insert/Update) operation
-//     await db.insert(userContents)
-//       .values(saveData)
-//       .onConflictDoUpdate({
-//         target: [userContents.sessionId, userContents.authorId, userContents.contentId],
-//         set: saveData
-//       });
-//
-//   } catch (error) {
-//     console.error(`Error saving content for ID ${contentId}:`, error);
-//   }
-// }
-//
-// // --- 6. saveNewContent ---
-// export async function saveNewContent(contentId: string){
-//   const supabase = await createClient(); // Needed for Auth check
-//
-//   const { data: userData, error: userError } = await supabase.auth.getUser();
-//
-//   if ( !userData || !userData.user){
-//     console.log('Error saving content.');
-//     console.error('Error: User not authenticated or user data retrieval failed.', userError);
-//     return;
-//   }
-//
-//   const user = userData.user;
-//
-//   const saveData = {
-//     contentId: contentId,
-//     authorId: user.id,
-//   }
-//
-//   try {
-//     // Drizzle UPSERT (Insert/Update) operation
-//     await db.insert(contents)
-//       .values(saveData)
-//       .onConflictDoUpdate({
-//         target: [contents.contentId, contents.authorId],
-//         set: saveData
-//       });
-//
-//   } catch (error) {
-//     console.error(`Error saving content for ID ${contentId}:`, error);
-//   }
-// }
-//
-// // --- 7. getLatestContentHistory (NO CHANGE) ---
-// export async function getLatestContentHistory(historyArray: ContentItem[] | null) {
-//
-//   if (!historyArray || historyArray.length === 0) {
-//     return null;
-//   }
-//
-//   const sortedHistory = [...historyArray].sort((a, b) => {
-//     const dateA = new Date(a.created_at).getTime();
-//     const dateB = new Date(b.created_at).getTime();
-//
-//     return dateB - dateA;
-//   });
-//
-//   return sortedHistory[0];
-// }
-
 'use server'
 import { createClient } from "@/utils/supabase/server";
-import { ContentGenerationResponse } from "@/lib/schema";
+import { db } from "@/db/index";
+import { contents, userContents } from "@/drizzle/schema";
+import { eq, desc, sql, and } from "drizzle-orm";
 import { revalidatePath } from 'next/cache';
 
-type ContentItem = {
-  id: number;
-  content_id: string;
-  author_id: string;
-  created_at: string; // Or Date object
-  // ... other content fields
+type ContentItem = typeof userContents.$inferSelect & {
+  created_at: string;
 };
-
-export async function saveGeneratedContent(content: ContentGenerationResponse) {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("generated_content")
-    .insert([
-      {
-        content_type: content.contentType,
-        content_keyword: content.contentKeyword,
-        tags: content.tags,
-        main_content: content.mainContent,
-      },
-    ]);
-
-  if (error) {
-    console.error("Error saving generated content:", error);
-    throw error;
-  }
-
-  return data;
-}
-
 
 const ITEMS_PER_PAGE = 6;
 
+// --- 1. getGeneratedContents ---
+// Fetches a paginated list of master content records for the current user.
 export async function getGeneratedContents(currentPage: number) {
   const supabase = await createClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // 2. Critical: Check for authentication BEFORE proceeding
-  if ( !userData || !userData.user){
-    console.log('Error saving content_google_searches');
-    console.error('Error: User not authenticated or user data retrieval failed.', userError);
-    // Exit the function gracefully
-    return;
+  if (!user) {
+    console.error('Error fetching content: User not authenticated.');
+    return { data: [], count: 0 };
   }
-
-  const user = userData.user;
 
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  const queryBuilder = supabase
-    .from("contents")
-    .select("*", { count: "exact" })
-    .eq('author_id', user.id);
+  const dataPromise = db.query.contents.findMany({
+    where: eq(contents.authorId, user.id),
+    orderBy: [desc(contents.createdAt)],
+    limit: ITEMS_PER_PAGE,
+    offset: offset,
+  });
 
-  // Apply pagination and ordering
-  const { data, error, count } = await queryBuilder
-    .order("created_at", { ascending: false })
-    .range(offset, offset + ITEMS_PER_PAGE - 1);
+  const countPromise = db
+    .select({ count: sql<number>`count(*)` })
+    .from(contents)
+    .where(eq(contents.authorId, user.id));
 
-  if (error) {
-    console.error("Error fetching generated content:", error);
+  console.log("contents", countPromise);
+
+  try {
+    const [data, countResult] = await Promise.all([dataPromise, countPromise]);
+    const count = countResult[0]?.count || 0;
+    return { data, count };
+  } catch (error) {
+    console.error("Error fetching generated content with Drizzle:", error);
     throw error;
   }
-
-  return { data, count };
 }
 
+// --- 2. getSingleContent ---
+// Fetches a single master content record by its ID.
+export async function getSingleContent(contentId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        console.error('Error fetching content: User not authenticated.');
+        return null;
+    }
+
+    try {
+        const data = await db.query.contents.findFirst({
+            where: and(eq(contents.contentId, contentId), eq(contents.authorId, user.id)),
+        });
+        return data ?? null;
+    } catch (error) {
+        console.error("Error fetching single content with Drizzle:", error);
+        return null;
+    }
+}
+
+
+// --- 3. getAllContentHistory ---
+// Fetches all historical versions of a specific content piece for the logged-in user.
 export async function getAllContentHistory(id: string) {
-
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-
-  // 2. Critical: Check for authentication BEFORE proceeding
-  if ( !userData || !userData.user){
-    console.log('Error fetching content history: User not authenticated.');
-    console.error('Error: User not authenticated or user data retrieval failed.', userError);
+  if (!user) {
+    console.error('Error fetching content history: User not authenticated.');
     return null;
   }
 
-  const user = userData.user;
-
-  const { data, error } = await supabase
-    .from("user_contents")
-    .select()
-    .eq('content_id', id)
-    .eq('author_id', user.id);
-
-  if (error) {
-    console.error("Error fetching ALL content history:", error);
+  try {
+    const data = await db.query.userContents.findMany({
+      where: and(
+        eq(userContents.contentId, id),
+        eq(userContents.authorId, user.id)
+      ),
+      orderBy: [desc(userContents.createdAt)],
+    });
+    return data;
+  } catch (error) {
+    console.error("Error fetching all content history with Drizzle:", error);
     return null;
   }
-
-  // Returns an array of all history items for that content ID
-  return data;
 }
 
-export async function getContentHistoryById(id: any){
-
-  const supabase = await createClient();
-  const { data, error } = await supabase.from("user_contents").select().eq('content_id', id);
-  if (error) {
-    console.log("Error fetching content:", error);
-  }
-  return data;
-}
-
-export async function saveContentImages(images: any[], content_id: string, session_id: string){
-  const supabase = await createClient();
-  // 1. Fetch user data safely
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-
-  // 2. Critical: Check for authentication and exit if not authenticated
-  if (userError || !userData?.user){
-    console.log('Error saving images');
-    console.error('Error: User not authenticated or data retrieval failed.', userError);
-    return;
-  }
-
-  const user = userData.user;
-
-  // 3. Define the data payload
-  const imageDataPayload = {
-    content_id: content_id,
-    // RECOMMENDATION: Use the User UUID for robust foreign key linking
-    author_id: user.id,
-
-    session_id: session_id,
-    // Save the entire array of image metadata as a JSONB object
-    images: images,
-  };
-
-  // 4. Use upsert with onConflict on content_id
-  // This assumes 'content_images' table has a unique/primary key on 'content_id'
-  const { error } = await supabase.from("user_contents")
-    .upsert(imageDataPayload, {
-      onConflict: 'content_id, author_id, session_id'
+// --- 4. getContentHistoryById ---
+// Fetches a specific version of content by its session ID (and content ID for precision).
+export async function getContentHistoryById(contentId: string) {
+  try {
+    const data = await db.query.userContents.findFirst({
+      where: and(
+         eq(userContents.contentId, contentId)
+      ),
     });
-
-  if (error) {
-    console.error(`Error saving content_images for ID ${content_id}:`, error);
+    return data;
+  } catch (error) {
+    console.error("Error fetching content history by ID with Drizzle:", error);
+    return null;
   }
 }
 
-export async function saveContentGoogleSearches(results: any[], content_id: string, session_id: string){
-  // 1. Ensure the client is created correctly
+// --- 5. saveContent (for historical versions) ---
+// Saves a specific version of generated content to the user_contents table.
+export async function saveContent(content: string, prompt: string, contentId: string, sessionId: string) {
   const supabase = await createClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // 2. Critical: Check for authentication BEFORE proceeding
-  if ( !userData || !userData.user){
-    console.log('Error saving content_google_searches');
-    console.error('Error: User not authenticated or user data retrieval failed.', userError);
-    // Exit the function gracefully
+  if (!user) {
+    console.error('Error saving content: User not authenticated.');
     return;
   }
-
-  const user = userData.user;
-
-  // 3. Define the data payload
-  const searchData = {
-    content_id: content_id,
-    // RECOMMENDATION: Use the user's UUID for linking
-    author_id: user.id,
-
-    session_id: session_id,
-    // Save the entire array of results as a JSONB object
-    searchResults: results,
-  };
-
-  // 4. Use upsert with onConflict for reliable insertion or update
-  const { error } = await supabase.from("user_contents")
-    .upsert(searchData, {
-      // If a record with this content_id already exists, update it.
-      onConflict: 'content_id, author_id, session_id'
-    });
-
-  if (error) {
-    console.error(`Error saving content_images for ID ${content_id}:`, error);
-  }
-}
-
-export async function saveContentScrapedData(results: any[], content_id: string, session_id){
-  // 1. Ensure the client is created correctly
-  const supabase = await createClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-
-  // 2. Critical: Check for authentication BEFORE proceeding
-  if ( !userData || !userData.user){
-    console.log('Error saving scraped data.');
-    console.error('Error: User not authenticated or user data retrieval failed.', userError);
-    // Exit the function gracefully
-    return;
-  }
-
-  const user = userData.user;
-
-  // 3. Define the data payload
-  const searchData = {
-    content_id: content_id,
-    // RECOMMENDATION: Use the user's UUID for linking
-    author_id: user.id,
-
-    session_id: session_id,
-    // Save the entire array of results as a JSONB object
-    scrapedData: results,
-  };
-
-  // 4. Use upsert with onConflict for reliable insertion or update
-  const { error } = await supabase.from("user_contents")
-    .upsert(searchData, {
-      // If a record with this content_id already exists, update it.
-      onConflict: 'content_id, author_id, session_id',
-    });
-
-  if (error) {
-    console.error(`Error saving scraped_data for ID ${content_id}:`, error);
-  }
-}
-
-export async function saveContent(content: string, prompt = '', contentId: string, sessionId: string){
-  const supabase = await createClient();
-
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-
-  // 2. Critical: Check for authentication BEFORE proceeding
-  if ( !userData || !userData.user){
-    console.log('Error saving content.');
-    console.error('Error: User not authenticated or user data retrieval failed.', userError);
-    // Exit the function gracefully
-    return;
-  }
-
-  const user = userData.user;
 
   const saveData = {
     content,
     prompt,
-    session_id: sessionId,
-    author_id: user.id,
-    content_id: contentId,
+    sessionId,
+    authorId: user.id,
+    contentId,
+  };
+
+  try {
+    await db.insert(userContents)
+      .values(saveData)
+      .onConflictDoUpdate({
+        target: [userContents.sessionId, userContents.contentId, userContents.authorId],
+        set: { content, prompt }
+      });
+  } catch (error) {
+    console.error(`Error saving content version for ID ${contentId} with Drizzle:`, error);
   }
-
-  const { error } = await supabase.from("user_contents").upsert(saveData, {
-    // If a record with this content_id already exists, update it.
-    onConflict: 'session_id, author_id, content_id'
-  });
-
-  if (error) {
-    console.error(`Error saving content for ID ${contentId}:`, error);
-  }
-
-  revalidatePath(`/dashboard/generate/${contentId}`);
-  revalidatePath('/dashboard');
 }
 
-
-export async function saveNewContent(contentId: string, content: string, prompt: string){
+// --- 6. saveNewContent (for master record) ---
+// Creates or updates the master content record in the 'contents' table.
+export async function saveNewContent(contentId: string, content: string, prompt: string) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-
-  // 2. Critical: Check for authentication BEFORE proceeding
-  if ( !userData || !userData.user){
-    console.log('Error saving content.');
-    console.error('Error: User not authenticated or user data retrieval failed.', userError);
-    // Exit the function gracefully
+  if (!user) {
+    console.error('Error saving new content: User not authenticated.');
     return;
   }
 
-  const user = userData.user;
-
   const saveData = {
-    content_id: contentId,
-    author_id: user.id,
+    contentId,
+    authorId: user.id,
     content,
-    prompt
-  }
+    prompt,
+  };
 
-  const { error } = await supabase.from("contents").upsert(saveData, {
-    onConflict: 'content_id, author_id'
-  })
-
-  if (error) {
-    console.error(`Error saving content for ID ${contentId}:`, error);
+  try {
+    await db.insert(contents)
+      .values(saveData)
+      .onConflictDoUpdate({
+        target: contents.contentId,
+        set: {
+          content: saveData.content,
+          prompt: saveData.prompt,
+        }
+      });
+    revalidatePath('/dashboard');
+    revalidatePath(`/dashboard/content/${contentId}`);
+  } catch (error) {
+    console.error(`Error saving new master content for ID ${contentId} with Drizzle:`, error);
   }
 }
 
-export async function getLatestContentHistory(historyArray: ContentItem[] | null) {
+// --- Helper functions to save metadata to a content version ---
 
+export async function saveContentImages(images: any[], content_id: string, session_id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  try {
+    await db.insert(userContents)
+      .values({ contentId: content_id, sessionId: session_id, authorId: user.id, images })
+      .onConflictDoUpdate({
+        target: [userContents.sessionId, userContents.contentId, userContents.authorId],
+        set: { images }
+      });
+  } catch (error) {
+    console.error(`Error saving images for session ${session_id}:`, error);
+  }
+}
+
+export async function saveContentGoogleSearches(results: any[], content_id: string, session_id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  try {
+    await db.insert(userContents)
+      .values({ contentId: content_id, sessionId: session_id, authorId: user.id, searchResults: results })
+      .onConflictDoUpdate({
+        target: [userContents.sessionId, userContents.contentId, userContents.authorId],
+        set: { searchResults: results }
+      });
+  } catch (error) {
+    console.error(`Error saving search results for session ${session_id}:`, error);
+  }
+}
+
+export async function saveContentScrapedData(results: any[], content_id: string, session_id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  try {
+    await db.insert(userContents)
+      .values({ contentId: content_id, sessionId: session_id, authorId: user.id, scrapedData: results })
+      .onConflictDoUpdate({
+        target: [userContents.sessionId, userContents.contentId, userContents.authorId],
+        set: { scrapedData: results }
+      });
+  } catch (error) {
+    console.error(`Error saving scraped data for session ${session_id}:`, error);
+  }
+}
+
+// --- 7. getLatestContentHistory (NO CHANGE) ---
+export async function getLatestContentHistory(historyArray: any[]) {
   if (!historyArray || historyArray.length === 0) {
     return null;
   }
@@ -474,7 +241,6 @@ export async function getLatestContentHistory(historyArray: ContentItem[] | null
   const sortedHistory = [...historyArray].sort((a, b) => {
     const dateA = new Date(a.created_at).getTime();
     const dateB = new Date(b.created_at).getTime();
-
     return dateB - dateA;
   });
 

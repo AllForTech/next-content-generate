@@ -2,90 +2,71 @@
 
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { db } from '@/db';
+import { contents } from '@/drizzle/schema';
+import { and, eq } from 'drizzle-orm';
 
 export async function deleteContent(contentId: string) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return { error: 'User not authenticated' };
   }
 
-  const { data: content, error: fetchError } = await supabase
-    .from('contents')
-    .select('*')
-    .eq('content_id', contentId)
-    .single();
+  try {
+    // With 'onDelete: cascade' in the schema, Drizzle will handle deleting related 'user_contents'.
+    // We only need to delete the master record from the 'contents' table.
+    const result = await db.delete(contents).where(
+      and(
+        eq(contents.contentId, contentId),
+        eq(contents.authorId, user.id)
+      )
+    ).returning();
 
-  if (fetchError || !content) {
-    return { error: 'Content not found.' };
-  }
+    if (result.length === 0) {
+      return { error: 'Content not found or you do not have permission to delete it.' };
+    }
 
-  const { error } = await supabase
-    .from('contents')
-    .delete()
-    .eq('content_id', contentId)
-    .eq('author_id', user.id);
+    revalidatePath('/dashboard');
+    return { success: 'Content deleted successfully.' };
 
-  if (error) {
-    console.error('Error deleting content:', error);
+  } catch (error) {
+    console.error('Error deleting content with Drizzle:', error);
     return { error: 'Failed to delete content.' };
   }
-
-  const { error: sessionsError } = await supabase
-    .from('user_contents')
-    .delete()
-    .eq('content_id', contentId)
-    .eq('author_id', user.id);
-
-  if (sessionsError) {
-    console.error('Error deleting content history:', error);
-    return { error: 'Failed to delete content history.' };
-  }
-
-  revalidatePath('/dashboard');
-
-  return { success: 'Content deleted successfully.' };
 }
 
 export async function updateContent(contentId: string, newContent: string) {
-  const supabase =  await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return { error: 'User not authenticated' };
   }
 
-  const { data: content, error: fetchError } = await supabase
-    .from('contents')
-    .select('user_id')
-    .eq('id', contentId)
-    .single();
+  try {
+    // Update the 'content' field in the 'contents' table where the ID and author match.
+    const result = await db.update(contents).set({
+      content: newContent
+    }).where(
+      and(
+        eq(contents.contentId, contentId),
+        eq(contents.authorId, user.id)
+      )
+    ).returning();
 
-  if (fetchError || !content) {
-    return { error: 'Content not found.' };
-  }
+    if (result.length === 0) {
+      return { error: 'Content not found or you are not authorized to update it.' };
+    }
 
-  if (content.user_id !== user.id) {
-    return { error: 'You are not authorized to update this content.' };
-  }
+    revalidatePath(`/dashboard/content/${contentId}`);
+    revalidatePath('/dashboard');
 
-  const { error } = await supabase
-    .from('generated_content')
-    .update({ main_content: newContent })
-    .eq('id', contentId);
+    return { success: 'Content updated successfully.' };
 
-  if (error) {
-    console.error('Error updating content:', error);
+  } catch (error) {
+    console.error('Error updating content with Drizzle:', error);
     return { error: 'Failed to update content.' };
   }
-
-  revalidatePath(`/dashboard/generate/${contentId}`);
-  revalidatePath('/dashboard');
-
-  return { success: 'Content updated successfully.' };
 }
