@@ -25,20 +25,18 @@ export const contents = pgTable('contents', {
   prompt: text('prompt'),
 });
 
-// export const userSchedules = pgTable('user_schedules', {
-//
-//   userId: uuid('user_id')
-//     .notNull()
-//     // ✅ The foreign key reference now points to the users table in the auth schema
-//     .references(() => users.id, { onDelete: 'cascade' }),
-//
-//   cronSchedule: text('cron_schedule').notNull(),
-//   jobType: text('job_type').default('content_generation').notNull(),
-//   isActive: boolean('is_active').default(true),
-//   lastRunAt: timestamp('last_run_at', { withTimezone: true }),
-// }, (t) => ({
-//   pk: primaryKey({ columns: [t.userId, t.jobType] }),
-// }));
+export const userSchedules = pgTable('user_schedules', {
+  jobId: text('job_id').notNull(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  cronSchedule: text('cron_schedule').notNull(),
+  jobType: text('job_type').default('content_generation').notNull(),
+  isActive: boolean('is_active').default(true),
+  lastRunAt: timestamp('last_run_at', { withTimezone: true }),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.userId, t.jobType, t.jobId] }),
+}));
 
 // Relations for 'contents'
 // Establishes a one-to-many relationship: one master 'contents' record can have many 'userContents' versions.
