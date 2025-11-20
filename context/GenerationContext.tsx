@@ -1,11 +1,12 @@
 'use client';
 
-import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
-import { useParams, useRouter } from 'next/navigation';
+import { ReadonlyURLSearchParams, useParams, useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { useAuth } from '@/context/AuthContext';
+import { getGeneratedContents, getScheduledJobs } from '@/lib/db/content';
 
 export type ChatHistoryType = {
   id: string;
@@ -87,12 +88,18 @@ interface GenerationContextType {
 
   allContents: any[],
   setAllContents: (contents: any[]) => void,
+
+  scheduledJobs: any[],
+  setScheduledJobs: any,
+
 }
 
 // --- 2. Create the Context with Default Values ---
 const GenerationContext = createContext<GenerationContextType | undefined>(
     undefined
 );
+
+const ITEMS_PER_PAGE = 6;
 
 // --- 3. Create the Provider Component ---
 export function ContextProvider({ children }: { children: ReactNode }) {
@@ -102,6 +109,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const { user } = useAuth();
 
     const [allContents, setAllContents] = useState([]);
+    const [scheduledJobs, setScheduledJobs] = useState([]);
     const [generatedContent, setGeneratedContent] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [chatHistory, setChatHistory] = useState<ChatHistoryType[]>([]);
@@ -114,6 +122,41 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const [currentSessionId, setCurrentSessionId] = useState('');
     const [isUpdating, setIsUpdating] = useState(false);
 
+
+  useEffect(() => {
+    fetchContents()
+    fetchScheduledJobs()
+  }, []);
+
+
+  const fetchContents = useCallback(async () => {
+    try {
+      const contents = await getGeneratedContents();
+      console.log("contents", contents);
+      if (contents){
+        setAllContents(contents);
+      }else {
+        setAllContents([]);
+      }
+    }catch (e) {
+      console.log(e);
+    }
+  }, [setAllContents])
+
+  const fetchScheduledJobs = useCallback(async () => {
+    try {
+      const schedules = await getScheduledJobs();
+      console.log('scheduledJobs', schedules);
+      if (schedules){
+        setScheduledJobs(schedules);
+      }else {
+        setScheduledJobs([]);
+      }
+    }catch (e) {
+      console.log(e);
+      toast.error(e.message || 'Error fetching scheduled jobs');
+    }
+  }, [setScheduledJobs])
 
     // The function to call the Next.js API Route
   const generateContent = async (prompt: string, tags: string[], tone: string, url: string[], attachedFile: any) => {
@@ -181,6 +224,12 @@ export function ContextProvider({ children }: { children: ReactNode }) {
           attachedFile: null
         }]))
         setCurrentSessionId(sessionId);
+        setAllContents(prev => [{
+          contentId: content_id,
+          content: generatedContent,
+          prompt,
+          createdAt: new Date().toISOString(),
+        },...prev])
 
       } catch (error) {
         console.error(error);
@@ -329,7 +378,9 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       currentSessionId,
       setCurrentSessionId,
       allContents,
-      setAllContents
+      setAllContents,
+      scheduledJobs,
+      setScheduledJobs,
     };
 
     return (

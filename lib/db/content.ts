@@ -1,15 +1,16 @@
 'use server'
-import { createClient } from "@/utils/supabase/server";
-import { db } from "@/db/index";
-import { contents, userContents, userSchedules } from '@/drizzle/schema';
-import { eq, desc, sql, and } from "drizzle-orm";
+import { createClient } from '@/utils/supabase/server';
+import { db } from '@/db/index';
+import { contents, userContents } from '@/drizzle/schema';
+import { and, desc, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { generateCronString } from '@/lib/utils';
-import { auth } from 'google-auth-library';
 
 interface ScheduledJob {
   jobType: string;
   prompt: string;
+  job_id: string;
+  cronSchedule: string;
   frequency: 'daily' | 'weekly' | 'monthly';
   time: string; // e.g., '09:30'
   isActive: boolean;
@@ -19,37 +20,28 @@ type ContentItem = typeof userContents.$inferSelect & {
   created_at: string;
 };
 
-const ITEMS_PER_PAGE = 6;
 
 // --- 1. getGeneratedContents ---
-// Fetches a paginated list of master content records for the current user.
-export async function getGeneratedContents(currentPage: number) {
+export async function getGeneratedContents() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     console.error('Error fetching content: User not authenticated.');
-    return { data: [], count: 0 };
+    // Return an empty array if there is no user
+    return [];
   }
 
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
-  const dataPromise = db.query.contents.findMany({
-    where: eq(contents.authorId, user.id),
-    orderBy: [desc(contents.createdAt)],
-    limit: ITEMS_PER_PAGE,
-    offset: offset,
-  });
-
-  const countPromise = db
-    .select({ count: sql<number>`count(*)` })
-    .from(contents)
-    .where(eq(contents.authorId, user.id));
-
   try {
-    const [data, countResult] = await Promise.all([dataPromise, countPromise]);
-    const count = countResult[0]?.count || 0;
-    return { data, count };
+    // 2. Query Drizzle to fetch the user's content
+
+
+    // 3. Return the data array
+    return await db.query.contents.findMany({
+      where: eq(contents.authorId, user.id),
+      orderBy: [desc(contents.createdAt)],
+    });
+
   } catch (error) {
     console.error("Error fetching generated content with Drizzle:", error);
     throw error;
@@ -275,26 +267,22 @@ export async function saveNewSchedule(input: ScheduledJob) {
   }
 
   try {
-    // 3. Generate Cron Schedule and Prepare Data
-    const cronSchedule = generateCronString(input.frequency, input.time);
 
     const newJobData = {
       user_id: user.id, // Supabase usually prefers snake_case for column names
-      cron_schedule: cronSchedule,
+      cron_schedule: input.cronSchedule,
       job_type: input.jobType,
       is_active: input.isActive,
       prompt: input.prompt,
+      job_id: input.job_id
     };
 
     // 4. Insert or Update the schedule using Supabase Client
     const { data: result, error } = await supabase
       .from('user_schedules')
-      .upsert(newJobData, {
-        // Define the columns that uniquely identify a record (the composite key)
-        onConflict: 'user_id, job_type'
-      })
-      .select() // Select the inserted/updated row
-      .single(); // Expect only one row
+      .insert(newJobData)
+      .select()
+      .single();
 
     if (error) {
       console.error('Supabase Error Saving Schedule:', error);
@@ -349,7 +337,7 @@ export async function getScheduledJobs(): Promise<ScheduledJob[]> {
 }
 
 
-export async function deleteScheduledJobAction(userId: string, jobType: string) {
+export async function deleteScheduledJobAction(job_id: string, jobType: string) {
   const supabase = await createClient();
 
   // 1. Double-Check Authentication (Safety Measure)
@@ -357,7 +345,7 @@ export async function deleteScheduledJobAction(userId: string, jobType: string) 
 
   // Ensure the request is coming from an authenticated user AND that the user ID in the request
   // matches the ID of the job's owner.
-  if (!user || user.id !== userId) {
+  if (!user) {
     return { error: 'Authorization error: Cannot delete job.' };
   }
 
@@ -367,7 +355,8 @@ export async function deleteScheduledJobAction(userId: string, jobType: string) 
     const { error } = await supabase
       .from('user_schedules')
       .delete()
-      .eq('user_id', userId)
+      .eq('job_id', job_id)
+      .eq('user_id', user.id)
       .eq('job_type', jobType); // Ensure this matches the column name in your database
 
     if (error) {

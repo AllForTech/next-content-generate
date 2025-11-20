@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import { cn } from "@/lib/utils";
+import { cn, generateCronString } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -27,9 +27,15 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Clock, Plus, Repeat, Settings } from 'lucide-react';
 import { saveNewSchedule } from '@/lib/db/content';
+import { useContent } from '@/context/GenerationContext';
+import { useAuth } from '@/context/AuthContext';
+import { nanoid } from 'nanoid';
 
 
 export function ScheduleNewJobDialog() {
+  const { setScheduledJobs } = useContent();
+  const { user } = useAuth();
+
   // State for all form fields
   const [jobType, setJobType] = useState('content_generation');
   const [prompt, setPrompt] = useState('');
@@ -40,49 +46,38 @@ export function ScheduleNewJobDialog() {
   const [isSaving, setIsSaving] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-
-  const saveNewJobToDatabase = async (jobData: any) => {
-    console.log("Saving new job to database:", jobData);
-    // Simulating an API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    // In a real app, you would call:
-    // const result = await saveNewScheduleAction(jobData);
-    // if (result.error) { throw new Error(result.error); }
-    return { success: true, id: Math.random().toString(36).substring(2, 9) };
-  };
-
-  /**
-   * Converts user-friendly inputs into a standard cron string.
-   */
-  const generateCronString = (freq: string, timeStr: string): string => {
-    const [hour, minute] = timeStr.split(':');
-
-    switch (freq) {
-      case 'daily':
-        // Runs every day at the specified time (e.g., '30 09 * * *')
-        return `${minute} ${hour} * * *`;
-      case 'weekly':
-        // Runs every Sunday at the specified time (e.g., '30 09 * * 0')
-        return `${minute} ${hour} * * 0`;
-      case 'monthly':
-        // Runs on the 1st of every month at the specified time (e.g., '30 09 1 * *')
-        return `${minute} ${hour} 1 * *`;
-      default:
-        return `${minute} ${hour} * * *`;
-    }
-  };
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (!user) return;
+
     setIsSaving(true);
 
+    const cronSchedule = generateCronString(frequency, time);
+    const job_id = nanoid();
+
     const jobData = {
-      jobType, prompt, frequency, time, isActive
+      jobType, prompt, frequency, time, isActive, cronSchedule, job_id
     };
+
     const toastId = toast.loading("Saving new schedule...");
 
     try {
-      await saveNewSchedule(jobData);
+      const newJob = await saveNewSchedule(jobData);
+
+      if (newJob?.error){
+        console.log(newJob?.error);
+      }
+
+     setScheduledJobs(prev => ([{
+       job_type: jobType,
+       user_id: user.id,
+       prompt,
+       job_id,
+       frequency,
+       time,
+       cron_schedule: cronSchedule,
+       is_active: isActive
+     },...prev]))
 
       toast.success("New schedule created!", {
         id: toastId,

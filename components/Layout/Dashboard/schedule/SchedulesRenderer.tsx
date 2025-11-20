@@ -19,6 +19,7 @@ import { ScheduleNewJobDialog } from '@/components/Layout/Dashboard/schedule/Sch
 import { Button } from '@mdxeditor/editor';
 import { toast } from 'sonner';
 import { deleteScheduledJobAction } from '@/lib/db/content';
+import { useContent } from '@/context/GenerationContext';
 
 // Define the expected shape of a schedule item
 interface ScheduleItem {
@@ -29,30 +30,6 @@ interface ScheduleItem {
   lastRunAt: string | null;
 }
 
-// --- Placeholder Data for Demonstration ---
-const MOCK_SCHEDULES: ScheduleItem[] = [
-  {
-    userId: 'user-1',
-    cronSchedule: '0 8 * * *', // Every day at 8:00 AM
-    jobType: 'content_generation',
-    isActive: true,
-    lastRunAt: '2025-11-19 08:00:00+00',
-  },
-  {
-    userId: 'user-2',
-    cronSchedule: '0 15 * * 5', // Every Friday at 3:00 PM
-    jobType: 'image_generation',
-    isActive: true,
-    lastRunAt: '2025-11-15 15:00:00+00',
-  },
-  {
-    userId: 'user-3',
-    cronSchedule: '0 12 1 * *', // First day of the month at 12:00 PM
-    jobType: 'content_generation',
-    isActive: false, // Disabled job
-    lastRunAt: null,
-  },
-];
 // ------------------------------------------
 
 interface ScheduledJobsDashboardProps {
@@ -68,7 +45,8 @@ const formatRelativeTime = (timestamp: string | null): string => {
   return diff > 24 ? `${new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : `${diff} hours ago`;
 };
 
-const ScheduledJobsDashboard = ({ schedules }: { schedules: any[]}) => {
+const ScheduledJobsDashboard = () => {
+  const { scheduledJobs: schedules } = useContent();
 
   return (
     <div className={cn('w-full flex flex-col p-6 bg-white text-black')}>
@@ -92,7 +70,7 @@ const ScheduledJobsDashboard = ({ schedules }: { schedules: any[]}) => {
             </div>
           ) : (
             schedules.map((job) => (
-              <JobCard key={job?.user_id + job?.job_type} job={job} />
+              <JobCard key={job?.job_id} job={job} />
             ))
           )}
         </ScrollArea>
@@ -106,6 +84,8 @@ const ScheduledJobsDashboard = ({ schedules }: { schedules: any[]}) => {
 const JobCard = ({ job }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const { setScheduledJobs, scheduledJobs } = useContent();
+
   // Determine the status text and icon color
   const statusText = job?.is_active ? 'Active' : 'Disabled';
   const statusColor = job?.is_active ? 'text-black' : 'text-black/50';
@@ -113,17 +93,21 @@ const JobCard = ({ job }) => {
   // const statusIcon = job?.is_active ? CalendarCheck : CalendarX;
 
   const handleDelete = async () => {
-    if (!job?.user_id || !job?.job_type) return;
+    if (!job?.user_id || !job?.job_id) return;
 
     setIsDeleting(true);
     const toastId = toast.loading("Deleting schedule...");
 
     try {
-      const result = await deleteScheduledJobAction(job.user_id, job.job_type);
+      const result = await deleteScheduledJobAction(job.job_id, job.job_type);
 
       if (result.error) {
         throw new Error(result.error);
       }
+
+      setScheduledJobs(
+        scheduledJobs.filter(scheduledJob => scheduledJob.job_id !== job?.job_id)
+      )
 
       toast.success("Schedule Deleted", {
         id: toastId,
@@ -131,6 +115,7 @@ const JobCard = ({ job }) => {
       });
 
     } catch (error) {
+      console.log(error);
       toast.error("Deletion Failed", {
         id: toastId,
         description: error.message || "Could not delete the job from the database.",
@@ -166,12 +151,12 @@ const JobCard = ({ job }) => {
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                className="hover:bg-neutral-300 text-sm bg-transparent h-8 w-8 p-0 text-black/70 hover:text-black transition-colors"
+              <div
+                className="hover:bg-neutral-300 center rounded-md text-sm bg-transparent h-8 w-8 p-0 text-black/70 hover:text-black transition-colors"
                 title="Delete Schedule"
               >
-                <Trash className="h-4 w-4" />
-              </Button>
+                <Trash className="h-4 text-md font-semibold w-4" />
+              </div>
             </AlertDialogTrigger>
             <AlertDialogContent className="bg-white border-black">
               <AlertDialogHeader>
