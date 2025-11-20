@@ -1,15 +1,8 @@
-import {
-  pgTable,
-  text,
-  timestamp,
-  jsonb,
-  primaryKey,
-} from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, jsonb, primaryKey, uuid } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { users } from 'unsplash-js/src/internals';
+import { boolean } from 'zod';
 
-// --- 1. Contents Table (Master Content Records) ---
-// This table acts as a master list for generated content, holding the *latest* version
-// for quick access and display on the dashboard.
 export const contents = pgTable('contents', {
   // contentId: Primary key, UUID generated client-side
   contentId: text('content_id').notNull().primaryKey(),
@@ -25,6 +18,27 @@ export const contents = pgTable('contents', {
   content: text('content'),
   prompt: text('prompt'),
 });
+
+// export const userSchedules = pgTable('user_schedules', {
+//   // Foreign Key to the Supabase Auth User ID
+//   userId: text('user_id')
+//     .notNull(),
+//
+//   // The cron expression (e.g., '30 9 * * *' for 9:30 AM daily)
+//   cronSchedule: text('cron_schedule').notNull(),
+//
+//   // An optional field to indicate what kind of job this is (e.g., 'content_generation')
+//   jobType: text('job_type').default('content_generation').notNull(),
+//
+//   // Status flag to enable/disable the job without deleting the settings
+//   isActive: boolean('is_active').default(true),
+//
+//   // Timestamp for when the job was last successfully processed
+//   lastRunAt: timestamp('last_run_at', { withTimezone: true }),
+// }, (t) => ({
+//   // Use a composite primary key to enforce only one schedule per user/job type (optional)
+//   pk: primaryKey({ columns: [t.userId, t.jobType] }),
+// }));
 
 // Relations for 'contents'
 // Establishes a one-to-many relationship: one master 'contents' record can have many 'userContents' versions.

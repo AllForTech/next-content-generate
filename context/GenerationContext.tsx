@@ -84,6 +84,9 @@ interface GenerationContextType {
 
   currentSessionId: string,
   setCurrentSessionId: (id: string) => void;
+
+  allContents: any[],
+  setAllContents: (contents: any[]) => void,
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -98,6 +101,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
     const { user } = useAuth();
 
+    const [allContents, setAllContents] = useState([]);
     const [generatedContent, setGeneratedContent] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [chatHistory, setChatHistory] = useState<ChatHistoryType[]>([]);
@@ -286,7 +290,10 @@ export function ContextProvider({ children }: { children: ReactNode }) {
           .eq('author_id', user.id)
           .eq('content_id', content_id)
 
-        if (error) console.log(error);
+        if (error) {
+          console.log(error);
+          toast.error(error?.message ?? 'Error updating session');
+        }
       }catch (e) {
         console.error(e);
       }finally {
@@ -320,7 +327,9 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       isUpdating,
       setIsUpdating,
       currentSessionId,
-      setCurrentSessionId
+      setCurrentSessionId,
+      allContents,
+      setAllContents
     };
 
     return (

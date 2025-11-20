@@ -22,7 +22,9 @@ import {
   tablePlugin,
   InsertTable,
   InsertSandpack,
-  linkDialogPlugin, imageDialogState$,
+  linkDialogPlugin,
+  imageDialogState$,
+  jsxPlugin,
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
 import { cn } from '@/lib/utils';
@@ -68,9 +70,11 @@ export default function Editor() {
             toolbarClassName: 'toolbar-className',
           }),
           imagePlugin({
-
+            allowSetImageDimensions: true,
+            disableImageResize: false
           }),
           headingsPlugin(),
+          jsxPlugin(),
           linkDialogPlugin({
 
           }),

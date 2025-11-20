@@ -26,13 +26,13 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
     if (!contentId || !allHistory)return;
 
     const chatHistory = allHistory?.map((hs: any) => ({
-      id: hs.session_id || '',
+      id: hs.sessionId || '',
       role: 'agent' as 'agent' | 'user',
       content: hs.content || '',
-      searchResults: hs.scraped_data || [],
-      scrapedData: hs.scraped_data || [],
+      searchResults: hs.scrapedData || [],
+      scrapedData: hs.scrapedData || [],
       images: hs.images || [],
-      attachedFile: hs.attached_fIle
+      attachedFile: hs.attachedFIle
     }))
     console.log(allHistory);
     setChatHistory(chatHistory);
@@ -43,12 +43,12 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       setGeneratedContent('# No content found.');
     }
 
-    setCurrentSessionId(history?.session_id);
-    console.log(history?.session_id);
+    setCurrentSessionId(history?.sessionId);
+    console.log(history?.sessionId);
     setGeneratedContent(history?.content);
     setUnsplashImages(history?.images);
-    setContentSources(history?.search_results);
-    setScrapedData(history?.scraped_data);
+    setContentSources(history?.searchResults);
+    setScrapedData(history?.scrapedData);
 
   }, [history, contentId]);
 

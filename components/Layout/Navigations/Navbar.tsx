@@ -34,34 +34,6 @@ export const Navbar = () => {
 
           {/* Right: Actions and Avatar */}
           <div className={'center gap-5'}>
-            {/* Placeholder for Search or other actions */}
-            {generatedContent && (
-              <Button
-                onClick={() => setIsEditingRaw(prev => !prev)}
-                className={cn(
-                  "text-xs px-3 py-3 h-auto rounded-full transition-colors",
-                  isEditingRaw
-                    ? "bg-black hover:bg-stone-700 text-white shadow-lg shadow-indigo-500/30"
-                    : "bg-white text-black hover:bg-white/80"
-                )}
-              >
-                {isEditingRaw ? <Code className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
-                {isEditingRaw ? 'Editing' : 'View Mode'}
-              </Button>
-            )}
-
-            {/* DocX Export*/}
-            {generatedContent && (
-              <Button
-                onClick={() => handleDocxExport(generatedContent)}
-                className={cn(
-                  "text-xs px-3 py-3 h-auto rounded-full transition-colors",
-                  "bg-white text-black hover:bg-white/80"
-                )}
-              >
-                Export
-              </Button>
-            )}
 
             {/* Desktop Avatar */}
             <div className="hidden md:flex items-center space-x-4">

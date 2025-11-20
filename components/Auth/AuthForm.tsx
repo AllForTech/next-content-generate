@@ -24,7 +24,7 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto">
+    <div className="w-full max-w-sm py-4 p-3 rounded-md shadow-lg shadow-neutral-400 mx-auto">
       <div className="text-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"

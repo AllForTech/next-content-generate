@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (user) {
-    if (pathname === "/sign-in" || pathname === "/sign-up") {
+    if (pathname === "/sign-in" || pathname === "/sign-up" || pathname === "/") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   } else {
