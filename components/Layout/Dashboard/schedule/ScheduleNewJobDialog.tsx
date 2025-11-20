@@ -26,13 +26,14 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Clock, Plus, Repeat, Settings } from 'lucide-react';
+import { saveNewSchedule } from '@/lib/db/content';
 
 
 export function ScheduleNewJobDialog() {
   // State for all form fields
   const [jobType, setJobType] = useState('content_generation');
   const [prompt, setPrompt] = useState('');
-  const [frequency, setFrequency] = useState('daily');
+  const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [time, setTime] = useState('09:00'); // Default to 9:00 AM
   const [isActive, setIsActive] = useState(true);
 
@@ -75,20 +76,13 @@ export function ScheduleNewJobDialog() {
     event.preventDefault();
     setIsSaving(true);
 
-    const cronSchedule = generateCronString(frequency, time);
-
     const jobData = {
-      jobType,
-      prompt, // You'll need a column for this in your `user_schedules` table
-      cronSchedule,
-      isActive,
-      // userId will be handled by the server action from auth()
+      jobType, prompt, frequency, time, isActive
     };
-
     const toastId = toast.loading("Saving new schedule...");
 
     try {
-      await saveNewJobToDatabase(jobData);
+      await saveNewSchedule(jobData);
 
       toast.success("New schedule created!", {
         id: toastId,

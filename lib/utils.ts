@@ -58,3 +58,22 @@ export function formatDatabaseDate(timestamp: string): string {
     day: 'numeric',
   });
 }
+
+export const generateCronString = (frequency: string, timeStr: string): string => {
+  // Note: Assuming input timeStr is in 'HH:MM' format (e.g., '09:30')
+  const [hour, minute] = timeStr.split(':');
+
+  // Cron format: Minute(0-59) Hour(0-23) DayOfMonth(1-31) Month(1-12) DayOfWeek(0-7)
+  switch (frequency) {
+    case 'daily':
+      return `${minute} ${hour} * * *`;
+    case 'weekly':
+      // Runs every Sunday (DayOfWeek 0 or 7)
+      return `${minute} ${hour} * * 0`;
+    case 'monthly':
+      // Runs on the 1st day of the month
+      return `${minute} ${hour} 1 * *`;
+    default:
+      return `${minute} ${hour} * * *`;
+  }
+};

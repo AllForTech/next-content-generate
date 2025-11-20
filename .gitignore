@@ -56,3 +56,5 @@ next-env.d.ts
 
 # idea
 .idea
+node_modules/
+package-lock.json

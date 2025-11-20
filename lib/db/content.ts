@@ -1,9 +1,19 @@
 'use server'
 import { createClient } from "@/utils/supabase/server";
 import { db } from "@/db/index";
-import { contents, userContents } from "@/drizzle/schema";
+import { contents, userContents, userSchedules } from '@/drizzle/schema';
 import { eq, desc, sql, and } from "drizzle-orm";
 import { revalidatePath } from 'next/cache';
+import { generateCronString } from '@/lib/utils';
+import { auth } from 'google-auth-library';
+
+interface ScheduledJob {
+  jobType: string;
+  prompt: string;
+  frequency: 'daily' | 'weekly' | 'monthly';
+  time: string; // e.g., '09:30'
+  isActive: boolean;
+}
 
 type ContentItem = typeof userContents.$inferSelect & {
   created_at: string;
@@ -253,4 +263,125 @@ export async function getLatestContentHistory(historyArray: any[]) {
   });
 
   return sortedHistory[0];
+}
+
+export async function saveNewSchedule(input: ScheduledJob) {
+  const supabase = await createClient();
+
+  // 2. Authentication and Authorization
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: 'Authentication required to save a schedule.' };
+  }
+
+  try {
+    // 3. Generate Cron Schedule and Prepare Data
+    const cronSchedule = generateCronString(input.frequency, input.time);
+
+    const newJobData = {
+      user_id: user.id, // Supabase usually prefers snake_case for column names
+      cron_schedule: cronSchedule,
+      job_type: input.jobType,
+      is_active: input.isActive,
+      prompt: input.prompt,
+    };
+
+    // 4. Insert or Update the schedule using Supabase Client
+    const { data: result, error } = await supabase
+      .from('user_schedules')
+      .upsert(newJobData, {
+        // Define the columns that uniquely identify a record (the composite key)
+        onConflict: 'user_id, job_type'
+      })
+      .select() // Select the inserted/updated row
+      .single(); // Expect only one row
+
+    if (error) {
+      console.error('Supabase Error Saving Schedule:', error);
+      return { error: error.message };
+    }
+
+    // 5. Revalidate and Return Success
+    revalidatePath('/dashboard/schedule');
+
+    // Note: Supabase returns 'data' as a single object if .single() is used
+    return { success: true, schedule: result };
+
+  } catch (error) {
+    console.error('Unknown Error Saving Schedule:', error);
+    return {
+      error: 'Failed to save job to database. An unknown error occurred.',
+    };
+  }
+}
+
+export async function getScheduledJobs(): Promise<ScheduledJob[]> {
+  // 1. Initialize Supabase Client
+  const supabase = await createClient();
+
+  // 2. Authentication
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    // Return an empty array if no user is authenticated
+    return [];
+  }
+
+  try {
+    // 3. Query the 'user_schedules' table
+    const { data, error } = await supabase
+      .from('user_schedules')
+      .select('*') // Selects all columns defined in the table
+      .eq('user_id', user.id); // Filter only for the current user's jobs
+
+    if (error) {
+      console.error('Supabase Error Fetching Schedules:', error);
+      // Return an empty array on database error
+      return [];
+    }
+
+    // 4. Return the data
+    return (data as ScheduledJob[]) || [];
+
+  } catch (e) {
+    console.error('Unknown Error in getScheduledJobs:', e);
+    return [];
+  }
+}
+
+
+export async function deleteScheduledJobAction(userId: string, jobType: string) {
+  const supabase = await createClient();
+
+  // 1. Double-Check Authentication (Safety Measure)
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Ensure the request is coming from an authenticated user AND that the user ID in the request
+  // matches the ID of the job's owner.
+  if (!user || user.id !== userId) {
+    return { error: 'Authorization error: Cannot delete job.' };
+  }
+
+  try {
+    // 2. Perform the deletion
+    // We use the composite key (user_id AND job_type) to target the specific row.
+    const { error } = await supabase
+      .from('user_schedules')
+      .delete()
+      .eq('user_id', userId)
+      .eq('job_type', jobType); // Ensure this matches the column name in your database
+
+    if (error) {
+      console.error('Supabase Delete Error:', error);
+      return { error: error.message };
+    }
+
+    // 3. Revalidate the path to update the list instantly
+    revalidatePath('/dashboard/schedule');
+
+    return { success: true };
+
+  } catch (e) {
+    console.error('Unknown deletion error:', e);
+    return { error: 'An unexpected error occurred during deletion.' };
+  }
 }

@@ -1,7 +1,8 @@
 import { getTrendingTopics } from "@/lib/tavily/tavily.search";
 import { generateText } from "ai"; // Vercel AI SDK for text generation
 import { google } from "@ai-sdk/google";
-import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt'; // Using the Google provider
+import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt';
+import { NextRequest } from 'next/server'; // Using the Google provider
 
 // Set the cron job's user ID (You should replace this with a real admin UUID from your DB)
 const CRON_AUTHOR_ID = process.env.CRON_AUTHOR_ID || '00000000-0000-0000-0000-000000000000';
@@ -9,8 +10,12 @@ const CRON_AUTHOR_ID = process.env.CRON_AUTHOR_ID || '00000000-0000-0000-0000-00
 /**
  * Vercel Cron Job API Endpoint: Automatically generates blog posts based on trending topics.
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('Authorization');
+  const searchParams = request.nextUrl.searchParams;
+
+  const userId = searchParams.get('user_id');
+  const prompt = searchParams.get('prompt');
 
   const { user_id } = await request.json();
 
