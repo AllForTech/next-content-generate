@@ -1,6 +1,5 @@
-import { pgTable, text, timestamp, jsonb, primaryKey, uuid, pgSchema } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, jsonb, primaryKey, uuid, pgSchema, boolean } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { boolean } from 'zod';
 
 const authSchema = pgSchema('auth');
 export const users = authSchema.table('users', {
