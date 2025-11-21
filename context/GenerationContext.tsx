@@ -30,6 +30,7 @@ export const panelTabsState = {
   prompt: 'prompt',
   history: 'history',
   images: 'images',
+  system: 'system'
 }
 
 export const contentRendererTabsState = {
@@ -92,6 +93,11 @@ interface GenerationContextType {
   scheduledJobs: any[],
   setScheduledJobs: any,
 
+  isDashboardLoading: boolean,
+  setIsDashboardLoading: (value: boolean) => void,
+  isSchedulesLoading: boolean,
+  setIsSchedulesLoading: (value: boolean) => void,
+
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -121,6 +127,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const [localImages, setLocalImages] = useState([]);
     const [currentSessionId, setCurrentSessionId] = useState('');
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isDashboardLoading, setIsDashboardLoading] = useState(false);
+    const [isSchedulesLoading, setIsSchedulesLoading] = useState(false);
 
 
   useEffect(() => {
@@ -130,6 +138,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
 
   const fetchContents = useCallback(async () => {
+    setIsDashboardLoading(true);
     try {
       const contents = await getGeneratedContents();
       console.log("contents", contents);
@@ -140,10 +149,13 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       }
     }catch (e) {
       console.log(e);
+    }finally {
+      setIsDashboardLoading(false);
     }
   }, [setAllContents])
 
   const fetchScheduledJobs = useCallback(async () => {
+    setIsSchedulesLoading(true);
     try {
       const schedules = await getScheduledJobs();
       console.log('scheduledJobs', schedules);
@@ -155,6 +167,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     }catch (e) {
       console.log(e);
       toast.error(e.message || 'Error fetching scheduled jobs');
+    }finally {
+      setIsSchedulesLoading(false);
     }
   }, [setScheduledJobs])
 
@@ -381,6 +395,10 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       setAllContents,
       scheduledJobs,
       setScheduledJobs,
+      isDashboardLoading,
+      setIsDashboardLoading,
+      isSchedulesLoading,
+      setIsSchedulesLoading,
     };
 
     return (

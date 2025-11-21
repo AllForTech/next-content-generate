@@ -229,6 +229,11 @@
     margin-bottom: 1.25rem;
 }
 
+.markdown link, a {
+    color: #1e3a8a;
+    text-decoration: underline;
+}
+
 .markdown blockquote {
     border-left: 4px solid #6366f1; /* Primary color accent */
     padding-left: 1.5rem;

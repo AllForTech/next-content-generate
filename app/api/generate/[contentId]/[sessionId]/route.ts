@@ -168,7 +168,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
           }),
         },
 
-        stopWhen: stepCountIs(4),
+        stopWhen: stepCountIs(10),
         // Pass the user's specific request
         messages,
       });
@@ -178,7 +178,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
             fullContent += chunk;
         }
 
-      await saveNewContent(contentId, fullContent, prompt);
+        await saveNewContent(contentId, fullContent, prompt);
         await saveContent(fullContent, prompt, contentId, sessionId)
 
       return NextResponse.json({

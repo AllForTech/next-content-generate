@@ -13,6 +13,7 @@ import { Button } from '@mdxeditor/editor';
 import { Upload, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import MobileSheetWrapper from '@/components/Layout/Dashboard/Generate/MobileSheetWrapper';
+import { SystemPromptSelector } from '@/components/Layout/Dashboard/Generate/AISystemConfig';
 
 const useMediaQuery = (query: string) => {
   const [matches, setMatches] = useState(false);
@@ -30,6 +31,7 @@ const useMediaQuery = (query: string) => {
 
 export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [systemPrompt, setSystemPrompt] = useState<string>('');
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   // The actual Tabs content block, which remains unchanged
@@ -42,6 +44,9 @@ export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
         </TabsContent>
         <TabsContent className={'container-full'} value={panelTabsState.history}>
           <History/>
+        </TabsContent>
+        <TabsContent className={'container-full'} value={panelTabsState.system}>
+          <SystemPromptSelector onPromptChange={setSystemPrompt} />
         </TabsContent>
         <TabsContent className={'container-full'} value={panelTabsState.images}>
           <Images/>

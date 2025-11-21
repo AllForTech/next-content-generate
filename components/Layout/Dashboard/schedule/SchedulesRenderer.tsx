@@ -16,12 +16,13 @@ import {
 import { Clock, CalendarCheck, CalendarX, Repeat, Settings, Trash } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ScheduleNewJobDialog } from '@/components/Layout/Dashboard/schedule/ScheduleNewJobDialog';
-import { Button } from '@mdxeditor/editor';
+import { Button } from '@/components/ui/button'; // Changed to standard Button import
 import { toast } from 'sonner';
-import { deleteScheduledJobAction } from '@/lib/db/content';
+import { deleteScheduledJobAction } from '@/lib/db/content'; // Assuming this is correct
 import { useContent } from '@/context/GenerationContext';
+import { Skeleton } from '@/components/ui/skeleton'; // Assuming you have this imported
 
-// Define the expected shape of a schedule item
+// Define the expected shape of a schedule item (kept for reference)
 interface ScheduleItem {
   userId: string;
   cronSchedule: string; // e.g., '30 9 * * *'
@@ -30,67 +31,113 @@ interface ScheduleItem {
   lastRunAt: string | null;
 }
 
-// ------------------------------------------
-
-interface ScheduledJobsDashboardProps {
-  schedules?: ScheduleItem[];
-  // You would integrate your actual data fetching here
-}
-
-// Placeholder for a date formatter (assuming you have one, or use the one suggested earlier)
+// Placeholder for a date formatter (kept for reference)
 const formatRelativeTime = (timestamp: string | null): string => {
   if (!timestamp) return 'Never';
-  // In a real app, use date-fns: return formatDistanceToNowStrict(new Date(timestamp), { addSuffix: true });
   const diff = Math.floor((Date.now() - new Date(timestamp).getTime()) / (1000 * 60 * 60));
   return diff > 24 ? `${new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : `${diff} hours ago`;
 };
 
+// 🛑 NEW: Job Card Skeleton Component
+const JobCardSkeleton = () => (
+  <div className="w-full p-4 border rounded-lg shadow-md shadow-neutral-200 mb-3.5 transition-all duration-200 bg-neutral-100 border-black/20 animate-pulse">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
+      {/* Left Section: Job Type, Status, and Delete Icon */}
+      <div className="flex items-center space-x-4">
+        <Skeleton className="h-8 w-8 rounded-full bg-gray-200" /> {/* Icon */}
+        <div className="flex flex-col space-y-1">
+          <Skeleton className="h-4 w-32 bg-gray-200" /> {/* Job Type */}
+          <Skeleton className="h-3 w-20 bg-gray-200" /> {/* Status */}
+        </div>
+        <Skeleton className="h-8 w-8 rounded-md bg-gray-200" /> {/* Trash Icon Placeholder */}
+      </div>
+
+      {/* Right Section: Schedule and Last Run */}
+      <div className="flex flex-col md:flex-row md:space-x-8 text-right md:items-center">
+        {/* Schedule */}
+        <div className="flex items-center justify-end space-x-2 text-xs">
+          <Skeleton className="h-4 w-4 bg-gray-200" />
+          <Skeleton className="h-3 w-16 bg-gray-200" /> {/* Schedule label */}
+          <Skeleton className="h-5 w-24 bg-gray-200 rounded" /> {/* Cron schedule code */}
+        </div>
+
+        {/* Last Run */}
+        <div className="flex items-center justify-end space-x-2 text-xs mt-1 md:mt-0">
+          <Skeleton className="h-4 w-4 bg-gray-200" />
+          <Skeleton className="h-3 w-16 bg-gray-200" /> {/* Last Run label */}
+          <Skeleton className="h-3 w-20 bg-gray-200" /> {/* Time stamp */}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+
 const ScheduledJobsDashboard = () => {
-  const { scheduledJobs: schedules } = useContent();
+  const { scheduledJobs: schedules, isSchedulesLoading } = useContent();
+
+  // Array to map over for skeleton loading
+  const skeletonCards = Array.from({ length: 3 });
+
+  // 🛑 Logic to render either Skeletons, Actual Data, or Empty State
+  const renderScheduleContent = () => {
+    if (isSchedulesLoading) {
+      return (
+        <div className="flex flex-col container-full overflow-hidden space-y-4 p-2.5">
+          {skeletonCards.map((_, index) => <JobCardSkeleton key={index} />)}
+        </div>
+      );
+    }
+
+    if (schedules && schedules?.length === 0) {
+      return (
+        <div className="text-center p-8 text-black/70 font-medium border border-dashed border-black rounded-md">
+          No automated schedules configured.
+        </div>
+      );
+    }
+
+    // Default: Display actual schedules
+    return (
+      <ScrollArea className={cn('container-full p-2.5 center flex-col !justify-start')}>
+        {schedules.map((job: any) => (
+          // Type cast 'job' to any temporarily since the interface is defined outside the context hook
+          <JobCard key={job?.job_id} job={job} />
+        ))}
+      </ScrollArea>
+    );
+  };
 
   return (
     <div className={cn('w-full flex flex-col p-6 bg-white text-black')}>
 
       {/* Header */}
-      <div className={cn('w-full h-fit between')}>
-        <h2 className="text-xl font-bold mb-6 pb-3">
+      <div className={cn('w-full h-fit flex justify-between items-center mb-6 pb-3 border-b border-gray-100')}>
+        <h2 className="text-xl font-bold">
           <Clock className="inline h-6 w-6 mr-2" />
           Scheduled Automations
         </h2>
-
         <ScheduleNewJobDialog/>
       </div>
 
       {/* List Container */}
       <div className="flex flex-col container-full overflow-hidden space-y-4">
-        <ScrollArea className={cn('container-full p-2.5 center flex-col !justify-start')}>
-          {schedules && schedules?.length === 0 ? (
-            <div className="text-center p-8 text-black/70 font-medium border border-dashed border-black rounded-md">
-              No automated schedules configured.
-            </div>
-          ) : (
-            schedules.map((job) => (
-              <JobCard key={job?.job_id} job={job} />
-            ))
-          )}
-        </ScrollArea>
+        {renderScheduleContent()}
       </div>
     </div>
   );
 };
 
 
-// Individual Job Card Component
-const JobCard = ({ job }) => {
+// Individual Job Card Component (kept unchanged, except for standardizing Button import)
+const JobCard = ({ job }: { job: any }) => { // Used 'any' for job type here
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { setScheduledJobs, scheduledJobs } = useContent();
+  const { setScheduledJobs, scheduledJobs  } = useContent();
 
   // Determine the status text and icon color
   const statusText = job?.is_active ? 'Active' : 'Disabled';
   const statusColor = job?.is_active ? 'text-black' : 'text-black/50';
-  // CalendarCheck and CalendarX are unused icons here, but kept for context.
-  // const statusIcon = job?.is_active ? CalendarCheck : CalendarX;
 
   const handleDelete = async () => {
     if (!job?.user_id || !job?.job_id) return;
@@ -114,7 +161,7 @@ const JobCard = ({ job }) => {
         description: `The '${job.job_type.replace(/_/g, ' ')}' job has been removed.`,
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       toast.error("Deletion Failed", {
         id: toastId,
@@ -134,7 +181,7 @@ const JobCard = ({ job }) => {
     )}>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
 
-        {/* Left Section: Job Type, Status, and DELETE BUTTON (NEW) */}
+        {/* Left Section: Job Type, Status, and DELETE BUTTON */}
         <div className="flex items-center space-x-4">
           <div className={cn('p-2 rounded-full border border-black', job?.is_active ? 'bg-black text-white' : 'bg-white text-black/50')}>
             <Settings className="h-4 w-4" />
@@ -151,12 +198,14 @@ const JobCard = ({ job }) => {
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <div
-                className="hover:bg-neutral-300 center rounded-md text-sm bg-transparent h-8 w-8 p-0 text-black/70 hover:text-black transition-colors"
+              <Button
+                variant="ghost" // Use variant ghost for a subtle button
+                size="sm"
+                className="hover:bg-neutral-300 h-8 w-8 p-0 text-black/70 hover:text-black transition-colors"
                 title="Delete Schedule"
               >
                 <Trash className="h-4 text-md font-semibold w-4" />
-              </div>
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent className="bg-white border-black">
               <AlertDialogHeader>
@@ -180,7 +229,7 @@ const JobCard = ({ job }) => {
 
         </div>
 
-        {/* Right Section: Schedule and Last Run (Unchanged) */}
+        {/* Right Section: Schedule and Last Run */}
         <div className="flex flex-col md:flex-row md:space-x-8 text-right md:items-center">
           {/* Schedule */}
           <div className="flex items-center justify-end md:justify-start space-x-2 text-xs">

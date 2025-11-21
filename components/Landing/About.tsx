@@ -16,14 +16,14 @@ export const About = () => {
           viewport={{ once: true }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
         >
-          {/* 1. VISUAL & IMPACT COLUMN (Left) */}
+          {/* 1. VISUAL & IMPACT COLUMN (Left) - Unchanged */}
           <div className="relative h-96 flex items-center justify-center lg:h-auto lg:p-10">
             {/* The Creative Element: Layered, Stylized Text */}
             <h3
               className="absolute text-[15rem] md:text-[18rem] font-extrabold text-black/5 select-none pointer-events-none
                          transform rotate-[-8deg] -translate-y-1/4 -translate-x-1/4 tracking-tighter leading-none"
             >
-              THINK
+              TRUST
             </h3>
 
             <motion.blockquote
@@ -42,7 +42,7 @@ export const About = () => {
             </motion.blockquote>
           </div>
 
-          {/* 2. CONTENT & MISSION COLUMN (Right) */}
+          {/* 2. CONTENT & MISSION COLUMN (Right) - UPDATED TEXT */}
           <div className="space-y-8">
             <motion.h2
               initial={{ opacity: 0, y: -20 }}
@@ -51,7 +51,7 @@ export const About = () => {
               viewport={{ once: true }}
               className="text-sm font-semibold text-indigo-600 uppercase tracking-widest flex items-center"
             >
-              <Sparkles className="h-4 w-4 mr-2" /> Our Core Mission
+              <Sparkles className="h-4 w-4 mr-2" /> The Engine of Productivity
             </motion.h2>
 
             <motion.h3
@@ -61,7 +61,7 @@ export const About = () => {
               viewport={{ once: true }}
               className="text-5xl md:text-6xl font-extrabold text-black leading-tight"
             >
-              Empowering creators to define the future.
+              Verified speed meets automated delivery.
             </motion.h3>
 
             <motion.p
@@ -71,7 +71,7 @@ export const About = () => {
               viewport={{ once: true }}
               className="text-xl leading-relaxed text-black"
             >
-              We are a dedicated team of developers and AI specialists, committed to merging cutting-edge large language models with a seamless editing experience. Our platform isn't just about generation; it's about providing the **tools and verifiability** needed to produce high-quality, impactful content at speed.
+              Our platform is powered by a **Supabase/Drizzle backend** for reliable scheduling and data integrity. We prioritize **factual accuracy** by integrating real-time web search (Tavily/Google) into every generation. This means your content is not only fast and automated but also grounded in up-to-date, verifiable information, making it genuinely impactful.
             </motion.p>
 
             <motion.div
@@ -82,7 +82,7 @@ export const About = () => {
             >
               <Link href="/dashboard">
                 <Button size="lg" className="bg-black text-white hover:bg-indigo-600 hover:shadow-xl transition-all duration-300">
-                  Join the Revolution <ArrowRight className="ml-2 h-5 w-5" />
+                  See the Automation in Action <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
             </motion.div>

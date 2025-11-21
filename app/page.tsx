@@ -5,6 +5,7 @@ import { About } from '@/components/Landing/About';
 import { Footer } from '@/components/Landing/Footer';
 import { Navbar } from '@/components/Landing/Navbar';
 import { cn } from '@/lib/utils';
+import { HeroSecondary } from '@/components/Landing/HeroSecondary';
 
 export default function LandingPage() {
   return (
