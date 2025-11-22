@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { setIsEditingRaw, isEditingRaw } = useGlobalState();
-  const { generatedContent, handleDocxExport } = useContent();
+  const { selectedPrompt } = useContent();
 
   return (
     <motion.div
@@ -28,8 +28,10 @@ export const Navbar = () => {
         <div className="container mx-auto px-4 flex items-center justify-between h-full">
 
           {/* Center/Main Links (Empty as per original) */}
-          <div className="hidden md:flex items-center space-x-8">
-            {/* Placeholder for future primary navigation links */}
+          <div className="hidden md:flex px-3 items-center space-x-8">
+            {selectedPrompt && (
+              <p className={cn('text-xs font-semibold text-black')}>{selectedPrompt?.label ?? " "}</p>
+            )}
           </div>
 
           {/* Right: Actions and Avatar */}

@@ -156,7 +156,7 @@ export async function saveContent(content: string, prompt: string, contentId: st
 
 // --- 6. saveNewContent (for master record) ---
 // Creates or updates the master content record in the 'contents' table.
-export async function saveNewContent(contentId: string, content: string, prompt: string) {
+export async function saveNewContent(contentId: string, content: string, prompt?: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -197,6 +197,7 @@ export async function saveContentImages(images: any[], content_id: string, sessi
   if (!user) return;
 
   try {
+    await saveNewContent(content_id, session_id)
     await db.insert(userContents)
       .values({ contentId: content_id, sessionId: session_id, authorId: user.id, images })
       .onConflictDoUpdate({
@@ -214,6 +215,7 @@ export async function saveContentGoogleSearches(results: any[], content_id: stri
   if (!user) return;
 
   try {
+    await saveNewContent(content_id, session_id);
     await db.insert(userContents)
       .values({ contentId: content_id, sessionId: session_id, authorId: user.id, searchResults: results })
       .onConflictDoUpdate({
@@ -231,6 +233,7 @@ export async function saveContentScrapedData(results: any[], content_id: string,
   if (!user) return;
 
   try {
+    await saveNewContent(content_id, session_id);
     await db.insert(userContents)
       .values({ contentId: content_id, sessionId: session_id, authorId: user.id, scrapedData: results })
       .onConflictDoUpdate({

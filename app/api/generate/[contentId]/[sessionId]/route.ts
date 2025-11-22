@@ -147,7 +147,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
 
             // The input schema guides the LLM on what arguments to provide.
             inputSchema: z.object({
-              query: z.string().describe('The primary search term or keyword to find relevant images (e.g., "AI infrastructure" or "sustainable architecture").'),
+              query: z.string().describe('The primary Alt description to find relevant images (e.g., "AI infrastructure" or "sustainable architecture").'),
               count: z.number().optional().default(3).describe('The maximum number of image results to return, defaulting to 3.'),
             }),
 

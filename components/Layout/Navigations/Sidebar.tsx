@@ -12,6 +12,7 @@ import React, { useState } from 'react'; // Import useState for collapse state
 import { nanoid } from 'nanoid';
 import { UserAvatar } from '@/components/Layout/Navigations/UserAvatar';
 import { useAuth } from '@/context/AuthContext';
+import { ChatHistoryRenderer } from '@/components/Layout/Dashboard/Generate/ChatHistoryRenderer';
 
 // --- 1. Define Navigation Routes ---
 const navigation = [
@@ -164,8 +165,8 @@ export function Sidebar() {
 
         <Separator className="my-2" />
 
-        <div className={cn('flex-grow center')}>
-          {/* Placeholder for center content */}
+        <div className={cn('flex-grow w-full center')}>
+          <ChatHistoryRenderer/>
         </div>
 
         <Separator className="my-2" />

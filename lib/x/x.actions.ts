@@ -1,35 +1,47 @@
 import {
   Client,
   type ClientConfig,
-  type Trends, // 🛑 Import the specific type for the trends response
+  type Trends,
 } from '@xdevplatform/xdk';
 
-// Configuration remains the same
-const config: ClientConfig = { bearerToken: 'your-bearer-token' };
-const client: Client = new Client(config);
+const BEARER_TOKEN = process.env.X_BEARER_TOKEN!;
+const client: Client = new Client({
+  bearerToken: BEARER_TOKEN,
 
-// Step 1: Define the WOEID for the desired location (e.g., Worldwide)
+});
+
 const WORLDWIDE_WOEID = 1;
 
 export async function getTrendingTopic() {
   try {
-    //  Step 2: Use the client's 'trends' property to call the appropriate method
-    // Method name is speculative, based on common SDK patterns (e.g., getByWoeid or getPlaceTrends)
-    const trendsResponse: Trends.GetByWoeidResponse = await client.trends.getByWoeid(WORLDWIDE_WOEID);
+    // 1. Fetch the trends response
+    const trendsResponse: Trends.GetByWoeidResponse = await client.trends.getPersonalized();
 
-    const trendsList = trendsResponse.data;
+    // 2. The data structure is typically [{ trends: [{ name: 'topic', tweet_volume: 123 }, ...], ... }]
+    const trendsListContainer = trendsResponse.data;
 
-    if (!trendsList || trendsList.length === 0) {
-      console.log("No trends found.");
+    console.log("Trends list", trendsListContainer);
+
+    if (!trendsListContainer || trendsListContainer.length === 0 ) {
+      console.log("No trends or improperly formatted response found.");
       return null;
     }
 
-    //  Step 3: Extract the highest-volume trend
-    const topTrendName = trendsList;
+    // Drill down to the actual array of trending topics
+    const trendsArray = trendsListContainer[0].trends;
+
+    if (trendsArray.length === 0) {
+      console.log("Trends list is empty.");
+      return null;
+    }
+
+    // 3. Extract the highest-volume trend
+    const topTrend = trendsArray[0];
+
+    const topTrendName = topTrend.name;
 
     console.log(`Top Trend: ${topTrendName}`);
 
-    // Return the name to be used as your dynamic prompt
     return topTrendName;
 
   } catch (error) {

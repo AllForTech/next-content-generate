@@ -4,7 +4,7 @@ import {cn} from "@/lib/utils";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {ChatHistoryType, useContent} from "@/context/GenerationContext";
 import Loader from "@/components/ui/Loader";
-import { User, Bot } from 'lucide-react'; // Added icons for professional touch
+import { User, Bot, MessageSquare } from 'lucide-react';
 
 export function ChatHistoryRenderer(){
   const {
@@ -13,29 +13,35 @@ export function ChatHistoryRenderer(){
   } = useContent();
 
   return (
-    // 🛑 Removed 'container-full center' from outer div to allow content to flow naturally
-    <div className={cn('w-full h-full p-4')}>
+    // Component is now designed to fill the available space in the left sidebar
+    <div className={cn('w-full h-full flex flex-col pt-2')}>
+
+      <div className="text-sm font-semibold text-black px-4 pb-2 border-b border-neutral-200">
+        <MessageSquare className="inline h-4 w-4 mr-2 text-neutral-600" />
+        Content History
+      </div>
+
       <ScrollArea
-        // 🛑 Adjusted alignment to stack content properly
-        className={cn('w-full h-full flex flex-col gap-3')}
+        className={cn('w-full flex-grow p-1')} // Use flex-grow to fill remaining vertical space
       >
-        {/* 🛑 Added check for an empty history state */}
+        {/* 🛑 Empty history state */}
         {!isLoading && chatHistory && chatHistory.length === 0 && (
-          <div className="text-center text-sm text-neutral-500 py-10">
-            Start a conversation to see history here.
+          <div className="text-center text-xs text-neutral-500 py-4 px-2">
+            No history yet. Start generating content.
           </div>
         )}
 
+        {/* 🛑 Mapped History Cards */}
         {chatHistory && chatHistory.map((history) => (
-          // 🛑 Using history.id directly in key ensures uniqueness
           <HistoryCard key={history.id} history={history}/>
         ))}
 
+        {/* 🛑 Loading State */}
         {isLoading && (
           <Loader
-            text={'AI is generating...'}
-            // 🛑 Styled loader to align with the 'agent' response style
-            className={cn('w-full text-xs my-2.5 h-fit p-3 flex items-start justify-start rounded-xl bg-neutral-200 border border-neutral-300')}
+            text={'Generating...'}
+            // Styled loader for clean sidebar integration
+            className={cn('w-full text-xs h-10 flex items-center justify-start px-3 text-neutral-600')}
           />
         )}
       </ScrollArea>
@@ -47,57 +53,53 @@ export function ChatHistoryRenderer(){
 const HistoryCard = ({history}: {history: ChatHistoryType}) => {
   const { replaceCurrentContent } = useContent();
 
-  // Determine roles and styling
   const isUser = history?.role === 'user';
-  const alignClass = isUser ? 'justify-end' : 'justify-start';
-  const cardClass = isUser
-    ? 'bg-stone-300 border border-neutral-350 text-foreground/90 rounded-b-xl rounded-tl-xl'
-    : 'bg-white border border-neutral-300 text-foreground/90 rounded-b-xl rounded-tr-xl shadow-sm w-full'; // Agent gets full width
-  const icon = isUser ? User : Bot;
-  const iconColor = isUser ? 'text-neutral-600' : 'text-blue-600';
+  // Use neutral palette for all colors
+  const bgColor = isUser ? 'bg-neutral-100' : 'bg-white';
+  const borderColor = 'border-neutral-300';
+  const textColor = isUser ? 'text-black' : 'text-neutral-700';
 
+  // Get the display content: truncate if it's the AI response
+  const displayContent = isUser
+    ? history?.content // User prompt is short, display fully
+    : (history?.content ? history.content.substring(0, 10) + '...' : 'Content generated...');
 
   return (
-    <div className={cn(
-      'flex w-full mb-2', // Use flex for alignment
-      alignClass,
-      { 'pl-8': isUser, 'pr-8': !isUser } // Add padding to one side for a "bubble" effect
-    )}>
-      <div className={cn('flex items-start gap-3 w-full max-w-[850px]', alignClass)}>
+    <div
+      key={history.id}
+      onClick={() => {
+        console.log(history.id);
+        // MAINTAINED LOGIC: Replaces current content on click
+        replaceCurrentContent(history);
+      }}
+      className={cn(
+        'flex w-full h-[50px] p-1.5 mb-1.5 cursor-pointer rounded-lg border',
+        bgColor,
+        borderColor,
+        'transition-colors duration-150',
+        'hover:bg-neutral-200 hover:border-black/50'
+      )}
+    >
+      <div className="flex items-center gap-3 w-full">
 
-        {/* 1. Icon (Only on Agent side for clean bubble look) */}
-        {!isUser && (
-          <div className="h-6 w-6 flex-shrink-0 mt-1 center rounded-full bg-neutral-100 border border-neutral-300">
-            <Bot className="h-4 w-4 text-black-600" />
-          </div>
-        )}
-
-        {/* 2. Content Card/Bubble */}
-        <div
-          onClick={() => {
-            console.log(history.id);
-            // Logic maintained: replace current content on click
-            replaceCurrentContent(history);
-          }}
-          // 🛑 Applied sophisticated styling: rounded corners, shadow, padding
-          className={cn(
-            'w-fit h-fit p-3 cursor-pointer transition-shadow duration-200 hover:shadow-md',
-            cardClass,
-            isUser ? 'ml-auto' : 'mr-auto' // Use margin auto for better alignment
-          )}>
-
-          {history?.role === 'user' ? (
-            <p
-              // 🛑 Maintained text size but improved wrap and alignment
-              className={cn('text-xs text-wrap max-w-full', isUser ? 'text-right' : 'text-left')}
-            >{history?.content}</p>
-          ) : (
-            // 🛑 Placeholder for the actual generated content summary or card
-            <div className={cn('container-full h-[45px] center p-2 bg-neutral-100 rounded-lg text-xs text-neutral-500')}>
-              Click to view/edit generated content (ID: {history.id})
-            </div>
-          )}
+        {/* 1. Icon (Simplified and neutral) */}
+        <div className="h-6 w-6 flex-shrink-0 center rounded-full bg-neutral-200 border border-neutral-400">
+          {isUser
+            ? <User className="h-3.5 w-3.5 text-neutral-600" />
+            : <Bot className="h-3.5 w-3.5 text-black" />
+          }
         </div>
+
+        {/* 2. Content */}
+        <div className="flex flex-col justify-center overflow-hidden flex-grow">
+          <p className={cn('text-xs font-medium truncate', textColor)}>
+            {isUser ? 'Your Prompt' : 'AI Content'}
+          </p>
+          <p className="text-[11px] text-neutral-500 truncate">
+            {displayContent}
+          </p>
+        </div>
+
       </div>
     </div>
   );

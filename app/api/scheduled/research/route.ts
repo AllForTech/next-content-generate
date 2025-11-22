@@ -1,11 +1,14 @@
 import { getTrendingTopics } from "@/lib/tavily/tavily.search";
-import { generateText } from "ai"; // Vercel AI SDK for text generation
+import { generateText, stepCountIs, tool } from "ai"; // Vercel AI SDK for text generation
 import { google } from "@ai-sdk/google";
 import { GENERATOR_PROMPT } from '@/lib/AI/ai.system.prompt';
-import { NextRequest } from 'next/server'; // Using the Google provider
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { searchUnsplashImages } from '@/lib/AI/ai.image';
+import { saveContentImages } from '@/lib/db/content'; // Using the Google provider
 
 // Set the cron job's user ID (You should replace this with a real admin UUID from your DB)
-const CRON_AUTHOR_ID = process.env.CRON_AUTHOR_ID || '00000000-0000-0000-0000-000000000000';
+const CRON_AUTHOR_ID = process.env.CRON_AUTHOR_ID!;
 
 /**
  * Vercel Cron Job API Endpoint: Automatically generates blog posts based on trending topics.
@@ -14,15 +17,13 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('Authorization');
   const searchParams = request.nextUrl.searchParams;
 
-  const userId = searchParams.get('user_id');
-  const prompt = searchParams.get('prompt');
-
-  const { user_id } = await request.json();
-
-  // --- 1. Security Check ---
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response('Unauthorized: Invalid secret.', { status: 401 });
-  }
+  // const userId = searchParams.get('user_id');
+  // const prompt = searchParams.get('prompt');
+  //
+  // // --- 1. Security Check ---
+  // if (authHeader !== `Bearer ${CRON_AUTHOR_ID}`) {
+  //   return new Response('Unauthorized: Invalid secret.', { status: 401 });
+  // }
 
   // --- 2. Fetch Trending Topics using Tavily ---
   let topics = [];
@@ -54,11 +55,37 @@ export async function GET(request: NextRequest) {
       // Vercel AI SDK call using generateText (non-streaming, ideal for server tasks)
       const result = await generateText({
         model: google('gemini-2.5-flash'),
+        tools: {
+          unsplash: tool({
+            // 🚨 The description tells the LLM WHEN to use the tool.
+            description: 'Searches the free Unsplash library for high-quality stock photos related to the content topic. Use this to find image URLs for visual elements.',
+
+            // The input schema guides the LLM on what arguments to provide.
+            inputSchema: z.object({
+              query: z.string().describe('The primary Alt description to find relevant images (e.g., "AI infrastructure" or "sustainable architecture").'),
+              count: z.number().optional().default(3).describe('The maximum number of image results to return, defaulting to 3.'),
+            }),
+
+            // The execute function calls your core logic
+            execute: async ({ query, count }) => {
+              const images = await searchUnsplashImages(query, count);
+              if (images){
+                const parsedImage = JSON.parse(images);
+                if (!Array.isArray(parsedImage)){
+                  return images;
+                }
+                return images;
+              }
+              return images;
+            },
+          }),
+        },
+        stopWhen: stepCountIs(10),
         system: GENERATOR_PROMPT,
         prompt: generationPrompt,
       });
 
-      console.log(result.text);
+      console.log("from cron job",result.text);
 
       generatedCount++;
 

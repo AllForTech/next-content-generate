@@ -7,6 +7,8 @@ import { ReadonlyURLSearchParams, useParams, useRouter, useSearchParams } from '
 import { createClient } from '@/utils/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { getGeneratedContents, getScheduledJobs } from '@/lib/db/content';
+import { SystemPromptOption } from '@/components/Layout/Dashboard/Generate/AISystemConfig';
+import { predefinedPrompts } from '@/lib/AI/ai.system.prompt';
 
 export type ChatHistoryType = {
   id: string;
@@ -98,6 +100,9 @@ interface GenerationContextType {
   isSchedulesLoading: boolean,
   setIsSchedulesLoading: (value: boolean) => void,
 
+  selectedPrompt: SystemPromptOption;
+  setSelectedPrompt: (value: SystemPromptOption) => void;
+
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -129,6 +134,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const [isUpdating, setIsUpdating] = useState(false);
     const [isDashboardLoading, setIsDashboardLoading] = useState(false);
     const [isSchedulesLoading, setIsSchedulesLoading] = useState(false);
+    const [selectedPrompt, setSelectedPrompt] = useState<SystemPromptOption>(predefinedPrompts[0]);
 
 
   useEffect(() => {
@@ -399,6 +405,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       setIsDashboardLoading,
       isSchedulesLoading,
       setIsSchedulesLoading,
+      selectedPrompt,
+      setSelectedPrompt,
     };
 
     return (

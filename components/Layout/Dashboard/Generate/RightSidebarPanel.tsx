@@ -301,27 +301,26 @@ const Management = () => {
                   w-full max-w-[400px]
                   md:translate-x-0
                   p-6 sm:p-8
-                  max-h-[82dvh]
-                  border-l border-black/20"
+                  max-h-[82dvh]"
     >
       {/* Sidebar Header */}
-      <h1 className="text-3xl font-extrabold mb-8 border-b pb-4 border-black/30">
+      <h1 className="text-xl font-extrabold mb-8 pb-4">
         Management Settings
       </h1>
 
       {/* API Key Management Section */}
-      <section className="mb-8 p-4 border border-black/30 rounded-lg shadow-md">
-        <h2 className="text-xl font-bold mb-4">
+      <section className="mb-8 p-4 border border-black/30 rounded-lg">
+        <h2 className="text-md font-bold mb-4">
           External API Key
         </h2>
 
-        <p className="text-sm mb-4 text-black/70">
+        <p className="text-xs mb-4 text-black/70">
           Enter your custom AI provider API key to lift usage restrictions.
         </p>
 
         {/* Input Group */}
         <div className="flex flex-col space-y-3">
-          <label htmlFor="apiKey" className="text-sm font-medium">
+          <label htmlFor="apiKey" className="text-xs font-medium">
             API Key
           </label>
           <input
@@ -348,7 +347,7 @@ const Management = () => {
             </button>
 
             {saveStatus && (
-              <p className={`text-sm font-medium transition-opacity ${saveStatus.includes('saved') ? 'text-black' : 'text-gray-600'} opacity-100`}>
+              <p className={`text-xs font-medium transition-opacity ${saveStatus.includes('saved') ? 'text-black' : 'text-gray-600'} opacity-100`}>
                 {saveStatus}
               </p>
             )}
@@ -358,17 +357,17 @@ const Management = () => {
 
       {/* Additional Settings (Placeholder) */}
       <section className="mb-8 p-4 border border-black/30 rounded-lg opacity-70">
-        <h2 className="text-xl font-bold mb-4">
+        <h2 className="text-md font-bold mb-4">
           Future Settings
         </h2>
         <div className="space-y-3 text-sm">
-          <div className="flex items-center justify-between py-1 border-b border-black/10">
+          <div className="flex text-xs  items-center justify-between py-1 border-b border-black/10">
             <span>Toggle Feature X</span>
             <div className="w-10 h-6 bg-gray-200 rounded-full"></div> {/* Placeholder switch */}
           </div>
-          <div className="flex items-center justify-between py-1">
+          <div className="flex  text-xs items-center justify-between py-1">
             <span>Max Tokens Limit</span>
-            <input type="number" defaultValue="2048" className="w-20 p-1 border border-black/50 rounded-md text-center" />
+            <input type="number" defaultValue="2048" className="w-20 p-1 text-xs border border-black/50 rounded-md text-center" />
           </div>
         </div>
         <p className="text-xs mt-3 italic text-black/50">
