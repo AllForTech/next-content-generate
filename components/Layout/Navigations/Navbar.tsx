@@ -9,9 +9,12 @@ import { Menu, X, Eye, Code } from 'lucide-react';
 import { useGlobalState } from '@/context/GlobalStateContext';
 import { useContent } from '@/context/GenerationContext'
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 
 export const Navbar = () => {
+  const pathname = usePathname();
+
   const [isOpen, setIsOpen] = useState(false);
   const { setIsEditingRaw, isEditingRaw } = useGlobalState();
   const { selectedPrompt } = useContent();
@@ -29,7 +32,7 @@ export const Navbar = () => {
 
           {/* Center/Main Links (Empty as per original) */}
           <div className="hidden md:flex px-3 items-center space-x-8">
-            {selectedPrompt && (
+            {selectedPrompt && pathname.startsWith('/dashboard/generate') && (
               <p className={cn('text-xs font-semibold text-black')}>{selectedPrompt?.label ?? " "}</p>
             )}
           </div>

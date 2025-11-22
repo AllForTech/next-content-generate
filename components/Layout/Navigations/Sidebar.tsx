@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
+import { useContent } from '@/context/GenerationContext'
 import React, { useState } from 'react'; // Import useState for collapse state
 import { nanoid } from 'nanoid';
 import { UserAvatar } from '@/components/Layout/Navigations/UserAvatar';
@@ -92,6 +93,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   const {user} = useAuth();
+  const { chatHistory } = useContent();
 
   // New state for toggling the collapsed status
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -142,7 +144,7 @@ export function Sidebar() {
 
         {/* Navigation Sections */}
         {navigation.map((section, index) => (
-          <div key={index} className="space-y-1 w-full pb-4">
+          <div key={index} className="space-y-1 w-full pb-2">
             {!isCollapsed && (
               <h3 className="mb-2 px-4 text-sm font-medium tracking-wider text-foreground/80">
                 {section.title}
@@ -163,10 +165,10 @@ export function Sidebar() {
           </div>
         ))}
 
-        <Separator className="my-2" />
+        <Separator className="my-0.5" />
 
         <div className={cn('flex-grow w-full center')}>
-          <ChatHistoryRenderer/>
+          {chatHistory.length !== 0 && pathname.startsWith('/dashboard/generate') && (<ChatHistoryRenderer/>)}
         </div>
 
         <Separator className="my-2" />

@@ -14,7 +14,7 @@ export function ChatHistoryRenderer(){
 
   return (
     // Component is now designed to fill the available space in the left sidebar
-    <div className={cn('w-full h-full flex flex-col pt-2')}>
+    <div className={cn('w-full h-[200px] rounded-md overflow-hidden flex flex-col')}>
 
       <div className="text-sm font-semibold text-black px-4 pb-2 border-b border-neutral-200">
         <MessageSquare className="inline h-4 w-4 mr-2 text-neutral-600" />
@@ -22,21 +22,20 @@ export function ChatHistoryRenderer(){
       </div>
 
       <ScrollArea
-        className={cn('w-full flex-grow p-1')} // Use flex-grow to fill remaining vertical space
+        className={cn('w-full h-[90%] center !justify-start flex-col p-1')} // Use flex-grow to fill remaining vertical space
       >
-        {/* 🛑 Empty history state */}
+
         {!isLoading && chatHistory && chatHistory.length === 0 && (
           <div className="text-center text-xs text-neutral-500 py-4 px-2">
             No history yet. Start generating content.
           </div>
         )}
 
-        {/* 🛑 Mapped History Cards */}
         {chatHistory && chatHistory.map((history) => (
           <HistoryCard key={history.id} history={history}/>
         ))}
 
-        {/* 🛑 Loading State */}
+
         {isLoading && (
           <Loader
             text={'Generating...'}
@@ -51,7 +50,7 @@ export function ChatHistoryRenderer(){
 
 
 const HistoryCard = ({history}: {history: ChatHistoryType}) => {
-  const { replaceCurrentContent } = useContent();
+  const { replaceCurrentContent, currentSessionId } = useContent();
 
   const isUser = history?.role === 'user';
   // Use neutral palette for all colors
@@ -61,8 +60,8 @@ const HistoryCard = ({history}: {history: ChatHistoryType}) => {
 
   // Get the display content: truncate if it's the AI response
   const displayContent = isUser
-    ? history?.content // User prompt is short, display fully
-    : (history?.content ? history.content.substring(0, 10) + '...' : 'Content generated...');
+    ? history?.content.substring(0, 15) + '...'
+    : (history?.content ? history.content.substring(2, 17) + '...' : 'Content generated...');
 
   return (
     <div
@@ -77,7 +76,8 @@ const HistoryCard = ({history}: {history: ChatHistoryType}) => {
         bgColor,
         borderColor,
         'transition-colors duration-150',
-        'hover:bg-neutral-200 hover:border-black/50'
+        'hover:bg-neutral-200 hover:border-black/50',
+        currentSessionId === history.id && 'border-black/50 bg-neutral-200'
       )}
     >
       <div className="flex items-center gap-3 w-full">
