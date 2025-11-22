@@ -1,10 +1,14 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "crons": [
     {
-      "path": "/api/scheduled/research",
-      "schedule": "0 2 * * *"
+      "path": "/api/scheduled/content_generate/early",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/scheduled/content_generate/later",
+      "schedule": "0 17 * * *"
     }
   ]
 }
