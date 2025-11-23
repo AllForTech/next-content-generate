@@ -121,7 +121,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
           }),
           webSearch: tool({
 
-            description: 'Performs a comprehensive, real-time web search for information or data that is not available in the current context or user-provided documents. Use this for general research and fact-checking.',
+            description: 'Performs a comprehensive, real-time web search for information or data that is not available in the current context or user-provided documents. Use this for general [content_id] and fact-checking.',
 
             // 2. Input Schema: What the LLM MUST provide to use the tool
             inputSchema: z.object({

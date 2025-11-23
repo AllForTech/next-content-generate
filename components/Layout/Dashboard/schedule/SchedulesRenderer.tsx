@@ -13,65 +13,68 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Clock, CalendarCheck, CalendarX, Repeat, Settings, Trash } from 'lucide-react';
+import {
+  Clock,
+  CalendarCheck,
+  CalendarX,
+  Repeat,
+  Settings,
+  Trash,
+  Sparkles,
+  MessageSquare,
+  AlignLeft,
+  Globe
+} from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ScheduleNewJobDialog } from '@/components/Layout/Dashboard/schedule/ScheduleNewJobDialog';
-import { Button } from '@/components/ui/button'; // Changed to standard Button import
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { deleteScheduledJobAction } from '@/lib/db/content'; // Assuming this is correct
+import { deleteScheduledJobAction } from '@/lib/db/content';
 import { useContent } from '@/context/GenerationContext';
-import { Skeleton } from '@/components/ui/skeleton'; // Assuming you have this imported
+import { Skeleton } from '@/components/ui/skeleton';
 
-// Define the expected shape of a schedule item (kept for reference)
-interface ScheduleItem {
-  userId: string;
-  cronSchedule: string; // e.g., '30 9 * * *'
-  jobType: string;      // e.g., 'content_generation'
-  isActive: boolean;
-  lastRunAt: string | null;
-}
-
-// Placeholder for a date formatter (kept for reference)
+// Placeholder for a date formatter
 const formatRelativeTime = (timestamp: string | null): string => {
   if (!timestamp) return 'Never';
   const diff = Math.floor((Date.now() - new Date(timestamp).getTime()) / (1000 * 60 * 60));
   return diff > 24 ? `${new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : `${diff} hours ago`;
 };
 
-// 🛑 NEW: Job Card Skeleton Component
+// Job Card Skeleton Component
 const JobCardSkeleton = () => (
   <div className="w-full p-4 border rounded-lg shadow-md shadow-neutral-200 mb-3.5 transition-all duration-200 bg-neutral-100 border-black/20 animate-pulse">
     <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
-      {/* Left Section: Job Type, Status, and Delete Icon */}
+      {/* Left Section */}
       <div className="flex items-center space-x-4">
-        <Skeleton className="h-8 w-8 rounded-full bg-gray-200" /> {/* Icon */}
+        <Skeleton className="h-8 w-8 rounded-full bg-gray-200" />
         <div className="flex flex-col space-y-1">
-          <Skeleton className="h-4 w-32 bg-gray-200" /> {/* Job Type */}
-          <Skeleton className="h-3 w-20 bg-gray-200" /> {/* Status */}
+          <Skeleton className="h-4 w-32 bg-gray-200" />
+          <Skeleton className="h-3 w-20 bg-gray-200" />
         </div>
-        <Skeleton className="h-8 w-8 rounded-md bg-gray-200" /> {/* Trash Icon Placeholder */}
+        <Skeleton className="h-8 w-8 rounded-md bg-gray-200" />
       </div>
 
-      {/* Right Section: Schedule and Last Run */}
+      {/* Right Section */}
       <div className="flex flex-col md:flex-row md:space-x-8 text-right md:items-center">
-        {/* Schedule */}
         <div className="flex items-center justify-end space-x-2 text-xs">
           <Skeleton className="h-4 w-4 bg-gray-200" />
-          <Skeleton className="h-3 w-16 bg-gray-200" /> {/* Schedule label */}
-          <Skeleton className="h-5 w-24 bg-gray-200 rounded" /> {/* Cron schedule code */}
+          <Skeleton className="h-3 w-16 bg-gray-200" />
+          <Skeleton className="h-5 w-24 bg-gray-200 rounded" />
         </div>
-
-        {/* Last Run */}
         <div className="flex items-center justify-end space-x-2 text-xs mt-1 md:mt-0">
           <Skeleton className="h-4 w-4 bg-gray-200" />
-          <Skeleton className="h-3 w-16 bg-gray-200" /> {/* Last Run label */}
-          <Skeleton className="h-3 w-20 bg-gray-200" /> {/* Time stamp */}
+          <Skeleton className="h-3 w-16 bg-gray-200" />
+          <Skeleton className="h-3 w-20 bg-gray-200" />
         </div>
       </div>
     </div>
+    {/* Bottom Details Skeleton */}
+    <div className="mt-4 pt-3 border-t border-black/5 flex gap-4">
+      <Skeleton className="h-3 w-24 bg-gray-200" />
+      <Skeleton className="h-3 w-24 bg-gray-200" />
+    </div>
   </div>
 );
-
 
 const ScheduledJobsDashboard = () => {
   const { scheduledJobs: schedules, isSchedulesLoading } = useContent();
@@ -79,7 +82,6 @@ const ScheduledJobsDashboard = () => {
   // Array to map over for skeleton loading
   const skeletonCards = Array.from({ length: 3 });
 
-  // 🛑 Logic to render either Skeletons, Actual Data, or Empty State
   const renderScheduleContent = () => {
     if (isSchedulesLoading) {
       return (
@@ -97,11 +99,9 @@ const ScheduledJobsDashboard = () => {
       );
     }
 
-    // Default: Display actual schedules
     return (
       <ScrollArea className={cn('container-full p-2.5 center flex-col !justify-start')}>
         {schedules.map((job: any) => (
-          // Type cast 'job' to any temporarily since the interface is defined outside the context hook
           <JobCard key={job?.job_id} job={job} />
         ))}
       </ScrollArea>
@@ -110,7 +110,6 @@ const ScheduledJobsDashboard = () => {
 
   return (
     <div className={cn('w-full flex flex-col p-6 bg-white text-black')}>
-
       {/* Header */}
       <div className={cn('w-full h-fit flex justify-between items-center mb-6 pb-3 border-b border-gray-100')}>
         <h2 className="text-xl font-bold">
@@ -128,11 +127,9 @@ const ScheduledJobsDashboard = () => {
   );
 };
 
-
-// Individual Job Card Component (kept unchanged, except for standardizing Button import)
-const JobCard = ({ job }: { job: any }) => { // Used 'any' for job type here
+// Individual Job Card Component
+const JobCard = ({ job }: { job: any }) => {
   const [isDeleting, setIsDeleting] = useState(false);
-
   const { setScheduledJobs, scheduledJobs  } = useContent();
 
   // Determine the status text and icon color
@@ -172,6 +169,14 @@ const JobCard = ({ job }: { job: any }) => { // Used 'any' for job type here
     }
   };
 
+  // Helper to handle cases where tone might be a string or an object
+  const getDisplayValue = (value: any) => {
+    if (!value) return null;
+    if (typeof value === 'object' && value.label) return value.label;
+    if (typeof value === 'string') return value;
+    return JSON.stringify(value);
+  };
+
   return (
     <div className={cn(
       'w-full p-4 border rounded-lg shadow-md shadow-neutral-200 mb-3.5 transition-all duration-200',
@@ -179,6 +184,7 @@ const JobCard = ({ job }: { job: any }) => { // Used 'any' for job type here
         ? 'bg-neutral-100 border-black/20 hover:bg-neutral-200'
         : 'bg-neutral-200/50 border-black/10 opacity-70 hover:opacity-100'
     )}>
+      {/* TOP SECTION: Status, Controls, Time */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
 
         {/* Left Section: Job Type, Status, and DELETE BUTTON */}
@@ -199,7 +205,7 @@ const JobCard = ({ job }: { job: any }) => { // Used 'any' for job type here
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
-                variant="ghost" // Use variant ghost for a subtle button
+                variant="ghost"
                 size="sm"
                 className="hover:bg-neutral-300 h-8 w-8 p-0 text-black/70 hover:text-black transition-colors"
                 title="Delete Schedule"
@@ -250,6 +256,50 @@ const JobCard = ({ job }: { job: any }) => { // Used 'any' for job type here
           </div>
         </div>
       </div>
+
+      {/* BOTTOM SECTION: Job Configuration Details */}
+      {/* We check if any relevant details exist before rendering the divider and section */}
+      {(job?.job_type || job?.tone) && (
+        <div className="mt-4 pt-3 border-t border-black/10 grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap gap-y-2 gap-x-6 text-sm">
+
+          {/* Topic / Query */}
+          {job?.job_type && (
+            <div className="flex items-center text-neutral-600 max-w-md" title={job.job_type}>
+              <MessageSquare className="w-3.5 h-3.5 mr-2 text-black/60" />
+              <span className="font-bold text-black mr-1.5">Type:</span>
+              <span className="truncate block">{job.job_type}</span>
+            </div>
+          )}
+
+          {/* Tone */}
+          {job?.tone && (
+            <div className="flex items-center text-neutral-600">
+              <Sparkles className="w-3.5 h-3.5 mr-2 text-black/60" />
+              <span className="font-bold text-black mr-1.5">Tone:</span>
+              <span className="capitalize">{getDisplayValue(job.tone)}</span>
+            </div>
+          )}
+
+          {/*/!* Length / Size *!/*/}
+          {/*{job?.length && (*/}
+          {/*  <div className="flex items-center text-neutral-600">*/}
+          {/*    <AlignLeft className="w-3.5 h-3.5 mr-2 text-black/60" />*/}
+          {/*    <span className="font-bold text-black mr-1.5">Length:</span>*/}
+          {/*    <span className="capitalize">{getDisplayValue(job.length)}</span>*/}
+          {/*  </div>*/}
+          {/*)}*/}
+
+          {/*/!* Language - if applicable *!/*/}
+          {/*{job?.language && (*/}
+          {/*  <div className="flex items-center text-neutral-600">*/}
+          {/*    <Globe className="w-3.5 h-3.5 mr-2 text-black/60" />*/}
+          {/*    <span className="font-bold text-black mr-1.5">Language:</span>*/}
+          {/*    <span className="capitalize">{getDisplayValue(job.language)}</span>*/}
+          {/*  </div>*/}
+          {/*)}*/}
+
+        </div>
+      )}
     </div>
   );
 };

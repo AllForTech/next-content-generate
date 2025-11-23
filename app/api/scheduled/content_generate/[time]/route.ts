@@ -1,14 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSchedulesByRunSlot, saveNewContentFromSchedules } from '@/lib/db/content';
+import { nanoid } from 'nanoid';
 
-export function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
+// --- Type Definitions ---
+interface Context {
+  params: {
+    time: 'early' | 'later';
+  };
+}
 
-  if (authHeader !== expectedSecret) {
-    return new NextResponse('Unauthorized', { status: 401 });
+const API_ENDPOINT = 'http://localhost:3000/api/scheduled';
+
+
+export async function GET(request: NextRequest, context: Context) {
+  const { time } = await context.params;
+
+  const authHeader = await request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+
+  // if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  //   return new NextResponse('Unauthorized: Invalid CRON_SECRET', { status: 401 });
+  // }
+
+  if (time !== 'early' && time !== 'later') {
+    return new NextResponse(`Invalid time parameter: ${time}`, { status: 400 });
   }
 
-  console.log("Starting daily research job...");
+  try {
+    console.log(`[Cron Job] Starting content generation for slot: ${time}`);
 
-  return NextResponse.json({ success: true, message: "Research job triggered." });
+    const schedulesToRun = await getSchedulesByRunSlot(time);
+
+    if (schedulesToRun.length === 0) {
+      console.log(`No tasks found for '${time}'.`);
+      return NextResponse.json({ success: true, message: `No tasks found for ${time}.` });
+    }
+
+
+    const results = [];
+
+    for (const task of schedulesToRun) {
+      try {
+        const formData = new FormData();
+
+        const content_id = nanoid();
+        const sessionId = nanoid();
+
+        formData.append('prompt', JSON.stringify(task.prompt));
+        formData.append('tone', JSON.stringify(task.tone));
+        formData.append('url', JSON.stringify(task.urls));
+        formData.append('user_id', JSON.stringify(task.user_id));
+
+        await saveNewContentFromSchedules(content_id, task.user_id, '', task.prompt);
+
+        const response = await fetch(`${API_ENDPOINT}/${content_id}/${sessionId}`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.log(errorData.error || 'Failed to generate content due to server error.');
+        }
+
+      } catch (e) {
+        // Handle individual task failure
+        console.error(`Task ${task.id} failed:`, e);
+        // await db.collection('schedules').doc(task.id).update({ status: 'failed', error: e.message });
+
+        results.push({ taskId: task.id, status: 'failed', error: e instanceof Error ? e.message : 'Unknown error' });
+      }
+    }
+
+    console.log(`Finished processing ${results.length} tasks for '${time}'.`);
+
+    return NextResponse.json({
+      success: true,
+      timeSlot: time,
+      processedCount: results.length,
+      results: results
+    }, { status: 200 });
+
+  } catch (error) {
+    console.error(`Fatal error in GET handler for ${time}:`, error);
+    return new NextResponse('Internal Server Error during processing.', { status: 500 });
+  }
 }

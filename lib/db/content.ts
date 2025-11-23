@@ -11,9 +11,12 @@ interface ScheduledJob {
   prompt: string;
   job_id: string;
   cronSchedule: string;
-  frequency: 'daily' | 'weekly' | 'monthly';
+  frequency: string;
   time: string; // e.g., '09:30'
   isActive: boolean;
+  runSlot: string;
+  referenceUrls: string[];
+  tone: string;
 }
 
 type ContentItem = typeof userContents.$inferSelect & {
@@ -277,7 +280,10 @@ export async function saveNewSchedule(input: ScheduledJob) {
       job_type: input.jobType,
       is_active: input.isActive,
       prompt: input.prompt,
-      job_id: input.job_id
+      job_id: input.job_id,
+      run_slot: input.runSlot,
+      urls: input.referenceUrls,
+      tone: input.tone,
     };
 
     // 4. Insert or Update the schedule using Supabase Client
@@ -339,7 +345,6 @@ export async function getScheduledJobs(): Promise<ScheduledJob[]> {
   }
 }
 
-
 export async function deleteScheduledJobAction(job_id: string, jobType: string) {
   const supabase = await createClient();
 
@@ -375,5 +380,74 @@ export async function deleteScheduledJobAction(job_id: string, jobType: string) 
   } catch (e) {
     console.error('Unknown deletion error:', e);
     return { error: 'An unexpected error occurred during deletion.' };
+  }
+}
+
+export async function getSchedulesByRunSlot(runSlot: string){
+  const supabase = await createClient();
+  
+  try{
+    const { data, error } = await supabase
+      .from('user_schedules')
+      .select('*')
+      .eq('run_slot', runSlot);
+
+    if (error) {
+      console.error('Supabase query error:', error.message);
+      return [];
+    }
+
+    return data || [];
+  }catch (err) {
+    console.error('An unexpected error occurred during schedule fetch:', err);
+    return [];
+  }
+}
+
+export async function saveNewContentFromSchedules(contentId: string, user_id: string, content = '', prompt?: string) {
+
+  const saveData = {
+    contentId,
+    authorId: user_id,
+    content,
+    prompt,
+  };
+
+  try {
+    await db.insert(contents)
+      .values(saveData)
+      .onConflictDoUpdate({
+        target: contents.contentId,
+        set: {
+          content: saveData.content,
+          prompt: saveData.prompt,
+        }
+      });
+    revalidatePath('/dashboard');
+    revalidatePath(`/dashboard/content/${contentId}`);
+  } catch (error) {
+    console.error(`Error saving new master content for ID ${contentId} with Drizzle:`, error);
+  }
+}
+
+export async function saveContentFromSchedules(content: string, user_id: string, prompt: string, contentId: string, sessionId: string) {
+
+  const saveData = {
+    content,
+    prompt,
+    sessionId,
+    authorId: user_id,
+    contentId,
+  };
+
+  try {
+    await db.insert(userContents)
+      .values(saveData)
+      .onConflictDoUpdate({
+        target: [userContents.sessionId, userContents.contentId, userContents.authorId],
+        set: { content, prompt }
+      });
+  } catch (error) {
+    console.error(`Error saving content version for ID ${contentId} with Drizzle:`, error);
   }
 }

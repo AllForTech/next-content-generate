@@ -58,3 +58,4 @@ next-env.d.ts
 .idea
 node_modules/
 package-lock.json
+supabase/
