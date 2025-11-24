@@ -244,6 +244,9 @@ export function ContextProvider({ children }: { children: ReactNode }) {
           attachedFile: null
         }]))
         setCurrentSessionId(sessionId);
+        const contentExist = allContents.filter(c => c.id === content_id);
+        if (contentExist) return;
+
         setAllContents(prev => [{
           contentId: content_id,
           content: generatedContent,
