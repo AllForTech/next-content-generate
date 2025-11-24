@@ -1,15 +1,40 @@
-# ThinkInk: The Professional Content Architect
+# ThinkInk: AI-Powered Content Generation
 
-ThinkInk is a powerful, **AI-driven content generation platform** designed for content creators. It leverages cutting-edge **Retrieval-Augmented Generation (RAG)** to ensure generated outputs are not only stylish and well-structured but also **grounded in real-time, verifiable facts**—eliminating common AI hallucinations.
+<p align="center">
+  <img src="assets/hero_image.png" alt="ThinkInk Screenshot" width="100%">
+</p>
+
+<p align="center">
+  <strong>ThinkInk is a powerful, AI-driven content generation platform designed for content creators.</strong>
+  <br />
+  It leverages cutting-edge Retrieval-Augmented Generation (RAG) to ensure generated outputs are not only stylish and well-structured but also grounded in real-time, verifiable facts—eliminating common AI hallucinations.
+</p>
+
+---
+
+## 📋 Table of Contents
+
+- [✨ Features](#-features)
+- [🛠️ Tech Stack](#-tech-stack)
+- [🚀 Getting Started](#-getting-started)
+- [📜 Available Scripts](#-available-scripts)
+- [📄 License](#-license)
+
+---
 
 ## ✨ Features
 
-* **Fact-Grounded Generation (RAG):** Utilizes the **Tavily Search API** within an AI tool-calling workflow to gather real-time data, ensuring all generated content is highly accurate and up-to-date.
-* **Structured, Presentation-Ready Output:** The AI is meticulously prompted to generate content, complete with strict formatting rules, clear headings, and visual placeholders for easy frontend rendering.
-* **Real-time Streaming:** Content is streamed instantly from the server using the **Vercel AI SDK**, providing a dynamic and highly responsive user experience.
-* **Professional Styling:** Markdown is rendered using the **Tailwind Typography plugin**, offering polished, magazine-quality styling for all text and data elements (tables, lists, code).
-* **Secure Authentication:** **Supabase** is used for robust, scalable user authentication, including support for **Google OAuth**.
-* **Modern UI/UX:** A sleek and intuitive interface built with Next.js, **Tailwind CSS**, and **shadcn/ui**.
+- **Fact-Grounded Generation (RAG):** Utilizes the **Tavily Search API** within an AI tool-calling workflow to gather real-time data, ensuring all generated content is highly accurate and up-to-date.
+- **Structured, Presentation-Ready Output:** The AI is meticulously prompted to generate content, complete with strict formatting rules, clear headings, and visual placeholders for easy frontend rendering.
+- **Real-time Streaming:** Content is streamed instantly from the server using the **Vercel AI SDK**, providing a dynamic and highly responsive user experience.
+- **Professional Styling:** Markdown is rendered using the **Tailwind Typography plugin**, offering polished, magazine-quality styling for all text and data elements (tables, lists, code).
+- **Secure Authentication:** **Supabase** is used for robust, scalable user authentication, including support for **Google OAuth**.
+- **Modern UI/UX:** A sleek and intuitive interface built with Next.js, **Tailwind CSS**, and **shadcn/ui**.
+- **Scheduled Content Generation:** Automatically generate content based on trends or a schedule using cron jobs.
+- **Image Search:** Find and embed images from Unsplash directly into your content.
+- **DOCX Export:** Export your generated content to a `.docx` file.
+
+---
 
 ## 🛠️ Tech Stack
 
@@ -24,77 +49,56 @@ ThinkInk is a powerful, **AI-driven content generation platform** designed for c
 | **State Management** | [React Context API](https://react.dev/reference/react/createContext) | Application state management. |
 | **Icons** | [Lucide React](https://lucide.dev/guide/packages/lucide-react) | Vector icons for the UI. |
 
+---
+
 ## 🚀 Getting Started
 
 To get a local copy up and running, follow these simple steps.
 
 ### Prerequisites
 
-* Node.js (v18 or higher)
-* npm or yarn
+- Node.js (v18 or higher)
+- npm or yarn
 
 ### Installation
 
-1.  Clone the repository:
+1.  **Clone the repository:**
+    ```sh
+    git clone https://github.com/AllForTech/Think-Ink_content_generate.git
+    ```
 
-    ```sh
-    git clone [https://github.com/AllForTech/next-content-generate.git](https://github.com/AllForTech/next-content-generate.git)
-    ```
-    
-2.  Install dependencies:
+2.  **Install dependencies:**
+    ```sh
+    npm install
+    ```
 
-    ```sh
-    npm install
-    ```
-    
-3.  Set up your environment variables by creating a `.env.local` file in the root of your project and adding the following:
+3.  **Set up environment variables:**
+    - Create a `.env.local` file in the root of your project.
+    - Copy the contents of `.env.example` into your new `.env.local` file.
+    - Fill in the required API keys and credentials.
 
-    ```env
-    # AI Credentials
-    GEMINI_API_KEY=your_gemini_api_key
-    TAVILY_API_KEY=your_tavily_api_key
+4.  **Run the development server:**
+    ```sh
+    npm run dev
+    ```
 
-    # Supabase Credentials
-    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-    # NOTE: Supabase requires setting up Google Client ID/Secret in its Dashboard
-    ```
+5.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-4.  Run the development server:
+---
 
-    ```sh
-    npm run dev
-    ```
-    
-5.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📜 Available Scripts
 
-## 📂 Project Structure
+In the project directory, you can run:
 
-/
+| Script | Description |
+| :--- | :--- |
+| `npm run dev` | Runs the app in development mode. |
+| `npm run build` | Builds the app for production. |
+| `npm run start` | Starts a production server. |
+| `npm run lint` | Lints the code using ESLint. |
+| `npm run format` | Formats the code using Prettier. |
 
-├── app/
-
-│   ├── (auth)/         # Authentication pages
-
-│   ├── (root)/         # Main application pages
-
-│   └── api/            # API routes
-
-├── components/
-
-│   ├── Auth/           # Authentication components
-
-│   ├── Layout/         # Layout components
-
-│   └── ui/             # UI components from shadcn/ui
-
-├── context/            # React context providers
-
-├── hooks/              # Custom React hooks
-
-├── lib/                # Utility functions and database schema
-
-└── public/             # Static assets
+---
 
 ## 📄 License
 
