@@ -30,7 +30,6 @@ export type UnsplashImagesType = { url: string, alt_description: string, photogr
 
 export const panelTabsState = {
   prompt: 'prompt',
-  history: 'history',
   images: 'images',
   system: 'system'
 }
@@ -147,14 +146,13 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     setIsDashboardLoading(true);
     try {
       const contents = await getGeneratedContents();
-      console.log("contents", contents);
       if (contents){
         setAllContents(contents);
       }else {
         setAllContents([]);
       }
     }catch (e) {
-      console.log(e);
+      toast.error(e.message || 'Error fetching contents');
     }finally {
       setIsDashboardLoading(false);
     }
@@ -164,14 +162,12 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     setIsSchedulesLoading(true);
     try {
       const schedules = await getScheduledJobs();
-      console.log('scheduledJobs', schedules);
       if (schedules){
         setScheduledJobs(schedules);
       }else {
         setScheduledJobs([]);
       }
     }catch (e) {
-      console.log(e);
       toast.error(e.message || 'Error fetching scheduled jobs');
     }finally {
       setIsSchedulesLoading(false);
@@ -224,7 +220,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
         if (!response.ok) {
           const errorData = await response.json();
-          console.log(errorData.error || 'Failed to generate content due to server error.');
+          toast.error(errorData.error || 'Failed to generate content due to server error.');
         }
 
         const resultData = await response.json();
@@ -255,7 +251,6 @@ export function ContextProvider({ children }: { children: ReactNode }) {
         },...prev])
 
       } catch (error) {
-        console.error(error);
         setError(error.message);
         toast.error(<p className={'text-xs text-red-400 font-medium'}>{error?.message ?? 'Error connecting to Ai model'}</p>)
       } finally {
@@ -294,9 +289,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
             contentId: newId,
         }).select('*');
 
-        if (error) console.log(error);
+        if (error) toast.error(error.message || 'Error creating content');
 
-        console.log(data);
         setGeneratedContent(data[0]?.content);
 
         router.push(`/dashboard/generate/${data[0]?.contentId}`);
@@ -317,7 +311,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     });
 
     if (!response.ok) {
-      console.error('Export failed:', await response.json());
+      toast.error('Export failed');
       return;
     }
 
@@ -363,11 +357,10 @@ export function ContextProvider({ children }: { children: ReactNode }) {
           .eq('content_id', content_id)
 
         if (error) {
-          console.log(error);
           toast.error(error?.message ?? 'Error updating session');
         }
       }catch (e) {
-        console.error(e);
+        toast.error(e.message || 'Error updating session');
       }finally {
         setIsUpdating(false);
       }

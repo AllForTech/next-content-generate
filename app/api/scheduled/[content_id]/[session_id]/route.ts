@@ -41,18 +41,18 @@ export async function POST(req: Request, {params}: { params: { content_id: strin
 
   let filePayload = null;
 
-  if (uploadedFile && uploadedFile instanceof Blob) {
-    // 4. Convert the Blob to a Base64 string in memory (NO DISK I/O)
-    const base64Data = await fileToBase64(uploadedFile);
+  if (filePayload) {
+    // Assuming filePayload is a File object
+    const file = filePayload as File;
+    const fileArrayBuffer = await file.arrayBuffer();
+    const base64File = Buffer.from(fileArrayBuffer).toString('base64');
 
-    filePayload = {
-      name: uploadedFile.name,
-      type: uploadedFile.type,
-      // The Base64 string is the data the AI needs for analysis
-      base64Data: base64Data,
-    };
-
-    console.log(`File received in memory: ${filePayload.name}, Type: ${filePayload.type}`);
+    fileParts.push({
+      inlineData: {
+        data: base64File,
+        mimeType: file.type,
+      },
+    });
   }
 
   let searchResults = [];

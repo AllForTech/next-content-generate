@@ -23,8 +23,12 @@ export async function executeTavilySearch(query: string) {
             source: result.url,
         }));
 
-        console.log('tavily result:', context);
-        return context;
+    max_results: 5,
+    search_depth: 'advanced',
+  });
+  // Return the context
+  return context;
+}
 
     } catch (error) {
         console.error("Tavily search execution failed:", error);

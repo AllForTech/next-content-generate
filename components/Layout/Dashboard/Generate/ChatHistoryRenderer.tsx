@@ -67,7 +67,6 @@ const HistoryCard = ({history}: {history: ChatHistoryType}) => {
     <div
       key={history.id}
       onClick={() => {
-        console.log(history.id);
         // MAINTAINED LOGIC: Replaces current content on click
         replaceCurrentContent(history);
       }}

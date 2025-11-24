@@ -15,7 +15,7 @@ export const runtime = 'nodejs';
 const model = google('gemini-2.5-flash');
 
 export async function POST(req: Request, {params}: { params: { contentId: string, sessionId: string }}) {
-    const { contentId, sessionId } = await params;
+  const { contentId, sessionId } = await params;
 
   const formData = await req.formData();
 
@@ -48,9 +48,9 @@ export async function POST(req: Request, {params}: { params: { contentId: string
     console.log(`File received in memory: ${filePayload.name}, Type: ${filePayload.type}`);
   }
 
-    let searchResults = [];
-    let unsplashImages = [];
-    let scrapedData = []
+  let searchResults = [];
+  let unsplashImages = [];
+  let scrapedData = []
 
   const formatedPrompt = `"${userPrompt}", \n ${url ? `use this URL for reference: ${url}` : ''}, \n ${filePayload ? 'Analyze the attached document and answer the prompt based on its content.' : ''}`
 
@@ -72,8 +72,6 @@ export async function POST(req: Request, {params}: { params: { contentId: string
   ];
 
   if (filePayload) {
-    const dataURI = `data:${filePayload.type};base64,${filePayload.base64Data}`;
-
     if (filePayload.type.startsWith('image/')) {
       messages[0].content.push({
         type: 'image',
@@ -94,107 +92,107 @@ export async function POST(req: Request, {params}: { params: { contentId: string
   }
 
 
-    try {
-      const result = streamText({
-        model: model,
+  try {
+    const result = streamText({
+      model: model,
 
-        // Pass the detailed system instructions
-        system: `${GENERATOR_PROMPT} \n The user wants the content to have a ${tone} tone.`,
+      // Pass the detailed system instructions
+      system: `${GENERATOR_PROMPT} \n The user wants the content to have a ${tone} tone.`,
 
-        tools: {
-          scrape: tool({
+      tools: {
+        scrape: tool({
 
-            description: 'Use this tool to extract text content from one or more specific URLs provided by the user (e.g., "https://source1.com and https://source2.com").',
+          description: 'Use this tool to extract text content from one or more specific URLs provided by the user (e.g., "https://source1.com and https://source2.com").',
 
-            inputSchema: z.object({
-              // The LLM will gather all valid URLs and put them into this array
-              urls: z.array(z.string().url()).describe('An array of all valid URLs provided by the user for scraping.'),
-              // Note: I renamed 'url' to 'urls' for clarity
-            }),
-
-            // This is the function the AI SDK calls when the LLM requests the tool
-            execute: async ({ urls }) => {
-              // We call the actual scraping logic here
-              const { content, allScrapedData } = await scrapeUrl(urls);
-
-              scrapedData = allScrapedData;
-              await saveContentScrapedData(allScrapedData, contentId, sessionId);
-
-              return content;
-            },
+          inputSchema: z.object({
+            // The LLM will gather all valid URLs and put them into this array
+            urls: z.array(z.string().url()).describe('An array of all valid URLs provided by the user for scraping.'),
+            // Note: I renamed 'url' to 'urls' for clarity
           }),
-          webSearch: tool({
 
-            description: 'Performs a comprehensive, real-time web search for information or data that is not available in the current context or user-provided documents. Use this for general [content_id] and fact-checking.',
+          // This is the function the AI SDK calls when the LLM requests the tool
+          execute: async ({ urls }) => {
+            // We call the actual scraping logic here
+            const { content, allScrapedData } = await scrapeUrl(urls);
 
-            // 2. Input Schema: What the LLM MUST provide to use the tool
-            inputSchema: z.object({
-              // The only required argument is the query string
-              query: z.string().describe('The search query for which to find real-time, relevant information.'),
-            }),
+            scrapedData = allScrapedData;
+            await saveContentScrapedData(allScrapedData, contentId, sessionId);
 
-            // This is the function the AI SDK calls when the LLM requests the tool
-            execute: async ({ query }) => {
-              const results = await executeTavilySearch(query);
+            return content;
+          },
+        }),
+        webSearch: tool({
 
-              if (!Array.isArray(results)){
-                return results;
-              }
-              searchResults = results;
-              await saveContentGoogleSearches(results, contentId, sessionId);
+          description: 'Performs a comprehensive, real-time web search for information or data that is not available in the current context or user-provided documents. Use this for general [content_id] and fact-checking.',
+
+          // 2. Input Schema: What the LLM MUST provide to use the tool
+          inputSchema: z.object({
+            // The only required argument is the query string
+            query: z.string().describe('The search query for which to find real-time, relevant information.'),
+          }),
+
+          // This is the function the AI SDK calls when the LLM requests the tool
+          execute: async ({ query }) => {
+            const results = await executeTavilySearch(query);
+
+            if (!Array.isArray(results)){
               return results;
-            },
+            }
+            searchResults = results;
+            await saveContentGoogleSearches(results, contentId, sessionId);
+            return results;
+          },
+        }),
+        unsplash: tool({
+          // 🚨 The description tells the LLM WHEN to use the tool.
+          description: 'Searches the free Unsplash library for high-quality stock photos related to the content topic. Use this to find image URLs for visual elements.',
+
+          // The input schema guides the LLM on what arguments to provide.
+          inputSchema: z.object({
+            query: z.string().describe('The primary Alt description to find relevant images (e.g., "AI infrastructure" or "sustainable architecture").'),
+            count: z.number().optional().default(3).describe('The maximum number of image results to return, defaulting to 3.'),
           }),
-          unsplash: tool({
-            // 🚨 The description tells the LLM WHEN to use the tool.
-            description: 'Searches the free Unsplash library for high-quality stock photos related to the content topic. Use this to find image URLs for visual elements.',
 
-            // The input schema guides the LLM on what arguments to provide.
-            inputSchema: z.object({
-              query: z.string().describe('The primary Alt description to find relevant images (e.g., "AI infrastructure" or "sustainable architecture").'),
-              count: z.number().optional().default(3).describe('The maximum number of image results to return, defaulting to 3.'),
-            }),
-
-            // The execute function calls your core logic
-            execute: async ({ query, count }) => {
-              const images = await searchUnsplashImages(query, count);
-              if (images){
-                const parsedImage = JSON.parse(images);
-                if (!Array.isArray(parsedImage)){
-                  return images;
-                }
-                unsplashImages = parsedImage;
-                await saveContentImages(parsedImage, contentId, sessionId);
+          // The execute function calls your core logic
+          execute: async ({ query, count }) => {
+            const images = await searchUnsplashImages(query, count);
+            if (images){
+              const parsedImage = typeof images === 'string' ? JSON.parse(images) : images;
+              if (!Array.isArray(parsedImage)){
                 return images;
               }
+              unsplashImages = parsedImage;
+              await saveContentImages(parsedImage, contentId, sessionId);
               return images;
-            },
-          }),
-        },
+            }
+            return images;
+          },
+        }),
+      },
 
-        stopWhen: stepCountIs(10),
-        // Pass the user's specific request
-        messages,
-      });
+      stopWhen: stepCountIs(10),
+      // Pass the user's specific request
+      messages,
+    });
 
-        let fullContent = "";
-        for await (const chunk of result.textStream) {
-            fullContent += chunk;
-        }
-
-        await saveNewContent(contentId, fullContent, prompt);
-        await saveContent(fullContent, prompt, contentId, sessionId)
-
-      return NextResponse.json({
-        contentId: contentId,
-        mainContent: fullContent,
-        searchResults: searchResults,
-        unsplashImages: unsplashImages,
-        scrapedData,
-        message: "Content generated and saved successfully."
-      }, { status: 200 });
-    } catch (error) {
-        console.error("Error generating content:", error);
-        return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });
+    let fullContent = "";
+    for await (const chunk of result.textStream) {
+      fullContent += chunk;
     }
+
+    await saveNewContent(contentId, fullContent, prompt);
+    await saveContent(fullContent, prompt, contentId, sessionId)
+
+    return NextResponse.json({
+      contentId: contentId,
+      mainContent: fullContent,
+      searchResults: searchResults,
+      unsplashImages: unsplashImages,
+      scrapedData,
+      message: "Content generated and saved successfully."
+    }, { status: 200 });
+  } catch (error) {
+    console.error("Error generating content:", error);
+    return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });
+  }
 }

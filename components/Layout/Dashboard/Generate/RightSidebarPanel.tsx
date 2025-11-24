@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { panelTabsState, PanelTabsStateType, useContent } from '@/context/GenerationContext';
+import { ContentSources, panelTabsState, PanelTabsStateType, useContent } from '@/context/GenerationContext';
 import { cn, extractMarkdownImageUrls } from '@/lib/utils';
 import { PromptProps } from '@/components/Layout/Dashboard/Generate/Prompt';
 import Prompt from '@/components/Layout/Dashboard/Generate/Prompt';
@@ -14,6 +14,7 @@ import { Upload, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import MobileSheetWrapper from '@/components/Layout/Dashboard/Generate/MobileSheetWrapper';
 import { SystemPromptSelector } from '@/components/Layout/Dashboard/Generate/AISystemConfig';
+import { MessageSquare, ImageIcon, Settings2 } from 'lucide-react';
 
 const useMediaQuery = (query: string) => {
   const [matches, setMatches] = useState(false);
@@ -42,9 +43,6 @@ export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
         <TabsContent className={'container-full'} value={panelTabsState.prompt}>
           <Prompt contentType={''} onGenerate={onGenerate} contentId={contentId} />
         </TabsContent>
-        <TabsContent className={'container-full'} value={panelTabsState.history}>
-          <History/>
-        </TabsContent>
         <TabsContent className={'container-full'} value={panelTabsState.system}>
           <SystemPromptSelector onPromptChange={setSystemPrompt} />
         </TabsContent>
@@ -70,24 +68,40 @@ export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
 };
 
 const PanelTabs = () => {
+  // Define the map of string keys to Icon Components
+  const iconMap = {
+    [panelTabsState.prompt]: MessageSquare,
+    [panelTabsState.images]: ImageIcon,
+    [panelTabsState.system]: Settings2,
+  };
 
   return (
     <div className={'w-full h-fit flex-col gap-2.5 center'}>
       <TabsList className={cn('w-full bg-stone-200 center gap-2')}>
-        {Object.values(panelTabsState).map((tab: PanelTabsStateType) => (
-          <TabsTrigger
-            key={tab}
-            value={tab}
-            className={cn('text-xs font-semibold data-[state=active]:bg-black data-[state=active]:text-white transition-300',
-            )}
-          >
-            {tab}
-          </TabsTrigger>
-        ))}
+        {Object.values(panelTabsState).map((tab: PanelTabsStateType) => {
+
+          // 1. Assign the component to a capitalized variable
+          const Icon = iconMap[tab];
+
+          return (
+            <TabsTrigger
+              key={tab}
+              value={tab}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 text-xs font-semibold transition-all duration-300',
+                'data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-sm'
+              )}
+            >
+              <Icon className="w-3.5 h-3.5" />
+
+              <span className="capitalize">{tab}</span>
+            </TabsTrigger>
+          );
+        })}
       </TabsList>
     </div>
-  )
-}
+  );
+};
 
 const History = () => {
 
@@ -108,9 +122,9 @@ export const Source = () => {
         Content Sources & Snippets
       </h3>
       {/* Refactored source snippet style for black/white theme */}
-      {contentSources && contentSources?.map((source: any, index) => (
+      {contentSources && contentSources?.map((source: ContentSources, index) => (
         <div key={index} className={cn('w-full h-fit p-4 text-black text-xs gap-3 mb-2.5 overflow-hidden bg-white border border-black/20 rounded-md shadow-sm')}>
-          <p className="font-semibold text-sm mb-1">{source?.source?.substring(0, 70)}...</p>
+          <p className="font-semibold text-sm mb-1">{source?.url?.substring(0, 70)}...</p>
           {/*<p className="text-black/90 text-xs text-wrap font-medium italic">{source?.snippet}</p>*/}
         </div>
       ))}
@@ -125,18 +139,17 @@ export const Source = () => {
 
 
 const Images = () => {
-  const { generatedContent, localImages, setLocalImages } = useContent();
+  const { generatedContent, setGeneratedContent, localImages, setLocalImages } = useContent();
 
   // MAINTAINED LOGIC: Extract images from Markdown
   const extractedUrls = useMemo(() => {
     return extractMarkdownImageUrls(generatedContent);
   }, [generatedContent]);
 
-  const handleInsertImage = (url) => {
-    console.log("Image selected for insertion:", url);
-    toast.success("Image URL copied and ready for editor insertion.", {
-      description: url.length > 50 ? url.substring(0, 47) + '...' : url
-    });
+  const handleInsertImage = (url: string) => {
+    const markdownImage = `\n![Image](${url})\n`;
+    setGeneratedContent(generatedContent + markdownImage);
+    toast.success('Image inserted into content!');
   };
   
   // COMBINED LIST: Merge local and extracted images
@@ -174,7 +187,7 @@ const Images = () => {
   const handleRemoveLocalImage = useCallback((urlToRemove: string) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    setLocalImages((image: any[]) => image.filter(url => url !== urlToRemove));
+    setLocalImages((image: string[]) => image.filter(url => url !== urlToRemove));
   }, [setLocalImages]);
 
 
@@ -288,7 +301,6 @@ const Management = () => {
     }
 
     // In a real application, you would save this to a database or configuration file.
-    // console.log("Saving API Key:", apiKey.trim());
 
     setSaveStatus('Settings saved successfully!');
 

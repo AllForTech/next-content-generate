@@ -34,7 +34,6 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       images: hs.images || [],
       attachedFile: hs.attachedFIle
     }))
-    console.log(allHistory);
     setChatHistory(chatHistory);
   }, [allHistory, contentId]);
 
@@ -44,7 +43,6 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
     }
 
     setCurrentSessionId(history?.sessionId);
-    console.log(history?.sessionId);
     setGeneratedContent(history?.content);
     setUnsplashImages(history?.images);
     setContentSources(history?.searchResults);

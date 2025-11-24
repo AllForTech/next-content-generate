@@ -159,13 +159,7 @@ const JobCard = ({ job }: { job: any }) => {
       });
 
     } catch (error: any) {
-      console.log(error);
-      toast.error("Deletion Failed", {
-        id: toastId,
-        description: error.message || "Could not delete the job from the database.",
-      });
-    } finally {
-      setIsDeleting(false);
+      toast.error(error.message || 'An error occurred while deleting the schedule.');
     }
   };
 

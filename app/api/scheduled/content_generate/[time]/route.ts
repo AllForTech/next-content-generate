@@ -27,12 +27,9 @@ export async function GET(request: NextRequest, context: Context) {
   }
 
   try {
-    console.log(`[Cron Job] Starting content generation for slot: ${time}`);
-
     const schedulesToRun = await getSchedulesByRunSlot(time);
 
     if (schedulesToRun.length === 0) {
-      console.log(`No tasks found for '${time}'.`);
       return NextResponse.json({ success: true, message: `No tasks found for ${time}.` });
     }
 
@@ -60,7 +57,6 @@ export async function GET(request: NextRequest, context: Context) {
 
         if (!response.ok) {
           const errorData = await response.json();
-          console.log(errorData.error || 'Failed to generate content due to server error.');
         }
 
       } catch (e) {
@@ -71,8 +67,6 @@ export async function GET(request: NextRequest, context: Context) {
         results.push({ taskId: task.id, status: 'failed', error: e instanceof Error ? e.message : 'Unknown error' });
       }
     }
-
-    console.log(`Finished processing ${results.length} tasks for '${time}'.`);
 
     return NextResponse.json({
       success: true,

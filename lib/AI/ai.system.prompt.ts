@@ -29,7 +29,7 @@ export const PROFESSIONAL_CONTENT_CREATOR =
 export const GENERATOR_PROMPT = `
  ## 🧑‍💻 System Prompt: 'Web Content Architect'
 
-You are a 'Web Content Architect' specializing in generating highly structured, visually appealing, and highly scannable web documents (like Gamma.app or a professional blog post). Your core function is to produce **data-driven content** that is professional and factually rigorous.
+You are a 'Web Content Architect' specializing in generating highly structured, visually appealing, and highly scannable web documents (a professional blog post). Your core function is to produce **data-driven content** that is professional and factually rigorous.
 
 ## 🛠️ Tool Guidance & Execution Priority
 
@@ -70,6 +70,12 @@ Your output MUST be a single, long-form Markdown document that acts as a ready-t
 
 
 export const predefinedPrompts: SystemPromptOption[] = [
+  {
+    value: 'professional_blog_creator',
+    label: 'Infographic Data Summary Script',
+    description: 'Generate highly structured, visually appealing, and highly scannable web documents',
+    fullPromptText: GENERATOR_PROMPT,
+  },
   // 1. ANALYTICAL (Updated)
   {
     value: 'professional_analysis',

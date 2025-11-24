@@ -18,7 +18,7 @@ export type PromptProps = {
   contentId: string;
 }
 
-const tones = ["Professional", "Casual", "Witty", "Sarcastic", "Formal"];
+const tones = ["Professional", "Casual", "Witty", "Sarcastic", "Academic", "Technical", "Friendly", "Authoritative"];
 
 // --- NEW TONE SELECTOR COMPONENT ---
 const ToneSelector = ({ selectedTone, setTone }) => {
@@ -32,10 +32,10 @@ const ToneSelector = ({ selectedTone, setTone }) => {
           // Animation for press effect
           whileTap={{ scale: 0.95 }}
           className={cn(
-            'text-xs font-semibold px-4 py-1.5 rounded-full transition-all duration-300 border',
+            'text-xs font-normal px-3 py-1 rounded-full transition-all duration-300 border',
             // Active State: Black background, White text, Indigo ring
             t === selectedTone
-              ? 'bg-black text-white border-black ring-2  shadow-md'
+              ? 'bg-black text-white border-black ring-2'
               // Inactive State: White background, Black text, subtle border
               : 'bg-white text-black/80 border-black/20 hover:border-black'
           )}
@@ -104,7 +104,7 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
           'shadow-xl shadow-black/10 transition-shadow duration-300' // Subtle floating shadow
         )}
       >
-        <form onSubmit={handleSubmit} className="w-full h-full flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="w-full h-full flex  flex-col gap-4">
 
           {/* TONE SELECTOR (Replaced NativeSelect) */}
           <div className="w-full flex flex-col gap-2.5">
@@ -121,27 +121,29 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
             <RenderReferenceUrl url={url} setUrl={setUrl} urls={urls} setUrls={setUrls}/>
           </div>
 
-          {/* Prompt Textarea */}
-          <div className="flex-grow flex flex-col h-fit">
-            <Label htmlFor="prompt" className="font-semibold text-xs text-black mb-2">Prompt</Label>
-            <Textarea
-              id="prompt"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Enter your detailed prompt here..."
-              // Monochrome style: White background, subtle black border
-              className={cn("w-full h-[160px] resize-none text-sm p-3 border border-black/20 rounded-lg bg-white focus:border-indigo-600 transition-colors")}
-            />
-          </div>
+          <div className={cn('w-full h-fit center flex-col gap-2.5')}>
+            {/* Prompt Textarea */}
+            <div className="flex-grow flex flex-col h-fit">
+              <Label htmlFor="prompt" className="font-semibold text-xs text-black mb-2">Prompt</Label>
+              <Textarea
+                id="prompt"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Enter your detailed prompt here..."
+                // Monochrome style: White background, subtle black border
+                className={cn("w-full h-[160px] resize-none text-sm p-3 border border-black/20 rounded-lg bg-white focus:border-indigo-600 transition-colors")}
+              />
+            </div>
 
-          {/* CTA Button (Black/Indigo Theme) */}
-          <Button
-            disabled={isLoading}
-            type={'submit'}
-            className="w-full bg-black text-white hover:bg-stone-700 transition-colors duration-300 font-bold text-base shadow-lg shadow-black/20 disabled:bg-black/50"
-          >
-            {isLoading ? 'Generating...' : 'Generate Content'}
-          </Button>
+            {/* CTA Button (Black/Indigo Theme) */}
+            <Button
+              disabled={isLoading}
+              type={'submit'}
+              className="w-full bg-black text-white hover:bg-stone-700 transition-colors duration-300 font-bold text-base shadow-lg shadow-black/20 disabled:bg-black/50"
+            >
+              {isLoading ? 'Generating...' : 'Generate Content'}
+            </Button>
+          </div>
         </form>
       </motion.div>
     </ScrollArea>

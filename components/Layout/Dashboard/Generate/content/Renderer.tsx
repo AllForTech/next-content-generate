@@ -12,6 +12,12 @@ import { Content } from '@/components/Layout/Dashboard/Generate/ContentRenderer'
 import { MarkdownViewer } from '@/components/Layout/Dashboard/Generate/content/MarkdownViewer';
 import { Source } from '../RightSidebarPanel';
 import EditorLoader from '@/components/Layout/Dashboard/Generate/Editor/EditorLoader';
+import {
+  FileText,
+  PenLine,
+  Link as LinkIcon,
+  Code
+} from 'lucide-react';
 
 
 const Editor = dynamic(() => import('../Editor/Editor'), {
@@ -51,6 +57,13 @@ export default function Renderer(){
 const RendererTabs = ( ) => {
   const { generatedContent } = useContent();
 
+  const iconMap = {
+    [contentRendererTabsState.content]: FileText,
+    [contentRendererTabsState.editor]: PenLine,
+    [contentRendererTabsState.sources]: LinkIcon,
+    [contentRendererTabsState.markdown]: Code,
+  };
+
   return generatedContent && (
     <motion.div
       initial={{ opacity: 0, y: 100 }}
@@ -59,16 +72,22 @@ const RendererTabs = ( ) => {
       transition={{ duration: 0.2, ease: 'easeInOut' }}
       className={'w-full h-fit flex-col gap-2.5 center'}>
       <TabsList className={cn('w-full bg-stone-200 center gap-2')}>
-        {Object.values(contentRendererTabsState).map(tab => (
-          <TabsTrigger
-            key={tab}
-            value={tab}
-            className={cn('text-xs font-semibold data-[state=active]:bg-neutral-900 data-[state=active]:text-white capitalize transition-300',
-            )}
-          >
-            {tab}
-          </TabsTrigger>
-        ))}
+        {Object.values(contentRendererTabsState).map(tab => {
+          const Icon = iconMap[tab];
+
+          return (
+            <TabsTrigger
+              key={tab}
+              value={tab}
+              className={cn(
+                'transition-300 text-xs font-semibold capitalize data-[state=active]:bg-neutral-900 data-[state=active]:text-white',
+              )}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span className="capitalize">{tab}</span>
+            </TabsTrigger>
+            )
+        })}
       </TabsList>
     </motion.div>
   )
