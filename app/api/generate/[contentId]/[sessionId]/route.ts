@@ -8,7 +8,7 @@ import { searchUnsplashImages } from '@/lib/AI/ai.image';
 import { z } from 'zod';
 import { executeTavilySearch } from '@/lib/tavily/tavily.search';
 import { scrapeUrl } from '@/lib/scraper/scraper';
-import { fileToBase64 } from '@/lib/AI/ai.actions';
+import { fileToBase64, refinePrompt } from '@/lib/AI/ai.actions';
 
 export const runtime = 'nodejs';
 
@@ -25,7 +25,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
   const urlJson = formData.get('url');
 
   // Parse the JSON back
-  const prompt = typeof promptJson === 'string' ? JSON.parse(promptJson) : promptJson;
+  const userPrompt = typeof promptJson === 'string' ? JSON.parse(promptJson) : promptJson;
   const tone = typeof toneJson === 'string' ? JSON.parse(toneJson) : toneJson;
   const url = typeof urlJson === 'string' ? JSON.parse(urlJson) : urlJson;
 
@@ -52,9 +52,13 @@ export async function POST(req: Request, {params}: { params: { contentId: string
     let unsplashImages = [];
     let scrapedData = []
 
+  const formatedPrompt = `"${userPrompt}", \n ${url ? `use this URL for reference: ${url}` : ''}, \n ${filePayload ? 'Analyze the attached document and answer the prompt based on its content.' : ''}`
+
+  const prompt = await refinePrompt(formatedPrompt);
+
   const textPart = {
     type: 'text',
-    text: `"${prompt}", \n ${url ? `use this URL for reference: ${url}` : ''}, \n ${filePayload ? 'Analyze the attached document and answer the prompt based on its content.' : ''}`,
+    text: prompt,
   };
 
   const messages: any[] = [

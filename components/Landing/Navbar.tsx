@@ -41,7 +41,7 @@ export const Navbar = () => {
           transition={{ duration: 0.8 }}
         >
           <Link href="/" className="text-xl font-extrabold text-black tracking-tighter flex items-center">
-            <BookOpen className="h-5 w-5 mr-1.5 text-indigo-600" />
+            <BookOpen className="h-5 w-5 mr-1.5 !text-black" />
             ThinkInk
           </Link>
         </motion.div>
@@ -52,11 +52,11 @@ export const Navbar = () => {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-black hover:text-indigo-600 transition-colors relative group"
+              className="text-sm font-medium text-black hover:text-black transition-colors relative group"
             >
               {link.label}
               {/* Active/Hover Underline Effect */}
-              <span className="absolute bottom-[-5px] left-0 w-full h-[2px] bg-indigo-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+              <span className="absolute bottom-[-5px] left-0 w-full h-[2px] bg-black scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
             </Link>
           ))}
         </div>
@@ -72,7 +72,7 @@ export const Navbar = () => {
 
         {/* Mobile Menu Button */}
         <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)} className="text-black p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <button onClick={() => setIsOpen(!isOpen)} className="text-black p-2 rounded-full hover:bg-neutral-100 transition-colors">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -90,7 +90,7 @@ export const Navbar = () => {
             <Link
               key={link.href}
               href={link.href}
-              className="text-lg font-medium text-black hover:text-indigo-600 transition-colors py-1"
+              className="text-lg font-medium text-black hover:text-black transition-colors py-1"
               onClick={() => setIsOpen(false)}
             >
               {link.label}

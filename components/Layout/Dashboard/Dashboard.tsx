@@ -47,7 +47,7 @@ export default function Dashboard() {
     if (contents.length !== 0) {
       // 2. Data Loaded State: Show Real Content
       return (
-        <ScrollArea className={cn('w-full h-[62dvh]')}>
+        <ScrollArea className={cn('w-full px-3 rounded-md h-[95%]')}>
           <div className="grid grid-cols-1 overflow-hidden md:grid-cols-2 lg:grid-cols-3 gap-6">
             {contents.map((content: any) => (
               <ContentCard
@@ -66,10 +66,10 @@ export default function Dashboard() {
     // 3. Empty State: Show No Content Message
     return (
       <div className="text-center p-16 bg-indigo-50 rounded-xl border border-indigo-200">
-        <p className="text-2xl font-bold text-indigo-700 mb-2">
+        <p className="text-2xl font-bold text-black mb-2">
           No content found.
         </p>
-        <p className="text-md text-indigo-600">
+        <p className="text-md text-black">
           Start a new search or create your first piece of content!
         </p>
       </div>
@@ -89,7 +89,7 @@ export default function Dashboard() {
           "shadow-2xl shadow-indigo-500/10 rounded-[2rem]"
         )}
       >
-        <div className={cn("flex flex-col container-full gap-3")}>
+        <div className={cn("flex flex-col container-full gap-4")}>
 
           {/* Header Section */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -100,9 +100,9 @@ export default function Dashboard() {
           </div>
 
           {/* Search Area */}
-          <div className="mb-4">
-            <Search placeholder="Search content by keyword or type..." />
-          </div>
+          {/*<div className="mb-4">*/}
+          {/*  /!*<Search placeholder="Search content by keyword or type..." />*!/*/}
+          {/*</div>*/}
           {displayContent()}
         </div>
       </div>
