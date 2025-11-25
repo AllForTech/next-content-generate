@@ -1,16 +1,34 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { cn } from "@/lib/utils";
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { X, Link as LinkIcon, Plus, Paperclip } from 'lucide-react';
+import {
+  X,
+  Link as LinkIcon,
+  Plus,
+  Paperclip,
+  Send,
+  Settings2,
+  Sparkles,
+  SlidersHorizontal,
+  Eye,
+  Trash2,
+} from 'lucide-react';
 import { useContent } from "@/context/GenerationContext";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-// Removed NativeSelect import as it is being replaced
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+
+interface PromptInputAreaProps {
+  prompt: string;
+  setPrompt: (value: string) => void;
+  onRefineClick: () => void; // Function to open a refinement modal/panel
+  onViewSourceClick: () => void; // Function to open the prompt viewing panel
+}
 
 export type PromptProps = {
   onGenerate: (prompt: string, tags?: string[], tone?: string, urls?: string[], attachedFile?: any) => void;
@@ -52,10 +70,23 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
   const [tags, setTags] = useState('');
   const [tone, setTone] = useState('Professional');
   const [url, setUrl] = useState('');
+  const [isRefining, setIsRefining] = useState(false);
+  const [isViewingGoal, setIsViewingGoal] = useState(true);
   const [urls, setUrls] = useState([]);
   const [attachedFile, setAttachedFile] = useState(null);
 
   const { isLoading } = useContent();
+
+  const handleRefineClick = useCallback(() => {
+    setIsRefining(true);
+    setIsViewingGoal(false);
+  }, []);
+
+  const handleViewSourceClick = useCallback(() => {
+    setIsViewingGoal(true);
+    setIsRefining(false);
+  }, []);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +124,7 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
   };
 
   return (
-    <ScrollArea className={cn('center !justify-start flex-col w-full  max-h-full')}>
+    <ScrollArea className={cn('center !justify-start flex-col !h-full flex-1')}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -104,7 +135,7 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
           'shadow-xl shadow-black/10 transition-shadow duration-300' // Subtle floating shadow
         )}
       >
-        <form onSubmit={handleSubmit} className="flex-1 between flex-col gap-4">
+        <form onSubmit={handleSubmit} className="container-full between flex-col gap-4">
 
           {/* TONE SELECTOR (Replaced NativeSelect) */}
           <div className="w-full flex flex-col gap-2.5">
@@ -121,29 +152,8 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
             <RenderReferenceUrl url={url} setUrl={setUrl} urls={urls} setUrls={setUrls}/>
           </div>
 
-          <div className={cn('w-full h-fit center flex-col gap-2.5')}>
-            {/* Prompt Textarea */}
-            <div className="w-full flex flex-col h-fit">
-              <Label htmlFor="prompt" className="font-semibold text-xs text-black mb-2">Prompt</Label>
-              <Textarea
-                id="prompt"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Enter your detailed prompt here..."
-                // Monochrome style: White background, subtle black border
-                className={cn("w-full h-[170px] resize-none text-sm p-3 border border-black/20 rounded-lg bg-white focus:border-neutral-600 transition-colors")}
-              />
-            </div>
-
-            {/* CTA Button (Black/Indigo Theme) */}
-            <Button
-              disabled={isLoading}
-              type={'submit'}
-              className="w-full bg-black text-white hover:bg-stone-700 transition-colors duration-300 font-bold text-base shadow-lg shadow-black/20 disabled:bg-black/50"
-            >
-              {isLoading ? 'Generating...' : 'Generate Content'}
-            </Button>
-          </div>
+          {/* Prompt Textarea */}
+          <PromptInputArea prompt={prompt} setPrompt={setPrompt} onRefineClick={handleRefineClick} onViewSourceClick={handleViewSourceClick}/>
         </form>
       </motion.div>
     </ScrollArea>
@@ -152,6 +162,103 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
 };
 
 export default Prompt;
+
+
+const PromptInputArea = ({ prompt, setPrompt, onRefineClick, onViewSourceClick }: PromptInputAreaProps) => {
+  // Determine if the submit button should be active
+  const isPromptEmpty = prompt.trim().length === 0;
+
+  return (
+    // 1. Main container: Elevated and slightly inset appearance
+    <div className={cn('w-full center flex-col bg-white')}>
+
+      {/* Optional: Descriptive header or context area */}
+      <div className="w-full flex justify-between items-center mb-1">
+        <Label htmlFor="prompt" className="font-medium text-xs text-neutral-600">
+          <Sparkles className="w-3 h-3 inline mr-1" />
+          ThinkInk AI Prompt
+        </Label>
+        {/* Optional quick action for prompt templates */}
+        <Button
+          variant="ghost"
+          type={'button'}
+          className="h-6 px-2 text-xs text-neutral-500 hover:text-black hover:bg-neutral-200 transition-colors"
+        >
+          View Templates
+        </Button>
+      </div>
+
+      {/* 2. Textarea and Submit Button Container */}
+      <div className="w-full flex items-end gap-2">
+        <Textarea
+          id="prompt"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Enter your detailed research prompt here... (Shift + Enter for new line)"
+          // Key change: Compact appearance with max height, integrated border
+          className={cn(
+            "w-full h-[160px] resize-none ring-neutral-300 ring-2 text-sm p-3 border-none shadow-inner rounded-lg bg-white",
+            "focus:ring-2 focus:ring-neutral-600 focus:outline-none transition-shadow",
+            "overflow-y-auto" // Ensure scrollbar appears when limit is hit
+          )}
+          // Custom logic for submission on Enter (without Shift) would be handled here via onKeyDown
+        />
+      </div>
+
+      {/* 3. Prompt Refinement/Action Toolbar */}
+      <div className="w-full flex justify-end gap-2 mt-2 pt-2 border-t border-black/10">
+
+        {/* Refine Button */}
+        <Button
+          onClick={onRefineClick}
+          type={'button'}
+          variant="ghost"
+          size="sm"
+          className="h-8 px-3 text-xs text-neutral-600 hover:text-black hover:bg-neutral-200 transition-colors"
+          disabled={isPromptEmpty}
+        >
+          <SlidersHorizontal className="w-3.5 h-3.5 mr-1" />
+          Refine Prompt
+        </Button>
+
+        {/* View Source/Goal Button */}
+        <Button
+          type={'button'}
+          onClick={onViewSourceClick}
+          variant="ghost"
+          size="sm"
+          className="h-8 px-3 text-xs text-neutral-600 hover:text-black hover:bg-neutral-200 transition-colors"
+        >
+          <Eye className="w-3.5 h-3.5 mr-1" />
+          View Goal
+        </Button>
+
+        {/* Optional: Settings/Model Select */}
+        <Button
+          type={'button'}
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0 text-neutral-600 hover:text-black hover:bg-neutral-200 transition-colors"
+        >
+          <Settings2 className="w-4 h-4" />
+        </Button>
+
+        {/* Submit Button */}
+        <Button
+          type={'submit'}
+          disabled={isPromptEmpty}
+          className={cn(
+            "h-10 w-10 p-0 flex-shrink-0 bg-black text-white hover:bg-neutral-800 transition-colors",
+            "disabled:bg-neutral-300 disabled:text-neutral-500"
+          )}
+        >
+          <Send className="w-4 h-4" />
+        </Button>
+      </div>
+      <Separator className="my-0.5" />
+    </div>
+  );
+};
 
 // --- RenderReferenceUrl Component (No change, repeated for completeness) ---
 const RenderReferenceUrl = ({ setUrl, url, urls, setUrls }: { url: string, setUrl: React.Dispatch<React.SetStateAction<string>>, urls: string[], setUrls: React.Dispatch<React.SetStateAction<string[]>>}) => {
@@ -181,7 +288,7 @@ const RenderReferenceUrl = ({ setUrl, url, urls, setUrls }: { url: string, setUr
   }
 
   return (
-    <div className={'center flex-col gap-3 w-full h-fit'}>
+    <div className={'center flex-col gap-3 w-full overflow-x-hidden mb-3 h-fit'}>
       <div className={cn('w-full flex justify-between items-end')}>
         <Label htmlFor="url" className="font-semibold text-xs text-black">Reference URLs</Label>
       </div>
@@ -208,23 +315,27 @@ const RenderReferenceUrl = ({ setUrl, url, urls, setUrls }: { url: string, setUr
         </Button>
       </div>
 
-      {/* URL Tags (Creative Styling) */}
-      <div className={cn('w-full max-h-[100px] overflow-y-auto pt-1 grid grid-cols-2 gap-2')}>
-        {urls && urls.map(u => (
-          <motion.div
-            key={u}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className={cn('flex items-center justify-start text-xs h-fit p-1.5 py-0.5 rounded-full bg-black text-white cursor-pointer hover:opacity-80 transition-opacity')}
-            onClick={() => handleRemove(u)}
-          >
-            <span className="max-w-[120px] center overflow-hidden  whitespace-nowrap text-ellipsis pr-1 font-medium">
-              {u.replace(/https?:\/\//, '').substring(0, 15)}...
-            </span>
-            <X className="h-3 w-3 ml-0.5 text-white/80" />
-          </motion.div>
-        ))}
+      <div id={'hide-scrollbar'} className="bg-neutral-50 overflow-hidden mt-2 flex-1 center flex-row border border-gray-200 rounded-md p-2 max-h-40">
+        <div id={'hide-scrollbar'}  className={cn('!overflow-x-auto rounded-sm px-3  absolute flex-1 gap-2 flex-row flex justify-start w-full')}>
+          {urls.map((url, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between text-xs py-1 px-2 mr-1 rounded-sm bg-neutral-50 hover:bg-neutral-200 transition-colors"
+            >
+              <LinkIcon className="h-3 w-3 mr-2 text-neutral-500 shrink-0" />
+              <span className="truncate flex-grow text-neutral-700">{url?.substring(0, 30)}</span>
+              <Button
+                type="button"
+                onClick={() => handleRemove(url)}
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-neutral-500 hover:bg-neutral-100"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -251,7 +362,7 @@ const RenderFileAttachment = ({ attachedFile, handleFileAttach, handleRemoveFile
           <label htmlFor="file-attach-input" className="cursor-pointer text-xs">
             <Button
               asChild
-              className='bg-black text-white hover:bg-indigo-600 h-8 px-3 transition-colors'
+              className='bg-black text-white text-xs hover:bg-neutral-600 h-8 px-3 transition-colors'
             >
               <div className="flex items-center">
                 <Paperclip className="h-4 w-4 mr-1" /> Attach
@@ -274,9 +385,9 @@ const RenderFileAttachment = ({ attachedFile, handleFileAttach, handleRemoveFile
           animate={{ opacity: 1, y: 0 }}
           className={cn('w-full flex items-center p-2 rounded-lg bg-indigo-50 border border-indigo-200 text-sm text-black/80')}
         >
-          <Paperclip className="h-4 w-4 mr-2 text-indigo-600 flex-shrink-0" />
+          <Paperclip className="h-4 w-4 mr-2 text-black flex-shrink-0" />
           <span className="truncate font-medium">{attachedFile.name}</span>
-          <span className="ml-auto text-xs text-indigo-600 font-bold">
+          <span className="ml-auto text-xs text-black font-bold">
                         {attachedFile.type.split('/')[1] || attachedFile.type}
                     </span>
         </motion.div>

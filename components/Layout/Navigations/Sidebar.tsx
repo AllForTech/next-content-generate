@@ -2,16 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { PanelLeft, FileText, Globe, MessageSquare, Menu, BookOpen, Settings, Home } from 'lucide-react'; // Added Home icon
-
+import { PanelLeft, FileText, Globe, MessageSquare, Menu, BookOpen, Settings, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { useContent } from '@/context/GenerationContext'
-import React, { useState } from 'react'; // Import useState for collapse state
+import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
-import { UserAvatar } from '@/components/Layout/Navigations/UserAvatar';
 import { useAuth } from '@/context/AuthContext';
 import { ChatHistoryRenderer } from '@/components/Layout/Dashboard/Generate/ChatHistoryRenderer';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -170,13 +168,12 @@ export function Sidebar() {
 
             <Separator className="my-0.5" />
 
-            <div className={cn('flex-grow w-full center')}>
+            <div className={cn('flex-1 w-full center')}>
               {chatHistory.length !== 0 && !isCollapsed && pathname.startsWith('/dashboard/generate') && (<ChatHistoryRenderer/>)}
             </div>
           </div>
         </ScrollArea>
 
-        <Separator className="my-2" />
 
         {/* --- Bottom Links (History and Settings) --- */}
         <div className="space-y-1 w-full">

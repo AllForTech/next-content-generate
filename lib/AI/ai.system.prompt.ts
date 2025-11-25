@@ -83,7 +83,7 @@ Your output MUST be a single, long-form Markdown document that acts as a ready-t
 export const predefinedPrompts: SystemPromptOption[] = [
   {
     value: 'professional_blog_creator',
-    label: 'Infographic Data Summary Script',
+    label: 'Professional In-Depth Researcher, SEO & Content Writer',
     description: 'Generate highly structured, visually appealing, and highly scannable web documents',
     fullPromptText: GENERATOR_PROMPT,
   },
