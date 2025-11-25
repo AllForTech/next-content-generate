@@ -39,8 +39,8 @@ export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
   const SidebarContent = (
     <Tabs defaultValue={panelTabsState.prompt} className={'container-full p-1.5 center flex-col gap-2'}>
       <PanelTabs/>
-      <div className={cn('center container-full')}>
-        <TabsContent className={'container-full'} value={panelTabsState.prompt}>
+      <div className={cn('center flex-1 h-full')}>
+        <TabsContent className={'flex-1 h-full'} value={panelTabsState.prompt}>
           <Prompt contentType={''} onGenerate={onGenerate} contentId={contentId} />
         </TabsContent>
         <TabsContent className={'container-full'} value={panelTabsState.system}>

@@ -9,6 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getGeneratedContents, getScheduledJobs } from '@/lib/db/content';
 import { SystemPromptOption } from '@/components/Layout/Dashboard/Generate/AISystemConfig';
 import { predefinedPrompts } from '@/lib/AI/ai.system.prompt';
+import { refinePrompt } from '@/lib/AI/ai.actions';
 
 export type ChatHistoryType = {
   id: string;
@@ -102,6 +103,16 @@ interface GenerationContextType {
   selectedPrompt: SystemPromptOption;
   setSelectedPrompt: (value: SystemPromptOption) => void;
 
+  isRefining: boolean;
+  setIsRefining: (prev: boolean) => void;
+  isViewingGoal: boolean;
+  setIsViewingGoal: (prev: boolean) => void;
+  prompt: string;
+  setPrompt: (value?: string) => void;
+  isRefineLoading: boolean;
+  setIsRefineLoading: (prev?: boolean) => void;
+
+  onRefinePrompt: () => Promise<string>;
 }
 
 // --- 2. Create the Context with Default Values ---
@@ -132,6 +143,10 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const [isUpdating, setIsUpdating] = useState(false);
     const [isDashboardLoading, setIsDashboardLoading] = useState(false);
     const [isSchedulesLoading, setIsSchedulesLoading] = useState(false);
+    const [isRefineLoading, setIsRefineLoading] = useState(false);
+    const [isRefining, setIsRefining] = useState(false);
+    const [isViewingGoal, setIsViewingGoal] = useState(true);
+    const [prompt, setPrompt] = useState('');
     const [selectedPrompt, setSelectedPrompt] = useState<SystemPromptOption>(predefinedPrompts[0]);
 
 
@@ -366,6 +381,14 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       }
   }
 
+  const onRefinePrompt = useCallback(async () => {
+
+    setIsRefineLoading(true);
+    const refinedPrompt = await refinePrompt(prompt);
+    setPrompt(refinedPrompt);
+    setIsRefineLoading(false);
+  }, [prompt, setPrompt])
+
     const value = {
         generatedContent,
         isLoading,
@@ -403,6 +426,14 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       setIsSchedulesLoading,
       selectedPrompt,
       setSelectedPrompt,
+      isRefining,
+      setIsRefining,
+      isViewingGoal,
+      setIsViewingGoal,
+      prompt,
+      setPrompt,
+      isRefineLoading,
+      onRefinePrompt,
     };
 
     return (

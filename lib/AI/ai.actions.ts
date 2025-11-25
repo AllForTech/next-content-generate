@@ -11,16 +11,21 @@ export async function fileToBase64(file) {
 }
 
 export async function refinePrompt(prompt: string){
-  const response = await streamText({
-    model,
-    prompt,
-    system: PromptEngineer,
-  })
 
-  let fullContent = "";
-  for await (const chunk of response.textStream) {
-    fullContent += chunk;
+  try{
+    const response = await streamText({
+      model,
+      prompt,
+      system: PromptEngineer,
+    })
+
+    let fullContent = "";
+    for await (const chunk of response.textStream) {
+      fullContent += chunk;
+    }
+
+    return fullContent
+  }catch (err){
+    return prompt;
   }
-
-  return fullContent
 }

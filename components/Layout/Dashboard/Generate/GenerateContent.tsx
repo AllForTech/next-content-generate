@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useContent } from '@/context/GenerationContext';
 import { RightSidebarPanel } from '@/components/Layout/Dashboard/Generate/RightSidebarPanel';
 import Renderer from './content/Renderer';
+import { RefinementPanel } from '@/components/Layout/Dashboard/Generate/RefinementPanel';
 
 interface GenerateContentProps {
     contentId: string;
@@ -20,6 +21,9 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       setUnsplashImages,
       setContentSources,
       setScrapedData,
+      isRefining,
+      setIsRefining,
+      prompt
     } = useContent();
 
   useEffect(() => {
@@ -55,10 +59,14 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
     return (
       <div
         className={cn(
-          'container-full center relative flex-row gap-2.5 overflow-hidden pr-2 pl-2.5',
+          'container-full flex-1 center relative flex-row gap-2.5 overflow-hidden pr-2 pl-2.5',
         )}
         id={'hide-scrollbar'}
       >
+        {isRefining && <RefinementPanel
+          onClose={() => setIsRefining(false)}
+          prompt={prompt}
+        />}
         <Renderer/>
         <RightSidebarPanel onGenerate={generateContent} contentId={contentId} contentType={''} />
       </div>
