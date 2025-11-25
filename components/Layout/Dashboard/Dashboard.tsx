@@ -47,8 +47,8 @@ export default function Dashboard() {
     if (contents.length !== 0) {
       // 2. Data Loaded State: Show Real Content
       return (
-        <ScrollArea className={cn('w-full px-3 rounded-md h-[95%]')}>
-          <div className="grid grid-cols-1 overflow-hidden md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ScrollArea className={cn('flex-1 px-3 rounded-md h-full')}>
+          <div className="grid grid-cols-1 container-full overflow-hidden md:grid-cols-2 lg:grid-cols-3 gap-6">
             {contents.map((content: any) => (
               <ContentCard
                 key={content?.contentId}
@@ -79,17 +79,15 @@ export default function Dashboard() {
   return (
 
     // Outer container for centering the floating card
-    <div className="flex justify-center container-full pb-16 bg-gray-50/50">
+    <div className="flex justify-center flex-1 !container-full pb-16 bg-white">
 
       {/* The Floating Dashboard Card */}
       <div
         className={cn(
           "w-full h-full max-w-7xl mx-4 lg:mx-auto px-8 py-2.5 md:px-12",
-          "bg-white/95 backdrop-blur-xl border border-gray-100",
-          "shadow-2xl shadow-indigo-500/10 rounded-[2rem]"
         )}
       >
-        <div className={cn("flex flex-col container-full gap-4")}>
+        <div className={cn("flex flex-1 flex-col container-full gap-4")}>
 
           {/* Header Section */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">

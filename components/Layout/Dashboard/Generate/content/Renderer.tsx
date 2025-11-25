@@ -32,8 +32,9 @@ export default function Renderer(){
   } = useContent();
 
   return (
-    <div className={'container-full overflow-hidden shadow-md shadow-stone-400 rounded-lg flex-col gap-2.5 center'}>
-      <Tabs defaultValue={contentRendererTabsState.content} className={'container-full p-1.5 center flex-col gap-2'}>
+    <div className={cn('flex-1 h-full overflow-hidden shadow-md shadow-stone-400 rounded-lg flex-col gap-2.5 center'
+      )}>
+      <Tabs defaultValue={contentRendererTabsState.content} className={'container-full overflow-hidden p-1.5 center !justify-start flex-col gap-2'}>
         <RendererTabs/>
         <div className='container-full overflow-hidden center'>
           <TabsContent className={'container-full'} value={contentRendererTabsState.content}>

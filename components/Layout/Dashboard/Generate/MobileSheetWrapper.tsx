@@ -18,7 +18,7 @@ const SidebarContentWrapper = ({ children, isMobile }: { children: React.ReactNo
     className={cn(
       'flex-col gap-2.5 center',
       // Desktop styles: fixed width, visible
-      !isMobile && 'container-full shadow-md shadow-stone-400 rounded-lg !max-w-[410px]',
+      !isMobile && 'h-full shadow-md shadow-stone-400 rounded-lg w-[330px] lg:w-[30dvw]',
       // Mobile styles: full height, full width for sheet content
       isMobile && 'container-full'
     )}

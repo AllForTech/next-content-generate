@@ -12,7 +12,7 @@ export default function Layout({
     return (
       <GlobalStateProvider>
         <ContextProvider>
-          <div className={cn('screen relative bg-white center flex-row')}>
+          <div className={cn('screen bg-white center flex-row')}>
             {children}
           </div>
         </ContextProvider>

@@ -44,7 +44,7 @@ async function scrapeWithPuppeteer(url: string): Promise<string> {
 
   // Note: For production use in a containerized environment (like Vercel),
   // you may need to pass specific launch arguments (e.g., headless: 'new', args: ['--no-sandbox'])
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox']});
   const page = await browser.newPage();
 
   // Set a good user agent for the Puppeteer session as well

@@ -10,14 +10,15 @@ export default function Layout({
 }>) {
 
     return (
-        <div className={cn('screen bg-white center flex-row')}>
-            <Sidebar />
-            <main className={cn('center container-full flex-col')}>
-              <Navbar/>
-              <div className={'container-full bg-white overflow-hidden rounded-2xl'}>
-                {children}
-              </div>
-            </main>
-        </div>
+      <div className={cn('screen overflow-hidden bg-white flex flex-row', 'justify-center items-center')}>
+        <Sidebar />
+        <main className={cn('flex-1 flex flex-col h-full overflow-hidden')}>
+          <Navbar/>
+
+          <div className={'flex-1 bg-white  overflow-hidden rounded-2xl'}>
+            {children}
+          </div>
+        </main>
+      </div>
     );
 }

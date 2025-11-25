@@ -92,9 +92,9 @@ const PanelTabs = () => {
                 'data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-sm'
               )}
             >
-              <Icon className="w-3.5 h-3.5" />
+              <Icon className={cn("w-3.5 hidden h-3.5", 'lg:block')} />
 
-              <span className="capitalize">{tab}</span>
+              <span className="capitalize text-xs">{tab}</span>
             </TabsTrigger>
           );
         })}

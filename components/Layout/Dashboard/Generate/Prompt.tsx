@@ -93,18 +93,18 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
   };
 
   return (
-    <ScrollArea className={cn('center !justify-start flex-col w-[400px]  max-h-[84dvh]')}>
+    <ScrollArea className={cn('center !justify-start flex-col w-full  max-h-full')}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          'w-[400px] h-full p-4 rounded-2xl flex flex-col',
+          'flex-1 h-full p-4 overflow-hidden rounded-2xl flex flex-col',
           'bg-white/95 backdrop-blur-sm border border-black/5',
           'shadow-xl shadow-black/10 transition-shadow duration-300' // Subtle floating shadow
         )}
       >
-        <form onSubmit={handleSubmit} className="w-full h-full between flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex-1 between flex-col gap-4">
 
           {/* TONE SELECTOR (Replaced NativeSelect) */}
           <div className="w-full flex flex-col gap-2.5">

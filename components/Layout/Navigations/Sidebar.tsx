@@ -14,6 +14,7 @@ import { nanoid } from 'nanoid';
 import { UserAvatar } from '@/components/Layout/Navigations/UserAvatar';
 import { useAuth } from '@/context/AuthContext';
 import { ChatHistoryRenderer } from '@/components/Layout/Dashboard/Generate/ChatHistoryRenderer';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // --- 1. Define Navigation Routes ---
 const navigation = [
@@ -108,14 +109,14 @@ export function Sidebar() {
       // Conditional width for desktop collapse
       className={cn(
         "h-full bg-white shadow-xl border-none outline-none shadow-stone-300 px-3 transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-20" : "w-[200px]"
+        isCollapsed ? "w-20" : "w-full"
       )}
     >
-      <div className="py-3 flex flex-col !items-start w-full h-full">
+      <div className="py-3 flex flex-col !items-start justify-start w-full h-full">
         {/* Logo/Title and Collapse Button */}
-        <div className={cn("flex items-center w-full mb-6", isCollapsed ? "justify-center" : "justify-between pl-1 pr-1")}>
+        <div className={cn("flex items-start w-full mb-6", isCollapsed ? "justify-center mb-8" : "justify-start")}>
           {!isCollapsed && (
-            <div className="w-full gap-2 center !justify-start">
+            <div className="max-w-fit pt-2 px-2.5 gap-2 flex !justify-start">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="32px"
@@ -135,41 +136,45 @@ export function Sidebar() {
             variant="ghost"
             size="icon"
             onClick={toggleCollapse}
-            className={cn("text-black hover:bg-neutral-900/10 hover:text-black", isCollapsed ? "mx-auto" : "mr-0")}
+            className={cn("text-black z-10 absolute top-2.5 right-2.5 hover:bg-neutral-900/10 hover:text-black", isCollapsed ? "mx-auto right-[50%] translate-x-[50%]" : "mr-0")}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             <PanelLeft className={cn("h-5 w-5 transition-transform duration-300", isCollapsed ? 'rotate-180' : 'rotate-0')} />
           </Button>
         </div>
 
-        {/* Navigation Sections */}
-        {navigation.map((section, index) => (
-          <div key={index} className="space-y-1 w-full pb-2">
-            {!isCollapsed && (
-              <h3 className="mb-2 px-4 text-sm font-medium tracking-wider text-foreground/80">
-                {section.title}
-              </h3>
-            )}
-            <div className="space-y-1 w-full">
-              {section.items.map((item) => (
-                <NavLink
-                  key={item.href}
-                  href={item.href}
-                  icon={item.icon}
-                  label={item.label}
-                  pathname={pathname}
-                  isCollapsed={isCollapsed} // Pass new prop
-                />
-              ))}
+        <ScrollArea className={cn('flex-1 w-full px-1.5')}>
+          <div className={cn('container-full overflow-hidden rounded-md flex justify-start flex-col')}>
+            {/* Navigation Sections */}
+            {navigation.map((section, index) => (
+              <div key={index} className="space-y-1 flex flex-col w-full pb-2">
+                {!isCollapsed && (
+                  <h3 className="mb-2 px-4 text-sm font-medium tracking-wider text-foreground/80">
+                    {section.title}
+                  </h3>
+                )}
+                <div className="space-y-1 flex flex-col w-full">
+                  {section.items.map((item) => (
+                    <NavLink
+                      key={item.href}
+                      href={item.href}
+                      icon={item.icon}
+                      label={item.label}
+                      pathname={pathname}
+                      isCollapsed={isCollapsed} // Pass new prop
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <Separator className="my-0.5" />
+
+            <div className={cn('flex-grow w-full center')}>
+              {chatHistory.length !== 0 && !isCollapsed && pathname.startsWith('/dashboard/generate') && (<ChatHistoryRenderer/>)}
             </div>
           </div>
-        ))}
-
-        <Separator className="my-0.5" />
-
-        <div className={cn('flex-grow w-full center')}>
-          {chatHistory.length !== 0 && pathname.startsWith('/dashboard/generate') && (<ChatHistoryRenderer/>)}
-        </div>
+        </ScrollArea>
 
         <Separator className="my-2" />
 
@@ -189,7 +194,8 @@ export function Sidebar() {
 
         <div className={cn('w-full !h-[50px] between p-2.5 space-y-1.5 flex-col bg-stone-300 rounded-md center')}>
           {/* Placeholder for user profile or status */}
-          <p className="text-sm font-medium leading-none">{user && user?.user_metadata?.full_name || user && user?.email?.split('@')[0] || 'User'}</p>
+          <p className={cn("text-sm font-medium leading-none",
+            isCollapsed && 'hidden')}>{user && user?.user_metadata?.full_name || user && user?.email?.split('@')[0] || 'User'}</p>
           <p className="text-[10px] leading-none font-normal text-black/80">
             {user && user?.email}
           </p>
@@ -205,8 +211,8 @@ export function Sidebar() {
       {/* 4a. Desktop Sidebar (Hidden on small screens) */}
       <div
         className={cn(
-          "hidden h-screen shadow-xl border-none outline-none shadow-stone-300 bg-card lg:block transition-all duration-300 ease-in-out",
-          isCollapsed ? "w-20" : "w-[200px]" // Dynamic width applied here
+          "hidden !h-screen shadow-xl relative border-none outline-none shadow-stone-300 bg-card lg:flex transition-all duration-300 ease-in-out",
+          isCollapsed ? "w-20" : "w-[18%]" // Dynamic width applied here
         )}
       >
         {/* We render the sidebar content directly inside the container to manage width */}
@@ -216,7 +222,7 @@ export function Sidebar() {
       {/* 4b. Mobile Sheet (Visible on small screens) */}
       <Sheet>
         <SheetTrigger asChild className="lg:hidden fixed top-4 left-4 z-50">
-          <Button variant="outline" size="icon" className="bg-white border-black text-black hover:bg-gray-100">
+          <Button variant="outline" size="icon" className="bg-white border-black/80 text-black hover:bg-gray-100">
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle navigation</span>
           </Button>
