@@ -93,7 +93,7 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
   };
 
   return (
-    <ScrollArea className={cn('center !justify-start flex-col w-[400px]  max-h-[82dvh]')}>
+    <ScrollArea className={cn('center !justify-start flex-col w-[400px]  max-h-[84dvh]')}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -104,7 +104,7 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
           'shadow-xl shadow-black/10 transition-shadow duration-300' // Subtle floating shadow
         )}
       >
-        <form onSubmit={handleSubmit} className="w-full h-full flex  flex-col gap-4">
+        <form onSubmit={handleSubmit} className="w-full h-full between flex-col gap-4">
 
           {/* TONE SELECTOR (Replaced NativeSelect) */}
           <div className="w-full flex flex-col gap-2.5">
@@ -123,7 +123,7 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
 
           <div className={cn('w-full h-fit center flex-col gap-2.5')}>
             {/* Prompt Textarea */}
-            <div className="flex-grow flex flex-col h-fit">
+            <div className="w-full flex flex-col h-fit">
               <Label htmlFor="prompt" className="font-semibold text-xs text-black mb-2">Prompt</Label>
               <Textarea
                 id="prompt"
@@ -131,7 +131,7 @@ const Prompt = ({ onGenerate, contentType = '', contentId }: PromptProps) => {
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Enter your detailed prompt here..."
                 // Monochrome style: White background, subtle black border
-                className={cn("w-full h-[160px] resize-none text-sm p-3 border border-black/20 rounded-lg bg-white focus:border-indigo-600 transition-colors")}
+                className={cn("w-full h-[170px] resize-none text-sm p-3 border border-black/20 rounded-lg bg-white focus:border-neutral-600 transition-colors")}
               />
             </div>
 

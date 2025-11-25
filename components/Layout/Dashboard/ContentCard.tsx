@@ -20,6 +20,7 @@ import { deleteContent } from "@/lib/actions/content.actions";
 import { toast } from "sonner";
 import { use, useEffect, useState } from 'react';
 import { getContentHistoryById } from '@/lib/db/content';
+import { useContent } from '@/context/GenerationContext';
 
 interface ContentCardProps {
   id: string;
@@ -30,12 +31,15 @@ interface ContentCardProps {
 
 export default function ContentCard({ id, createdAt, content, prompt }: ContentCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  const { setAllContents, allContents } = useContent();
 
   const extractedUrls = content ? extractMarkdownImageUrls(content) : [];
 
   const handleDelete = async () => {
     setIsDeleting(true);
     const result = await deleteContent(id);
+    setAllContents(allContents.filter(c => c?.contentId !== id));
     setIsDeleting(false);
 
     if (result.error) {

@@ -19,38 +19,7 @@ export async function searchUnsplashImages(query: string, count: number = 3) {
     return JSON.stringify({ error: "UNSPLASH_ACCESS_KEY is not configured." });
   }
 
-  if (!process.env.UNSPLASH_ACCESS_KEY) {
-    throw new Error('Missing Unsplash API key.');
-  }
-
-  const unsplash = createApi({
-    accessKey: process.env.UNSPLASH_ACCESS_KEY! || '',
-  });
-
-  try {
-    const result = await unsplash.search.getPhotos({
-      query,
-      page: 1,
-      perPage: 5,
-    });
-
-    if (result.errors) {
-      throw new Error(result.errors[0]);
-    }
-
-    if (result.response.results.length === 0) {
-      return 'No images found.';
-    }
-
-    return result.response.results.map((photo: any) => ({
-      url: photo.urls.regular,
-      alt_description: photo.alt_description,
-      photographer: photo.user.name,
-    }));
-  } catch (error) {
-    return `Error searching for images: ${error.message}`;
-  }
-}
+  console.log(`[Unsplash Tool] Searching for: ${query}`);
 
   try {
     // Use the search.getPhotos endpoint for the best results
@@ -66,7 +35,7 @@ export async function searchUnsplashImages(query: string, count: number = 3) {
 
     // Map the results to a simplified, clean format for the LLM
     const imageUrls = response.response.results.map(photo => ({
-      url: `${photo.urls.regular}&fm=jpg&w=1080&h=720`, // A good, general-purpose image size
+      url: photo.urls.regular, // A good, general-purpose image size
       alt_description: photo.alt_description,
       photographer: photo.user.name,
     }));

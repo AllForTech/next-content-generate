@@ -17,10 +17,9 @@ export interface SystemPromptOption {
 // -------------------------------------------------------------
 
 export const SystemPromptSelector = ({ onPromptChange }: { onPromptChange: (prompt: string) => void }) => {
-  // Initialize with the first prompt
-  const [selectedPromptValue, setSelectedPromptValue] = useState<string>(predefinedPrompts[0].value);
-  
   const { setSelectedPrompt, selectedPrompt } = useContent();
+  // Initialize with the first prompt
+  const [selectedPromptValue, setSelectedPromptValue] = useState<string>(selectedPrompt.fullPromptText);
 
 
   const handleSelectPrompt = (prompt: SystemPromptOption) => {
@@ -48,7 +47,7 @@ export const SystemPromptSelector = ({ onPromptChange }: { onPromptChange: (prom
       <div className={'container-full center overflow-hidden'}>
         <ScrollArea className="flex flex-col w-full rounded-md h-full p-2.5 py-1 space-y-3">
           {predefinedPrompts.map((prompt) => {
-            const isSelected = prompt.value === selectedPromptValue;
+            const isSelected = prompt.value === selectedPrompt.value;
 
             return (
               <div

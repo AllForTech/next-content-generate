@@ -109,7 +109,6 @@ const GenerationContext = createContext<GenerationContextType | undefined>(
     undefined
 );
 
-const ITEMS_PER_PAGE = 6;
 
 // --- 3. Create the Provider Component ---
 export function ContextProvider({ children }: { children: ReactNode }) {
@@ -187,7 +186,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       tags: tags,
       tone: tone,
       url: url,
-      file: attachedFile
+      file: attachedFile,
+      system: selectedPrompt
     };
 
       setIsLoading(true);

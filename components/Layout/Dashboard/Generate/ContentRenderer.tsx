@@ -39,14 +39,14 @@ export const Content: React.FC<ContentRendererProps> = ({ isLoading }: { isLoadi
 
   return (
     <div className={cn('w-full h-full relative center !justify-start flex-col rounded-2xl bg-white')}>
-        <ScrollArea ref={scrollAreaRef} className={cn('container-full center px-1 md:px-4 py-2.5 flex-col !justify-start')}
+        <ScrollArea ref={scrollAreaRef} className={cn('container-full absolute inset-0 center px-1 md:px-4 py-2.5 flex-col !justify-start')}
                     id={'hide-scrollbar'}
         >
 
           {isLoading ? (
             <ContentLoadingSkeleton/>
           ): (
-            <article className={cn('container-full flex markdown prose flex-col !m-0 !justify-start')}>
+            <article className={cn('container-full  flex markdown prose flex-col !m-0 !justify-start')}>
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeHighlight, rehypeRaw]}

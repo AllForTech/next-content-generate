@@ -23,11 +23,17 @@ export async function POST(req: Request, {params}: { params: { contentId: string
   const promptJson = formData.get('prompt');
   const toneJson = formData.get('tone');
   const urlJson = formData.get('url');
+  const systemJson = formData.get('system');
 
   // Parse the JSON back
   const userPrompt = typeof promptJson === 'string' ? JSON.parse(promptJson) : promptJson;
   const tone = typeof toneJson === 'string' ? JSON.parse(toneJson) : toneJson;
   const url = typeof urlJson === 'string' ? JSON.parse(urlJson) : urlJson;
+  const system = typeof systemJson === 'string' ? JSON.parse(systemJson) : systemJson;
+
+  if (!system){
+    return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });
+  }
 
   // 3. Extract the file (it comes as a Blob object)
   const uploadedFile = formData.get('document'); // Use the name you append on the client
@@ -97,7 +103,7 @@ export async function POST(req: Request, {params}: { params: { contentId: string
       model: model,
 
       // Pass the detailed system instructions
-      system: `${GENERATOR_PROMPT} \n The user wants the content to have a ${tone} tone.`,
+      system: `${system.fullPromptText} \n The user wants the content to have a ${tone} tone.`,
 
       tools: {
         scrape: tool({

@@ -103,14 +103,6 @@ const PanelTabs = () => {
   );
 };
 
-const History = () => {
-
-  return (
-    <div className={cn('container-full !w-[400px] center flex-col gap-2')}>
-      <ChatHistoryRenderer/>
-    </div>
-  )
-}
 
 export const Source = () => {
   const { contentSources } = useContent();
