@@ -5,6 +5,7 @@ import { useContent } from '@/context/GenerationContext';
 import { RightSidebarPanel } from '@/components/Layout/Dashboard/Generate/RightSidebarPanel';
 import Renderer from './content/Renderer';
 import { RefinementPanel } from '@/components/Layout/Dashboard/Generate/RefinementPanel';
+import { ApiSenderDialog } from '@/components/Layout/Dashboard/Generate/ApiSenderDialog';
 
 interface GenerateContentProps {
     contentId: string;
@@ -23,7 +24,9 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       setScrapedData,
       isRefining,
       setIsRefining,
-      prompt
+      prompt,
+      isDialogOpen,
+      setIsDialogOpen
     } = useContent();
 
   useEffect(() => {
@@ -67,6 +70,11 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
           onClose={() => setIsRefining(false)}
           prompt={prompt}
         />}
+        <ApiSenderDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+        />
+
         <Renderer/>
         <RightSidebarPanel onGenerate={generateContent} contentId={contentId} contentType={''} />
       </div>

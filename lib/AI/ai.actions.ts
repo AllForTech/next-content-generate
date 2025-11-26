@@ -10,7 +10,7 @@ export async function fileToBase64(file) {
   return buffer.toString('base64');
 }
 
-export async function refinePrompt(prompt: string){
+export async function refinePrompt(prompt: string, system?: string, urls?: string[], tone?: string) {
 
   try{
     const response = await streamText({

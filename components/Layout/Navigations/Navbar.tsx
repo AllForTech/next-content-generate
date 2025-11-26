@@ -17,7 +17,11 @@ export const Navbar = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const { setIsEditingRaw, isEditingRaw } = useGlobalState();
-  const { selectedPrompt } = useContent();
+  const {
+    selectedPrompt,
+    isDialogOpen,
+    setIsDialogOpen,
+  } = useContent();
 
   return (
     <motion.div
@@ -39,6 +43,10 @@ export const Navbar = () => {
 
           {/* Right: Actions and Avatar */}
           <div className={'center gap-5'}>
+
+            <button onClick={() => setIsDialogOpen(!isDialogOpen)} className="text-black p-1 hover:bg-gray-100 rounded-md container-fit transition-colors">
+              API
+            </button>
 
             {/* Desktop Avatar */}
             <div className="hidden md:flex items-center space-x-4">
@@ -66,8 +74,8 @@ export const Navbar = () => {
           >
             <div className="container mx-auto px-4 flex flex-col space-y-4 py-4">
               {/* Mobile Links would go here */}
-              <Link href="/settings" className="text-black font-medium hover:text-indigo-600">Settings</Link>
-              <Link href="/help" className="text-black font-medium hover:text-indigo-600">Help</Link>
+              <Link href="/settings" className="text-black font-medium hover:text-black">Settings</Link>
+              <Link href="/help" className="text-black font-medium hover:text-black">Help</Link>
             </div>
           </motion.div>
         )}

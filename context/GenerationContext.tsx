@@ -111,6 +111,8 @@ interface GenerationContextType {
   setPrompt: (value?: string) => void;
   isRefineLoading: boolean;
   setIsRefineLoading: (prev?: boolean) => void;
+  isDialogOpen: boolean;
+  setIsDialogOpen: (prev?: boolean) => void;
 
   onRefinePrompt: () => Promise<string>;
 }
@@ -146,6 +148,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     const [isRefineLoading, setIsRefineLoading] = useState(false);
     const [isRefining, setIsRefining] = useState(false);
     const [isViewingGoal, setIsViewingGoal] = useState(true);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [prompt, setPrompt] = useState('');
     const [selectedPrompt, setSelectedPrompt] = useState<SystemPromptOption>(predefinedPrompts[0]);
 
@@ -434,6 +437,8 @@ export function ContextProvider({ children }: { children: ReactNode }) {
       setPrompt,
       isRefineLoading,
       onRefinePrompt,
+      isDialogOpen,
+      setIsDialogOpen,
     };
 
     return (
