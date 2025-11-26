@@ -14,21 +14,19 @@ const navLinks = [
 export const Footer = () => {
   return (
     // 1. Dramatic Background Change: Pure Black
-    <footer className="py-16 bg-black text-white border-t border-gray-900">
-      <div className="container mx-auto px-4 max-w-7xl">
-
+    <footer className="border-t border-gray-900 bg-black py-16 text-white">
+      <div className="container mx-auto max-w-7xl px-4">
         {/* TOP TIER: Branding and Primary Navigation */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center pb-10 mb-8 border-b border-gray-800">
-
+        <div className="mb-8 flex flex-col items-start justify-between border-b border-gray-800 pb-10 md:flex-row md:items-center">
           {/* Brand/Logo */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-3xl font-extrabold tracking-tighter text-white flex items-center mb-6 md:mb-0"
+            className="mb-6 flex items-center text-3xl font-extrabold tracking-tighter text-white md:mb-0"
           >
-            <BookOpen className="h-6 w-6 mr-2 text-indigo-500" /> ThinkInk
+            <BookOpen className="mr-2 h-6 w-6 text-indigo-500" /> ThinkInk
           </motion.div>
 
           {/* Navigation Links */}
@@ -37,13 +35,13 @@ export const Footer = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-8"
+            className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-8"
           >
             {navLinks.map((link, index) => (
               <Link
                 key={index}
                 href={link.href}
-                className="text-sm font-medium text-white/80 hover:text-indigo-500 transition-colors duration-200"
+                className="text-sm font-medium text-white/80 transition-colors duration-200 hover:text-indigo-500"
               >
                 {link.name}
               </Link>
@@ -52,15 +50,14 @@ export const Footer = () => {
         </div>
 
         {/* BOTTOM TIER: Copyright and Social Media */}
-        <div className="flex flex-col md:flex-row items-center justify-between">
-
+        <div className="flex flex-col items-center justify-between md:flex-row">
           {/* Copyright */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-sm text-white/60 mb-4 md:mb-0"
+            className="mb-4 text-sm text-white/60 md:mb-0"
           >
             &copy; {new Date().getFullYear()} ThinkInk, Inc. All rights reserved.
           </motion.div>
@@ -73,14 +70,29 @@ export const Footer = () => {
             viewport={{ once: true }}
             className="flex space-x-5"
           >
-            <Link href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-              <Github className="h-6 w-6 text-white hover:text-indigo-500 transition-colors duration-200" />
+            <Link
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+            >
+              <Github className="h-6 w-6 text-white transition-colors duration-200 hover:text-indigo-500" />
             </Link>
-            <Link href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-              <Twitter className="h-6 w-6 text-white hover:text-indigo-500 transition-colors duration-200" />
+            <Link
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Twitter"
+            >
+              <Twitter className="h-6 w-6 text-white transition-colors duration-200 hover:text-indigo-500" />
             </Link>
-            <Link href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-              <Linkedin className="h-6 w-6 text-white hover:text-indigo-500 transition-colors duration-200" />
+            <Link
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="h-6 w-6 text-white transition-colors duration-200 hover:text-indigo-500" />
             </Link>
           </motion.div>
         </div>

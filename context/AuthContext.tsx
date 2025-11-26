@@ -1,7 +1,7 @@
-"use client";
-import { createContext, useContext, useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js";
-import { createClient } from "@/utils/supabase/client";
+'use client';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { User } from '@supabase/supabase-js';
+import { createClient } from '@/utils/supabase/client';
 
 type AuthContextType = {
   user: User | null;
@@ -32,10 +32,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setUser(session?.user ?? null);
       }
-      if (event === "SIGNED_OUT") {
+      if (event === 'SIGNED_OUT') {
         setUser(null);
       }
     });
@@ -45,17 +45,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [supabase]);
 
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

@@ -1,6 +1,6 @@
 // components/ui/CodeEditorLoader.tsx
 import React from 'react';
-import { cn } from "@/lib/utils"; // Assuming 'cn' is available for utility merging
+import { cn } from '@/lib/utils'; // Assuming 'cn' is available for utility merging
 
 interface CodeEditorLoaderProps {
   className?: string;
@@ -13,21 +13,24 @@ export default function EditorLoader({ className }: CodeEditorLoaderProps) {
   return (
     <div
       className={cn(
-        'w-full p-4 md:p-6 bg-stone-300 rounded-xl shadow-2xl overflow-hidden',
+        'w-full overflow-hidden rounded-xl bg-stone-300 p-4 shadow-2xl md:p-6',
         'flex flex-col space-y-2',
-        className // Allows setting height/width from the dynamic import
+        className, // Allows setting height/width from the dynamic import
       )}
     >
-      <div className="text-xs text-stone-800 mb-2">
+      <div className="mb-2 text-xs text-stone-800">
         <span className="text-blue-400">Loading</span>: Initializing Markdown Interface...
       </div>
 
       {/* Simulated Code/Content Lines */}
       {Array.from({ length: LINE_COUNT }).map((_, index) => {
         // Line width varies to mimic code structure
-        const widthClass = index === 0 || index === LINE_COUNT - 1
-          ? 'w-2/3' // Shorter lines for start/end
-          : index % 2 === 0 ? 'w-full' : 'w-5/6'; // Full width or slightly shorter
+        const widthClass =
+          index === 0 || index === LINE_COUNT - 1
+            ? 'w-2/3' // Shorter lines for start/end
+            : index % 2 === 0
+              ? 'w-full'
+              : 'w-5/6'; // Full width or slightly shorter
 
         // Stagger the animation using CSS variable and inline style
         const animationDelay = `${BASE_DELAY * index}ms`;
@@ -36,13 +39,13 @@ export default function EditorLoader({ className }: CodeEditorLoaderProps) {
           <div
             key={index}
             className={cn(
-              'h-3 bg-stone-100 rounded-sm opacity-0', // Base style, initially hidden
+              'h-3 rounded-sm bg-stone-100 opacity-0', // Base style, initially hidden
               widthClass,
-              'animate-fade-in-line' // Apply keyframe animation
+              'animate-fade-in-line', // Apply keyframe animation
             )}
             style={{
               animationDelay: animationDelay,
-              animationFillMode: 'forwards' // Keep the final state
+              animationFillMode: 'forwards', // Keep the final state
             }}
           />
         );

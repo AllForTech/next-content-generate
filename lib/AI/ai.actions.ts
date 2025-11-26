@@ -1,4 +1,4 @@
-'use server'
+'use server';
 import { generateText, streamText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { PromptEngineer } from '@/lib/AI/ai.system.prompt';
@@ -10,22 +10,28 @@ export async function fileToBase64(file) {
   return buffer.toString('base64');
 }
 
-export async function refinePrompt(prompt: string, system?: string, urls?: string[], tone?: string) {
-
-  try{
+export async function refinePrompt(
+  prompt: string,
+  system?: string,
+  urls?: string[],
+  tone?: string,
+) {
+  const formattedprompt = `${prompt} \n ${tone && `Tone: ${tone}`} \n ${urls && `URLs: ${urls?.map(u => `${u}`).join('\n')}`} \n ${system && `Hare is the system prompt for the ai, refine the user prompt base on the system prompt: ${system}`}`
+  
+  try {
     const response = await streamText({
       model,
-      prompt,
+      prompt: formattedprompt,
       system: PromptEngineer,
-    })
+    });
 
-    let fullContent = "";
+    let fullContent = '';
     for await (const chunk of response.textStream) {
       fullContent += chunk;
     }
 
-    return fullContent
-  }catch (err){
+    return fullContent;
+  } catch (err) {
     return prompt;
   }
 }

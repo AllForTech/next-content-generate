@@ -11,8 +11,8 @@ const db = drizzle(sql);
 
 async function main() {
   try {
-  await migrate(db, { migrationsFolder: 'drizzle/migrations' });
-  process.exit(0);
+    await migrate(db, { migrationsFolder: 'drizzle/migrations' });
+    process.exit(0);
   } catch (error) {
     console.error('Error applying migrations:', error);
     process.exit(1);

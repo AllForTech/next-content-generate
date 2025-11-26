@@ -35,13 +35,13 @@ import { useCallback, useEffect } from 'react';
 
 export default function Editor() {
   const { setGeneratedContent, generatedContent, updateCurrentContent } = useContent();
-  
+
   useEffect(() => {
-    let timer = null
+    let timer = null;
 
     timer = setTimeout(() => {
-      updateCurrentContent()
-    }, 1000)
+      updateCurrentContent();
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [generatedContent, setGeneratedContent]);
@@ -59,11 +59,11 @@ export default function Editor() {
                 <UndoRedo />
                 <BlockTypeSelect />
                 <BoldItalicUnderlineToggles />
-                <ListsToggle options={["number", "bullet", "check"]} />
+                <ListsToggle options={['number', 'bullet', 'check']} />
                 <CodeToggle />
                 <InsertImage />
-                <InsertTable/>
-                <InsertSandpack/>
+                <InsertTable />
+                <InsertSandpack />
                 {/* You can add more buttons here */}
               </>
             ),
@@ -71,18 +71,18 @@ export default function Editor() {
           }),
           imagePlugin({
             allowSetImageDimensions: true,
-            disableImageResize: false
+            disableImageResize: false,
           }),
           headingsPlugin(),
           jsxPlugin(),
-          linkDialogPlugin({
-
-          }),
+          linkDialogPlugin({}),
           linkPlugin(),
           codeBlockPlugin({ defaultCodeBlockLanguage: 'javaScript' }),
           // sandpackPlugin({ sandpackConfig: virtuosoSampleSandpackConfig }),
-          codeMirrorPlugin({ codeBlockLanguages: { js: 'JavaScript', css: 'CSS', txt: 'text', tsx: 'TypeScript' } }),
-          directivesPlugin({ directiveDescriptors: [ AdmonitionDirectiveDescriptor] }),
+          codeMirrorPlugin({
+            codeBlockLanguages: { js: 'JavaScript', css: 'CSS', txt: 'text', tsx: 'TypeScript' },
+          }),
+          directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
           diffSourcePlugin({ viewMode: 'rich-text', diffMarkdown: 'boo' }),
           markdownShortcutPlugin(),
           listsPlugin(),
@@ -91,8 +91,10 @@ export default function Editor() {
           linkPlugin(),
           tablePlugin(),
         ]}
-        contentEditableClassName={cn('container-full !h-full p-2 overflow-y-auto prose markdown markdown-content-area')}
-        className={cn('container-full rounded-md bg-white overflow-hidden')}
+        contentEditableClassName={cn(
+          'container-full !h-full p-2 overflow-y-auto prose markdown markdown-content-area',
+        )}
+        className={cn('container-full overflow-hidden rounded-md bg-white')}
       />
     </ScrollArea>
   );

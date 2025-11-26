@@ -16,7 +16,7 @@ const unsplash = createApi({
  */
 export async function searchUnsplashImages(query: string, count: number = 3) {
   if (!process.env.UNSPLASH_ACCESS_KEY) {
-    return JSON.stringify({ error: "UNSPLASH_ACCESS_KEY is not configured." });
+    return JSON.stringify({ error: 'UNSPLASH_ACCESS_KEY is not configured.' });
   }
 
   console.log(`[Unsplash Tool] Searching for: ${query}`);
@@ -34,7 +34,7 @@ export async function searchUnsplashImages(query: string, count: number = 3) {
     }
 
     // Map the results to a simplified, clean format for the LLM
-    const imageUrls = response.response.results.map(photo => ({
+    const imageUrls = response.response.results.map((photo) => ({
       url: photo.urls.regular, // A good, general-purpose image size
       alt_description: photo.alt_description,
       photographer: photo.user.name,
@@ -42,9 +42,8 @@ export async function searchUnsplashImages(query: string, count: number = 3) {
 
     // Return the clean JSON string
     return JSON.stringify(imageUrls);
-
   } catch (error) {
-    console.error("Unsplash search failed:", error);
-    return JSON.stringify({ error: "Failed to connect to the Unsplash API." });
+    console.error('Unsplash search failed:', error);
+    return JSON.stringify({ error: 'Failed to connect to the Unsplash API.' });
   }
 }

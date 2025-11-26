@@ -12,12 +12,14 @@ export const metadata: Metadata = {
   title: 'AI Content Generator | Two-Step Quality Pipeline',
 
   // Description used by search engines (Google, Bing)
-  description: 'Generate high-quality, grounded, and SEO-optimized content using our two-step AI refinement and generation process.',
+  description:
+    'Generate high-quality, grounded, and SEO-optimized content using our two-step AI refinement and generation process.',
 
   // Open Graph (OG) tags for social media sharing
   openGraph: {
     title: 'AI Content Generator - Refinement First',
-    description: 'The best way to generate content: refine your prompt for quality before generating the final article.',
+    description:
+      'The best way to generate content: refine your prompt for quality before generating the final article.',
     url: '',
     siteName: 'Content Pipeline MVP',
     images: [
@@ -36,7 +38,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'AI Content Generator | Two-Step Pipeline',
-    description: 'Stop generating low-quality content. Our process guarantees high-quality, grounded output.',
+    description:
+      'Stop generating low-quality content. Our process guarantees high-quality, grounded output.',
     creator: '@YourTwitterHandle',
     images: ['https://yourwebsite.com/og-image-generator.png'],
   },
@@ -47,12 +50,18 @@ export const metadata: Metadata = {
   },
 };
 
-
 export default function LandingPage() {
   return (
     <>
-      <div className={cn('!fixed top-0 inset-0 screen center bg-gradient-to-br from-white via-purple-400/28  to-white -z-4')}/>
-      <div className="w-full text-black backdrop-blur-2xl bg-transparent overflow-hidden" id={'hide-scrollbar'}>
+      <div
+        className={cn(
+          'screen center !fixed inset-0 top-0 -z-4 bg-gradient-to-br from-white via-purple-400/28 to-white',
+        )}
+      />
+      <div
+        className="w-full overflow-hidden bg-transparent text-black backdrop-blur-2xl"
+        id={'hide-scrollbar'}
+      >
         <Navbar />
         <Hero />
         <Features />

@@ -1,9 +1,9 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import rehypeHighlight from "rehype-highlight";
+import rehypeHighlight from 'rehype-highlight';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ContentLoadingSkeleton } from '@/components/ui/ContentLoadingSkeleton';
 import '@mdxeditor/editor/style.css';
@@ -16,17 +16,16 @@ interface ContentRendererProps {
 }
 
 export const Content: React.FC<ContentRendererProps> = ({ isLoading }: { isLoading: boolean }) => {
-  const {  isEditingRaw } = useGlobalState();
+  const { isEditingRaw } = useGlobalState();
   const { setGeneratedContent, generatedContent } = useContent();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null); // Ref for the scrollable area
-
 
   useEffect(() => {
     if (!isLoading && generatedContent && !isEditingRaw) {
       timerRef.current = setTimeout(() => {
         setGeneratedContent(generatedContent);
-      }, 100)
+      }, 100);
     }
 
     return () => {
@@ -36,27 +35,29 @@ export const Content: React.FC<ContentRendererProps> = ({ isLoading }: { isLoadi
     };
   }, [generatedContent, isLoading, isEditingRaw]);
 
-
   return (
-    <div className={cn('w-full h-full relative center !justify-start flex-col rounded-2xl bg-white')}>
-        <ScrollArea ref={scrollAreaRef} className={cn('container-full absolute inset-0 center px-1 md:px-4 py-2.5 flex-col !justify-start')}
-                    id={'hide-scrollbar'}
-        >
-
-          {isLoading ? (
-            <ContentLoadingSkeleton/>
-          ): (
-            <article className={cn('container-full  flex markdown prose flex-col !m-0 !justify-start')}>
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeHighlight, rehypeRaw]}
-                >
-                  {generatedContent}
-                </ReactMarkdown>
-            </article>
-          )}
-        </ScrollArea>
+    <div
+      className={cn('center relative h-full w-full flex-col !justify-start rounded-2xl bg-white')}
+    >
+      <ScrollArea
+        ref={scrollAreaRef}
+        className={cn(
+          'container-full center absolute inset-0 flex-col !justify-start px-1 py-2.5 md:px-4',
+        )}
+        id={'hide-scrollbar'}
+      >
+        {isLoading ? (
+          <ContentLoadingSkeleton />
+        ) : (
+          <article
+            className={cn('container-full markdown prose !m-0 flex flex-col !justify-start')}
+          >
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight, rehypeRaw]}>
+              {generatedContent}
+            </ReactMarkdown>
+          </article>
+        )}
+      </ScrollArea>
     </div>
   );
 };
-

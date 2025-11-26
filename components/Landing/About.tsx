@@ -7,22 +7,19 @@ import Link from 'next/link';
 
 export const About = () => {
   return (
-    <section id="about" className="py-24 bg-black/5 backdrop-blur-md relative overflow-hidden">
-      <div className="container mx-auto px-4 max-w-7xl">
+    <section id="about" className="relative overflow-hidden bg-black/5 py-24 backdrop-blur-md">
+      <div className="container mx-auto max-w-7xl px-4">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
+          className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2"
         >
           {/* 1. VISUAL & IMPACT COLUMN (Left) - Unchanged */}
-          <div className="relative h-96 flex items-center justify-center lg:h-auto lg:p-10">
+          <div className="relative flex h-96 items-center justify-center lg:h-auto lg:p-10">
             {/* The Creative Element: Layered, Stylized Text */}
-            <h3
-              className="absolute text-[15rem] md:text-[18rem] font-extrabold text-black/5 select-none pointer-events-none
-                         transform rotate-[-8deg] -translate-y-1/4 -translate-x-1/4 tracking-tighter leading-none"
-            >
+            <h3 className="pointer-events-none absolute -translate-x-1/4 -translate-y-1/4 rotate-[-8deg] transform text-[15rem] leading-none font-extrabold tracking-tighter text-black/5 select-none md:text-[18rem]">
               TRUST
             </h3>
 
@@ -31,14 +28,13 @@ export const About = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               viewport={{ once: true }}
-              className="relative z-10 p-8 border-l-4 border-indigo-600 bg-white shadow-2xl rounded-xl max-w-lg"
+              className="relative z-10 max-w-lg rounded-xl border-l-4 border-indigo-600 bg-white p-8 shadow-2xl"
             >
               <p className="text-2xl font-semibold text-black italic">
-                “Intelligence is the ability to adapt to change. Creation is the ability to drive it.”
+                “Intelligence is the ability to adapt to change. Creation is the ability to drive
+                it.”
               </p>
-              <footer className="mt-4 text-lg font-medium text-indigo-600">
-                — Our Philosophy
-              </footer>
+              <footer className="mt-4 text-lg font-medium text-indigo-600">— Our Philosophy</footer>
             </motion.blockquote>
           </div>
 
@@ -49,9 +45,9 @@ export const About = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="text-sm font-semibold text-indigo-600 uppercase tracking-widest flex items-center"
+              className="flex items-center text-sm font-semibold tracking-widest text-indigo-600 uppercase"
             >
-              <Sparkles className="h-4 w-4 mr-2" /> The Engine of Productivity
+              <Sparkles className="mr-2 h-4 w-4" /> The Engine of Productivity
             </motion.h2>
 
             <motion.h3
@@ -59,7 +55,7 @@ export const About = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true }}
-              className="text-5xl md:text-6xl font-extrabold text-black leading-tight"
+              className="text-5xl leading-tight font-extrabold text-black md:text-6xl"
             >
               Verified speed meets automated delivery.
             </motion.h3>
@@ -71,7 +67,11 @@ export const About = () => {
               viewport={{ once: true }}
               className="text-xl leading-relaxed text-black"
             >
-              Our platform is powered by a **Supabase/Drizzle backend** for reliable scheduling and data integrity. We prioritize **factual accuracy** by integrating real-time web search (Tavily/Google) into every generation. This means your content is not only fast and automated but also grounded in up-to-date, verifiable information, making it genuinely impactful.
+              Our platform is powered by a **Supabase/Drizzle backend** for reliable scheduling and
+              data integrity. We prioritize **factual accuracy** by integrating real-time web search
+              (Tavily/Google) into every generation. This means your content is not only fast and
+              automated but also grounded in up-to-date, verifiable information, making it genuinely
+              impactful.
             </motion.p>
 
             <motion.div
@@ -81,7 +81,10 @@ export const About = () => {
               viewport={{ once: true }}
             >
               <Link href="/dashboard">
-                <Button size="lg" className="bg-black text-white hover:bg-indigo-600 hover:shadow-xl transition-all duration-300">
+                <Button
+                  size="lg"
+                  className="bg-black text-white transition-all duration-300 hover:bg-indigo-600 hover:shadow-xl"
+                >
                   See the Automation in Action <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>

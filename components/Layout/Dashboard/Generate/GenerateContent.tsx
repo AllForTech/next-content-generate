@@ -1,6 +1,6 @@
-'use client'
+'use client';
 import React, { useEffect } from 'react';
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 import { useContent } from '@/context/GenerationContext';
 import { RightSidebarPanel } from '@/components/Layout/Dashboard/Generate/RightSidebarPanel';
 import Renderer from './content/Renderer';
@@ -8,29 +8,29 @@ import { RefinementPanel } from '@/components/Layout/Dashboard/Generate/Refineme
 import { ApiSenderDialog } from '@/components/Layout/Dashboard/Generate/ApiSenderDialog';
 
 interface GenerateContentProps {
-    contentId: string;
+  contentId: string;
   history: any;
   allHistory: any[];
 }
 
 export const GenerateContent = ({ history, allHistory, contentId }: GenerateContentProps) => {
-    const {
-      generateContent,
-      setGeneratedContent,
-      setChatHistory,
-      setCurrentSessionId,
-      setUnsplashImages,
-      setContentSources,
-      setScrapedData,
-      isRefining,
-      setIsRefining,
-      prompt,
-      isDialogOpen,
-      setIsDialogOpen
-    } = useContent();
+  const {
+    generateContent,
+    setGeneratedContent,
+    setChatHistory,
+    setCurrentSessionId,
+    setUnsplashImages,
+    setContentSources,
+    setScrapedData,
+    isRefining,
+    setIsRefining,
+    prompt,
+    isDialogOpen,
+    setIsDialogOpen,
+  } = useContent();
 
   useEffect(() => {
-    if (!contentId || !allHistory)return;
+    if (!contentId || !allHistory) return;
 
     const chatHistory = allHistory?.map((hs: any) => ({
       id: hs.sessionId || '',
@@ -39,8 +39,8 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
       searchResults: hs.scrapedData || [],
       scrapedData: hs.scrapedData || [],
       images: hs.images || [],
-      attachedFile: hs.attachedFIle
-    }))
+      attachedFile: hs.attachedFIle,
+    }));
     setChatHistory(chatHistory);
   }, [allHistory, contentId]);
 
@@ -54,29 +54,20 @@ export const GenerateContent = ({ history, allHistory, contentId }: GenerateCont
     setUnsplashImages(history?.images);
     setContentSources(history?.searchResults);
     setScrapedData(history?.scrapedData);
-
   }, [history, contentId]);
 
+  return (
+    <div
+      className={cn(
+        'container-full center relative flex-1 flex-row gap-2.5 overflow-hidden pr-2 pl-2.5',
+      )}
+      id={'hide-scrollbar'}
+    >
+      {isRefining && <RefinementPanel onClose={() => setIsRefining(false)} prompt={prompt} />}
+      <ApiSenderDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
 
-
-    return (
-      <div
-        className={cn(
-          'container-full flex-1 center relative flex-row gap-2.5 overflow-hidden pr-2 pl-2.5',
-        )}
-        id={'hide-scrollbar'}
-      >
-        {isRefining && <RefinementPanel
-          onClose={() => setIsRefining(false)}
-          prompt={prompt}
-        />}
-        <ApiSenderDialog
-          isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
-        />
-
-        <Renderer/>
-        <RightSidebarPanel onGenerate={generateContent} contentId={contentId} contentType={''} />
-      </div>
-    );
+      <Renderer />
+      <RightSidebarPanel onGenerate={generateContent} contentId={contentId} contentType={''} />
+    </div>
+  );
 };

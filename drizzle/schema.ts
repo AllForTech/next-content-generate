@@ -1,4 +1,13 @@
-import { pgTable, text, timestamp, jsonb, primaryKey, uuid, pgSchema, boolean } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  text,
+  timestamp,
+  jsonb,
+  primaryKey,
+  uuid,
+  pgSchema,
+  boolean,
+} from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 const authSchema = pgSchema('auth');
@@ -24,18 +33,22 @@ export const contents = pgTable('contents', {
   prompt: text('prompt'),
 });
 
-export const userSchedules = pgTable('user_schedules', {
-  jobId: text('job_id').notNull(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  cronSchedule: text('cron_schedule').notNull(),
-  jobType: text('job_type').default('content_generation').notNull(),
-  isActive: boolean('is_active').default(true),
-  lastRunAt: timestamp('last_run_at', { withTimezone: true }),
-}, (t) => ({
-  pk: primaryKey({ columns: [t.userId, t.jobType, t.jobId] }),
-}));
+export const userSchedules = pgTable(
+  'user_schedules',
+  {
+    jobId: text('job_id').notNull(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    cronSchedule: text('cron_schedule').notNull(),
+    jobType: text('job_type').default('content_generation').notNull(),
+    isActive: boolean('is_active').default(true),
+    lastRunAt: timestamp('last_run_at', { withTimezone: true }),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.jobType, t.jobId] }),
+  }),
+);
 
 // Relations for 'contents'
 // Establishes a one-to-many relationship: one master 'contents' record can have many 'userContents' versions.
@@ -43,42 +56,47 @@ export const contentsRelations = relations(contents, ({ many }) => ({
   versions: many(userContents),
 }));
 
-
 // --- 2. User Contents Table (Content Versions/History) ---
 // This table holds the actual large data blobs, prompts, and specific versions of the content.
 // It acts as a historical log of each generation session.
-export const userContents = pgTable("user_contents", {
-  // sessionId: A unique identifier for a specific generation event.
-  sessionId: text('session_id').notNull(),
+export const userContents = pgTable(
+  'user_contents',
+  {
+    // sessionId: A unique identifier for a specific generation event.
+    sessionId: text('session_id').notNull(),
 
-  // content_id: Foreign key linking back to the 'contents' master record.
-  contentId: text('content_id')
-    .notNull()
-    .references(() => contents.contentId, { onDelete: 'cascade' }), // Cascade deletion ensures versions are cleaned up.
+    // content_id: Foreign key linking back to the 'contents' master record.
+    contentId: text('content_id')
+      .notNull()
+      .references(() => contents.contentId, { onDelete: 'cascade' }), // Cascade deletion ensures versions are cleaned up.
 
-  // author_id: User who created this specific version.
-  authorId: text('author_id').notNull(),
+    // author_id: User who created this specific version.
+    authorId: text('author_id').notNull(),
 
-  // created_at: Timestamp for when this specific version/session was created.
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    // created_at: Timestamp for when this specific version/session was created.
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .defaultNow()
+      .notNull(),
 
-  // The final generated content for this specific version.
-  content: text('content'),
+    // The final generated content for this specific version.
+    content: text('content'),
 
-  // The prompt used to generate this version.
-  prompt: text('prompt'),
+    // The prompt used to generate this version.
+    prompt: text('prompt'),
 
-  // Flexible storage for metadata captured during this generation session.
-  attachedFile: jsonb('attached_file'),
-  scrapedData: jsonb('scraped_data'),
-  searchResults: jsonb('search_results'),
-  images: jsonb('images'),
-}, (table) => {
-  // Composite primary key to uniquely identify a version by session, content, and author.
-  return {
-    pk: primaryKey({ columns: [table.sessionId, table.contentId, table.authorId] }),
-  }
-});
+    // Flexible storage for metadata captured during this generation session.
+    attachedFile: jsonb('attached_file'),
+    scrapedData: jsonb('scraped_data'),
+    searchResults: jsonb('search_results'),
+    images: jsonb('images'),
+  },
+  (table) => {
+    // Composite primary key to uniquely identify a version by session, content, and author.
+    return {
+      pk: primaryKey({ columns: [table.sessionId, table.contentId, table.authorId] }),
+    };
+  },
+);
 
 // Relations for 'userContents'
 export const userContentsRelations = relations(userContents, ({ one }) => ({

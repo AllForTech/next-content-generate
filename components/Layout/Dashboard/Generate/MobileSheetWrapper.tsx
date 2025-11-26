@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -13,23 +13,27 @@ interface MobileSheetWrapperProps {
 }
 
 // Wrapper for the Sidebar content
-const SidebarContentWrapper = ({ children, isMobile }: { children: React.ReactNode, isMobile: boolean }) => (
+const SidebarContentWrapper = ({
+  children,
+  isMobile,
+}: {
+  children: React.ReactNode;
+  isMobile: boolean;
+}) => (
   <div
     className={cn(
-      'flex-col gap-2.5 center',
+      'center flex-col gap-2.5',
       // Desktop styles: fixed width, visible
-      !isMobile && 'h-full shadow-md shadow-stone-400 rounded-lg w-[330px] lg:w-[30dvw]',
+      !isMobile && 'h-full w-[330px] rounded-lg shadow-md shadow-stone-400 lg:w-[30dvw]',
       // Mobile styles: full height, full width for sheet content
-      isMobile && 'container-full'
+      isMobile && 'container-full',
     )}
   >
     {children}
   </div>
 );
 
-
 const MobileSheetWrapper = ({ children, isMobile, isOpen, setIsOpen }: MobileSheetWrapperProps) => {
-
   // Desktop View: Just render the sidebar content directly
   if (!isMobile) {
     return <SidebarContentWrapper isMobile={false}>{children}</SidebarContentWrapper>;
@@ -43,7 +47,7 @@ const MobileSheetWrapper = ({ children, isMobile, isOpen, setIsOpen }: MobileShe
         variant="outline"
         size="icon"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 z-50 bg-black text-white hover:bg-neutral-800"
+        className="fixed right-4 bottom-4 z-50 bg-black text-white hover:bg-neutral-800"
       >
         <Menu className="h-5 w-5" />
       </Button>
@@ -52,10 +56,10 @@ const MobileSheetWrapper = ({ children, isMobile, isOpen, setIsOpen }: MobileShe
         {/* The SheetContent holds the actual sidebar */}
         <SheetContent
           side="right"
-          className="w-full max-w-[420px] sm:max-w-md p-0 flex flex-col border-none bg-white dark:bg-neutral-900"
+          className="flex w-full max-w-[420px] flex-col border-none bg-white p-0 sm:max-w-md dark:bg-neutral-900"
         >
-          <SheetHeader className='p-4 border-b dark:border-neutral-700'>
-            <SheetTitle className='text-xl font-bold dark:text-white'>Content Tools</SheetTitle>
+          <SheetHeader className="border-b p-4 dark:border-neutral-700">
+            <SheetTitle className="text-xl font-bold dark:text-white">Content Tools</SheetTitle>
           </SheetHeader>
           {/* Render the sidebar content within the sheet body */}
           <SidebarContentWrapper isMobile={true}>{children}</SidebarContentWrapper>

@@ -36,7 +36,6 @@ export async function POST(req: Request) {
       .getPublicUrl(fileName);
 
     return NextResponse.json({ publicUrl: publicUrlData.publicUrl }, { status: 200 });
-
   } catch (error) {
     console.error('Supabase upload error:', error);
     return NextResponse.json({ error: 'Failed to upload image to storage.' }, { status: 500 });

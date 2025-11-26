@@ -21,12 +21,15 @@ export const UserAvatar = () => {
   const router = useRouter();
 
   if (loading) {
-    return <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />;
+    return <div className="h-8 w-8 animate-pulse rounded-full bg-gray-200" />;
   }
 
   if (!user) {
     return (
-      <Button onClick={() => router.push('/sign-in')} className="bg-black text-white hover:bg-opacity-80">
+      <Button
+        onClick={() => router.push('/sign-in')}
+        className="hover:bg-opacity-80 bg-black text-white"
+      >
         Sign In
       </Button>
     );
@@ -61,16 +64,12 @@ export const UserAvatar = () => {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{userName}</p>
-            <p className="text-[10px] leading-none text-muted-foreground">
-              {user.email}
-            </p>
+            <p className="text-sm leading-none font-medium">{userName}</p>
+            <p className="text-muted-foreground text-[10px] leading-none">{user.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
-          Log out
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -11,7 +11,6 @@ interface Context {
 
 const API_ENDPOINT = 'http://localhost:3000/api/scheduled';
 
-
 export async function GET(request: NextRequest, context: Context) {
   const { time } = await context.params;
 
@@ -33,7 +32,6 @@ export async function GET(request: NextRequest, context: Context) {
       return NextResponse.json({ success: true, message: `No tasks found for ${time}.` });
     }
 
-
     const results = [];
 
     for (const task of schedulesToRun) {
@@ -52,29 +50,34 @@ export async function GET(request: NextRequest, context: Context) {
 
         const response = await fetch(`${API_ENDPOINT}/${content_id}/${sessionId}`, {
           method: 'POST',
-          body: formData
+          body: formData,
         });
 
         if (!response.ok) {
           const errorData = await response.json();
         }
-
       } catch (e) {
         // Handle individual task failure
         console.error(`Task ${task.id} failed:`, e);
         // await db.collection('schedules').doc(task.id).update({ status: 'failed', error: e.message });
 
-        results.push({ taskId: task.id, status: 'failed', error: e instanceof Error ? e.message : 'Unknown error' });
+        results.push({
+          taskId: task.id,
+          status: 'failed',
+          error: e instanceof Error ? e.message : 'Unknown error',
+        });
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      timeSlot: time,
-      processedCount: results.length,
-      results: results
-    }, { status: 200 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        timeSlot: time,
+        processedCount: results.length,
+        results: results,
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error(`Fatal error in GET handler for ${time}:`, error);
     return new NextResponse('Internal Server Error during processing.', { status: 500 });

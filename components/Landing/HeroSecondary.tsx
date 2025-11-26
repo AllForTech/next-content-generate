@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -6,24 +6,25 @@ import { motion } from 'framer-motion';
 const Hero = () => {
   return (
     <section className="bg-white py-20">
-      <div className="container mx-auto flex flex-col md:flex-row items-center">
+      <div className="container mx-auto flex flex-col items-center md:flex-row">
         {/* Left Column: Text Content */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="md:w-1/2 md:pr-12 mb-12 md:mb-0 text-center md:text-left"
+          className="mb-12 text-center md:mb-0 md:w-1/2 md:pr-12 md:text-left"
         >
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6 text-gray-900">
+          <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 md:text-6xl">
             Unleash Your AI Writer. Create Fact-Based Content, Instantly.
           </h1>
-          <p className="text-lg text-gray-700 mb-8">
-            Generate high-quality blogs, social media posts, and more with our advanced AI. Grounded in truth, crafted for impact.
+          <p className="mb-8 text-lg text-gray-700">
+            Generate high-quality blogs, social media posts, and more with our advanced AI. Grounded
+            in truth, crafted for impact.
           </p>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full shadow-md transition duration-300"
+            className="rounded-full bg-teal-500 px-8 py-3 font-bold text-white shadow-md transition duration-300 hover:bg-teal-600"
           >
             Start Generating for Free
           </motion.button>
@@ -34,7 +35,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-          className="md:w-1/2 relative"
+          className="relative md:w-1/2"
         >
           <div className="relative z-10">
             <Image
@@ -42,12 +43,12 @@ const Hero = () => {
               height={100}
               src="/assets/hero_image.png" // Replace with the actual path to your image
               alt="AI Content Generator Interface"
-              className="!w-full !h-auto"
+              className="!h-auto !w-full"
             />
           </div>
 
           {/* Background Decoration */}
-          <div className="absolute top-0 left-0 w-full h-full -z-10">
+          <div className="absolute top-0 left-0 -z-10 h-full w-full">
             <motion.svg
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -55,7 +56,7 @@ const Hero = () => {
               viewBox="0 0 100 100"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="w-full h-full text-teal-100"
+              className="h-full w-full text-teal-100"
             >
               <path
                 d="M0 50C0 22.3858 22.3858 0 50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50Z"

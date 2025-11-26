@@ -1,33 +1,34 @@
-
-import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
+import { cn } from '@/lib/utils';
+import { LucideIcon } from 'lucide-react';
 import { useContent } from '@/context/GenerationContext';
-import {useGlobalState} from "@/context/GlobalStateContext";
+import { useGlobalState } from '@/context/GlobalStateContext';
 
 interface ContentCardProps {
-    icon: LucideIcon;
-    title: string;
-    type: string;
-    description: string;
+  icon: LucideIcon;
+  title: string;
+  type: string;
+  description: string;
 }
 
 export default function ContentCard({ icon: Icon, type, title, description }: ContentCardProps) {
-    const { handleSelection } = useContent();
-    const { setCreateContentDialogOpen } = useGlobalState();
+  const { handleSelection } = useContent();
+  const { setCreateContentDialogOpen } = useGlobalState();
 
-    const handleClick = () => {
-        handleSelection(type);
-        setCreateContentDialogOpen(false);
-    }
+  const handleClick = () => {
+    handleSelection(type);
+    setCreateContentDialogOpen(false);
+  };
 
-    return (
-        <div 
-            onClick={handleClick}
-            className={cn('bg-stone-100 rounded-lg shadow-md p-6 flex flex-col items-center hover:scale-102 text-center cursor-pointer hover:shadow-xl transition-300')}
-        >
-            <Icon className={cn('w-12 h-12 text-indigo-500')} />
-            <h3 className={cn('text-lg font-bold mt-4')}>{title}</h3>
-            <p className={cn('text-gray-500 mt-2')}>{description}</p>
-        </div>
-    )
+  return (
+    <div
+      onClick={handleClick}
+      className={cn(
+        'transition-300 flex cursor-pointer flex-col items-center rounded-lg bg-stone-100 p-6 text-center shadow-md hover:scale-102 hover:shadow-xl',
+      )}
+    >
+      <Icon className={cn('h-12 w-12 text-indigo-500')} />
+      <h3 className={cn('mt-4 text-lg font-bold')}>{title}</h3>
+      <p className={cn('mt-2 text-gray-500')}>{description}</p>
+    </div>
+  );
 }

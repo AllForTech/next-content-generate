@@ -17,30 +17,32 @@ export const RefinementPanel = ({ onClose, prompt }) => {
   const handleRefine = async () => {
     await onRefinePrompt();
     onClose();
-  }
+  };
 
   return (
-    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="w-full max-w-lg bg-white rounded-xl p-6 shadow-2xl border border-neutral-200">
-        <div className="flex justify-between items-center mb-4 border-b pb-2">
-          <h3 className="text-lg font-semibold flex items-center">
-            <SlidersHorizontal className="w-5 h-5 mr-2 text-neutral-600" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-xl border border-neutral-200 bg-white p-6 shadow-2xl">
+        <div className="mb-4 flex items-center justify-between border-b pb-2">
+          <h3 className="flex items-center text-lg font-semibold">
+            <SlidersHorizontal className="mr-2 h-5 w-5 text-neutral-600" />
             Refine Prompt
           </h3>
-          <Button onClick={onClose} variant="ghost" size="sm" className="h-8 w-8 p-0"><X className="w-4 h-4" /></Button>
+          <Button onClick={onClose} variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <X className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Current Prompt Preview */}
-        <div className="mb-4 p-3 bg-neutral-100 rounded-lg max-h-24 overflow-y-auto text-xs text-neutral-700 border border-neutral-200 italic">
+        <div className="mb-4 max-h-24 overflow-y-auto rounded-lg border border-neutral-200 bg-neutral-100 p-3 text-xs text-neutral-700 italic">
           {prompt?.substring(0, 100)}...
         </div>
 
         {/* Refinement Controls */}
         <div className="space-y-4">
           <div>
-            <Label className="block text-xs mb-2">Output Format</Label>
+            <Label className="mb-2 block text-xs">Output Format</Label>
             <div className="flex gap-2">
-              {options.map(opt => (
+              {options.map((opt) => (
                 <Button
                   key={opt}
                   type={'button'}
@@ -55,11 +57,11 @@ export const RefinementPanel = ({ onClose, prompt }) => {
           </div>
 
           <div>
-            <Label className="block mb-2">Tone</Label>
+            <Label className="mb-2 block">Tone</Label>
             <select
               value={tone}
               onChange={(e) => setTone(e.target.value)}
-              className="w-full text-sm border border-neutral-300 rounded-lg p-2"
+              className="w-full rounded-lg border border-neutral-300 p-2 text-sm"
             >
               <option value="neutral">Neutral / Informative</option>
               <option value="professional">Professional / Formal</option>
@@ -72,7 +74,8 @@ export const RefinementPanel = ({ onClose, prompt }) => {
           type={'button'}
           disabled={isRefineLoading}
           onClick={handleRefine}
-          className="w-full mt-6">
+          className="mt-6 w-full"
+        >
           {isRefineLoading ? 'Refining...' : 'Apply Refinements'}
         </Button>
       </div>

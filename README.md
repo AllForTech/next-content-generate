@@ -104,14 +104,14 @@ We use the bleeding edge of the React ecosystem to deliver a high-performance ex
 
 <br />
 
-| Category | Technology |
-| :--- | :--- |
-| **Framework** | Next.js 14 (App Router) |
-| **AI Model** | Google Gemini Pro/Vercel AI SDK |
-| **Data Source** | Tavily AI Search/Cheerio |
-| **Database** | Supabase (PostgreSQL) |
-| **Styling** | Tailwind CSS + Shadcn/ui |
-| **Icons** | Lucide React |
+| Category        | Technology                      |
+| :-------------- | :------------------------------ |
+| **Framework**   | Next.js 14 (App Router)         |
+| **AI Model**    | Google Gemini Pro/Vercel AI SDK |
+| **Data Source** | Tavily AI Search/Cheerio        |
+| **Database**    | Supabase (PostgreSQL)           |
+| **Styling**     | Tailwind CSS + Shadcn/ui        |
+| **Icons**       | Lucide React                    |
 
 <br />
 
@@ -123,31 +123,35 @@ Follow these steps to set up your local newsroom.
 
 ### 📋 Prerequisites
 
-* **Node.js** (v18+)
-* **npm** or **yarn**
-* API Keys for **Google Gemini**, **Tavily**, and **Supabase**.
+- **Node.js** (v18+)
+- **npm** or **yarn**
+- API Keys for **Google Gemini**, **Tavily**, and **Supabase**.
 
 ### 🔧 Installation
 
 1.  **Clone the repository**
+
     ```bash
     git clone [https://github.com/AllForTech/Think-Ink_content_generate.git](https://github.com/AllForTech/Think-Ink_content_generate.git)
     cd Think-Ink_content_generate
     ```
 
 2.  **Install dependencies**
+
     ```bash
     npm install
     ```
 
 3.  **Configure Environment**
     Create a `.env.local` file in the root directory and add your keys:
+
     ```bash
     cp .env.example .env.local
     # Edit .env.local with your specific API keys
     ```
 
 4.  **Ignition**
+
     ```bash
     npm run dev
     ```
@@ -160,13 +164,13 @@ Follow these steps to set up your local newsroom.
 
 ## 📜 Available Scripts
 
-| Command | Action |
-| :--- | :--- |
-| `npm run dev` | 🟢 Starts the development server |
-| `npm run build` | 🏗️ Builds the application for production |
-| `npm run start` | 🚀 Starts the production server |
-| `npm run lint` | 🧹 Runs ESLint to check for code quality |
-| `npm run format` | 💅 Formats code using Prettier |
+| Command          | Action                                   |
+| :--------------- | :--------------------------------------- |
+| `npm run dev`    | 🟢 Starts the development server         |
+| `npm run build`  | 🏗️ Builds the application for production |
+| `npm run start`  | 🚀 Starts the production server          |
+| `npm run lint`   | 🧹 Runs ESLint to check for code quality |
+| `npm run format` | 💅 Formats code using Prettier           |
 
 <br />
 

@@ -19,15 +19,14 @@ You will need to add the environment variables from your `.env.local` file to yo
 
 1.  In your Vercel project settings, go to the "Environment Variables" section.
 2.  Add the following environment variables with their corresponding values:
-
-    -   `NEXT_PUBLIC_SUPABASE_URL`
-    -   `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-    -   `DATABASE_URL`
-    -   `GOOGLE_API_KEY`
-    -   `TAVILY_API_KEY`
-    -   `UNSPLASH_ACCESS_KEY`
-    -   `CRON_SECRET`
-    -   `CRON_AUTHOR_ID`
+    - `NEXT_PUBLIC_SUPABASE_URL`
+    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+    - `DATABASE_URL`
+    - `GOOGLE_API_KEY`
+    - `TAVILY_API_KEY`
+    - `UNSPLASH_ACCESS_KEY`
+    - `CRON_SECRET`
+    - `CRON_AUTHOR_ID`
 
     You can get the values for these variables from your Supabase project, Google AI Studio, Tavily, and Unsplash developer dashboards.
 
@@ -44,9 +43,9 @@ The application includes a scheduled task for automated content generation. You 
 
 1.  In your Vercel project settings, go to the "Cron Jobs" section.
 2.  Add a new cron job with the following settings:
-    -   **Schedule:** Choose a schedule that suits your needs (e.g., `0 0 * * *` to run once a day at midnight).
-    -   **Command:** `GET https://<your-deployment-url>/api/scheduled/research`
-    -   **Secret:** Make sure to include your `CRON_SECRET` in the request headers for authentication.
+    - **Schedule:** Choose a schedule that suits your needs (e.g., `0 0 * * *` to run once a day at midnight).
+    - **Command:** `GET https://<your-deployment-url>/api/scheduled/research`
+    - **Secret:** Make sure to include your `CRON_SECRET` in the request headers for authentication.
 
 ## Step 5: Access Your Deployed Application
 

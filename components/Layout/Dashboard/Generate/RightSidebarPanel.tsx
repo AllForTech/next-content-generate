@@ -1,8 +1,13 @@
-'use client'
+'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ContentSources, panelTabsState, PanelTabsStateType, useContent } from '@/context/GenerationContext';
+import {
+  ContentSources,
+  panelTabsState,
+  PanelTabsStateType,
+  useContent,
+} from '@/context/GenerationContext';
 import { cn, extractMarkdownImageUrls } from '@/lib/utils';
 import { PromptProps } from '@/components/Layout/Dashboard/Generate/Prompt';
 import Prompt from '@/components/Layout/Dashboard/Generate/Prompt';
@@ -30,24 +35,27 @@ const useMediaQuery = (query: string) => {
   return matches;
 };
 
-export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
+export const RightSidebarPanel = ({ contentId, onGenerate }: PromptProps) => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [systemPrompt, setSystemPrompt] = useState<string>('');
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   // The actual Tabs content block, which remains unchanged
   const SidebarContent = (
-    <Tabs defaultValue={panelTabsState.prompt} className={'container-full p-1.5 center flex-col gap-2'}>
-      <PanelTabs/>
-      <div className={cn('center flex-1 h-full')}>
-        <TabsContent className={'flex-1 h-full'} value={panelTabsState.prompt}>
+    <Tabs
+      defaultValue={panelTabsState.prompt}
+      className={'container-full center flex-col gap-2 p-1.5'}
+    >
+      <PanelTabs />
+      <div className={cn('center h-full flex-1')}>
+        <TabsContent className={'h-full flex-1'} value={panelTabsState.prompt}>
           <Prompt contentType={''} onGenerate={onGenerate} contentId={contentId} />
         </TabsContent>
         <TabsContent className={'container-full'} value={panelTabsState.system}>
           <SystemPromptSelector onPromptChange={setSystemPrompt} />
         </TabsContent>
         <TabsContent className={'container-full'} value={panelTabsState.images}>
-          <Images/>
+          <Images />
         </TabsContent>
         {/*<TabsContent className={'container-full'} value={panelTabsState.management}>*/}
         {/* <Management/>*/}
@@ -57,11 +65,7 @@ export const RightSidebarPanel = ({ contentId, onGenerate } :PromptProps) => {
   );
 
   return (
-    <MobileSheetWrapper
-      isMobile={isMobile}
-      isOpen={isSheetOpen}
-      setIsOpen={setIsSheetOpen}
-    >
+    <MobileSheetWrapper isMobile={isMobile} isOpen={isSheetOpen} setIsOpen={setIsSheetOpen}>
       {SidebarContent}
     </MobileSheetWrapper>
   );
@@ -76,10 +80,9 @@ const PanelTabs = () => {
   };
 
   return (
-    <div className={'w-full h-fit flex-col gap-2.5 center'}>
-      <TabsList className={cn('w-full bg-stone-200 center gap-2')}>
+    <div className={'center h-fit w-full flex-col gap-2.5'}>
+      <TabsList className={cn('center w-full gap-2 bg-stone-200')}>
         {Object.values(panelTabsState).map((tab: PanelTabsStateType) => {
-
           // 1. Assign the component to a capitalized variable
           const Icon = iconMap[tab];
 
@@ -89,12 +92,12 @@ const PanelTabs = () => {
               value={tab}
               className={cn(
                 'flex items-center gap-2 px-4 py-2 text-xs font-semibold transition-all duration-300',
-                'data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-sm'
+                'data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-sm',
               )}
             >
-              <Icon className={cn("w-3.5 hidden h-3.5", 'lg:block')} />
+              <Icon className={cn('hidden h-3.5 w-3.5', 'lg:block')} />
 
-              <span className="capitalize text-xs">{tab}</span>
+              <span className="text-xs capitalize">{tab}</span>
             </TabsTrigger>
           );
         })}
@@ -103,32 +106,35 @@ const PanelTabs = () => {
   );
 };
 
-
 export const Source = () => {
   const { contentSources } = useContent();
 
-
   return (
-    <ScrollArea className={cn('center container-full absolute inset-0 flex-col gap-2.5 bg-white p-4')}>
-      <h3 className="text-lg font-bold text-black mb-3 border-b border-black/10 w-full pb-2">
+    <ScrollArea
+      className={cn('center container-full absolute inset-0 flex-col gap-2.5 bg-white p-4')}
+    >
+      <h3 className="mb-3 w-full border-b border-black/10 pb-2 text-lg font-bold text-black">
         Content Sources & Snippets
       </h3>
       {/* Refactored source snippet style for black/white theme */}
-      {contentSources && contentSources?.map((source: ContentSources, index) => (
-        <div key={index} className={cn('w-full h-fit p-4 text-black text-xs gap-3 mb-2.5 overflow-hidden bg-white border border-black/20 rounded-md shadow-sm')}>
-          <p className="font-semibold text-sm mb-1">{source?.url?.substring(0, 70)}...</p>
-          {/*<p className="text-black/90 text-xs text-wrap font-medium italic">{source?.snippet}</p>*/}
-        </div>
-      ))}
+      {contentSources &&
+        contentSources?.map((source: ContentSources, index) => (
+          <div
+            key={index}
+            className={cn(
+              'mb-2.5 h-fit w-full gap-3 overflow-hidden rounded-md border border-black/20 bg-white p-4 text-xs text-black shadow-sm',
+            )}
+          >
+            <p className="mb-1 text-sm font-semibold">{source?.url?.substring(0, 70)}...</p>
+            {/*<p className="text-black/90 text-xs text-wrap font-medium italic">{source?.snippet}</p>*/}
+          </div>
+        ))}
       {contentSources?.length === 0 && (
-        <div className="text-center p-6 text-black/70">
-          No sources found.
-        </div>
+        <div className="p-6 text-center text-black/70">No sources found.</div>
       )}
     </ScrollArea>
-  )
-}
-
+  );
+};
 
 const Images = () => {
   const { generatedContent, setGeneratedContent, localImages, setLocalImages } = useContent();
@@ -143,10 +149,10 @@ const Images = () => {
     setGeneratedContent(generatedContent + markdownImage);
     toast.success('Image inserted into content!');
   };
-  
+
   // COMBINED LIST: Merge local and extracted images
   const allImageUrls = useMemo(() => {
-    if (!localImages){
+    if (!localImages) {
       return Array.from(extractedUrls);
     }
     // Use a Set to ensure uniqueness, prioritizing local over extracted if URLs overlap
@@ -154,34 +160,39 @@ const Images = () => {
   }, [localImages, extractedUrls]);
 
   // MAINTAINED LOGIC: Handle file upload
-  const handleFileUpload = useCallback((event) => {
-    const file = event.target.files[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast.error('Only image files are allowed.');
-        return;
-      }
+  const handleFileUpload = useCallback(
+    (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        if (!file.type.startsWith('image/')) {
+          toast.error('Only image files are allowed.');
+          return;
+        }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64Url = reader.result;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        setLocalImages(prev => [base64Url, ...prev]);
-        toast.success("Image uploaded locally.");
-        event.target.value = null; // Reset file input
-      };
-      reader.readAsDataURL(file);
-    }
-  }, [setLocalImages]);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Url = reader.result;
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          setLocalImages((prev) => [base64Url, ...prev]);
+          toast.success('Image uploaded locally.');
+          event.target.value = null; // Reset file input
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    [setLocalImages],
+  );
 
   // MAINTAINED LOGIC: Handler to remove a local image
-  const handleRemoveLocalImage = useCallback((urlToRemove: string) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    setLocalImages((image: string[]) => image.filter(url => url !== urlToRemove));
-  }, [setLocalImages]);
-
+  const handleRemoveLocalImage = useCallback(
+    (urlToRemove: string) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      setLocalImages((image: string[]) => image.filter((url) => url !== urlToRemove));
+    },
+    [setLocalImages],
+  );
 
   // MAINTAINED LOGIC: Check if the URL came from local upload
   const isLocalImage = (url) => url.startsWith('data:image/');
@@ -189,75 +200,85 @@ const Images = () => {
   const hasImages = allImageUrls.length > 0;
 
   return (
-    <ScrollArea className={cn('center container-full max-h-[82dvh] flex-col gap-2.5 !w-[400px] bg-white h-full p-4')}>
-      <h3 className="text-lg font-bold text-black mb-3 border-b border-black/10 w-full pb-2">
+    <ScrollArea
+      className={cn(
+        'center container-full h-full max-h-[82dvh] !w-[400px] flex-col gap-2.5 bg-white p-4',
+      )}
+    >
+      <h3 className="mb-3 w-full border-b border-black/10 pb-2 text-lg font-bold text-black">
         Images
       </h3>
 
       {hasImages ? (
-        <div className="grid grid-cols-2 gap-3 w-full">
-          {allImageUrls && allImageUrls.map((url: string, index: number) => (
-            <motion.div
-              key={url?.substring(0, 50) + index}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="relative aspect-square overflow-hidden rounded-md border border-black/10 shadow-sm group"
-            >
-              {/* Image Preview Container */}
-              <div
-                className="w-full h-full bg-black/10 flex items-center justify-center text-xs text-black/50 bg-cover bg-center transition-all duration-300 group-hover:scale-[1.05]"
-                style={{ backgroundImage: `url(${url})` }}
+        <div className="grid w-full grid-cols-2 gap-3">
+          {allImageUrls &&
+            allImageUrls.map((url: string, index: number) => (
+              <motion.div
+                key={url?.substring(0, 50) + index}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="group relative aspect-square overflow-hidden rounded-md border border-black/10 shadow-sm"
               >
-                {/* Label for Local/Extracted */}
-                <span className={cn(
-                  "p-1 rounded text-[10px] font-semibold absolute top-2 right-2",
-                  isLocalImage(url) ? "bg-black text-white" : "bg-white text-black border border-black/20"
-                )}>
-                      {isLocalImage(url) ? "LOCAL" : "EXTRACTED"}
-                  </span>
-              </div>
-
-              {/* Action Buttons Overlay */}
-              <div className="absolute inset-0 flex flex-col justify-end items-center p-2 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-
-                {/* Insert Button (Primary Action) */}
+                {/* Image Preview Container */}
                 <div
-                  onClick={() => handleInsertImage(url)}
-                  className="w-full mb-1 bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700"
+                  className="flex h-full w-full items-center justify-center bg-black/10 bg-cover bg-center text-xs text-black/50 transition-all duration-300 group-hover:scale-[1.05]"
+                  style={{ backgroundImage: `url(${url})` }}
                 >
-                  Insert into Editor
+                  {/* Label for Local/Extracted */}
+                  <span
+                    className={cn(
+                      'absolute top-2 right-2 rounded p-1 text-[10px] font-semibold',
+                      isLocalImage(url)
+                        ? 'bg-black text-white'
+                        : 'border border-black/20 bg-white text-black',
+                    )}
+                  >
+                    {isLocalImage(url) ? 'LOCAL' : 'EXTRACTED'}
+                  </span>
                 </div>
 
-                {/* Remove Button (Only for locally uploaded images) */}
-                {isLocalImage(url) && (
+                {/* Action Buttons Overlay */}
+                <div className="absolute inset-0 flex flex-col items-center justify-end bg-black/30 p-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  {/* Insert Button (Primary Action) */}
                   <div
-                    onClick={() => handleRemoveLocalImage(url)}
-                    className="w-full bg-white text-black border border-black/20 text-xs font-semibold hover:bg-black hover:text-white"
+                    onClick={() => handleInsertImage(url)}
+                    className="mb-1 w-full bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-700"
                   >
-                    <X className="h-3 w-3 mr-1" /> Remove
+                    Insert into Editor
                   </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
+
+                  {/* Remove Button (Only for locally uploaded images) */}
+                  {isLocalImage(url) && (
+                    <div
+                      onClick={() => handleRemoveLocalImage(url)}
+                      className="w-full border border-black/20 bg-white text-xs font-semibold text-black hover:bg-black hover:text-white"
+                    >
+                      <X className="mr-1 h-3 w-3" /> Remove
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
         </div>
       ) : (
-        <div className="text-center p-6 text-black/70 border border-black/10 rounded-lg w-full">
+        <div className="w-full rounded-lg border border-black/10 p-6 text-center text-black/70">
           No images found. Upload one or generate content to see suggestions.
         </div>
       )}
 
       {/* Upload Block (Creative Redesign of the original h2/p div) */}
-      <div className={cn('w-full between mt-3.5 mb-4')}>
-        <label htmlFor="local-image-upload" className="cursor-pointer w-full">
-          <div className='w-full h-[60px] flex items-center justify-between p-3 rounded-lg border border-black/10 hover:bg-stone-200  transition-colors bg-white shadow-sm'>
-            <h2 className={cn('text-sm font-semibold text-black flex items-center')}>
-              <Upload className="h-4 w-4 mr-2 text-black/80" />
+      <div className={cn('between mt-3.5 mb-4 w-full')}>
+        <label htmlFor="local-image-upload" className="w-full cursor-pointer">
+          <div className="flex h-[60px] w-full items-center justify-between rounded-lg border border-black/10 bg-white p-3 shadow-sm transition-colors hover:bg-stone-200">
+            <h2 className={cn('flex items-center text-sm font-semibold text-black')}>
+              <Upload className="mr-2 h-4 w-4 text-black/80" />
               Upload Local Image
             </h2>
             <div
-              className={'bg-black text-white hover:bg-stone-600 center rounded-md h-8 px-3 transition-colors'}
+              className={
+                'center h-8 rounded-md bg-black px-3 text-white transition-colors hover:bg-stone-600'
+              }
             >
               <div className="flex items-center">
                 <span className="text-xl leading-none">+</span>
@@ -274,7 +295,6 @@ const Images = () => {
           </div>
         </label>
       </div>
-
     </ScrollArea>
   );
 };
@@ -301,24 +321,15 @@ const Management = () => {
   }, [apiKey]);
 
   return (
-    <ScrollArea className="h-full bg-white text-black shadow-2xl transition-transform duration-300 ease-in-out z-40
-                  w-full max-w-[400px]
-                  md:translate-x-0
-                  p-6 sm:p-8
-                  max-h-[82dvh]"
-    >
+    <ScrollArea className="z-40 h-full max-h-[82dvh] w-full max-w-[400px] bg-white p-6 text-black shadow-2xl transition-transform duration-300 ease-in-out sm:p-8 md:translate-x-0">
       {/* Sidebar Header */}
-      <h1 className="text-xl font-extrabold mb-8 pb-4">
-        Management Settings
-      </h1>
+      <h1 className="mb-8 pb-4 text-xl font-extrabold">Management Settings</h1>
 
       {/* API Key Management Section */}
-      <section className="mb-8 p-4 border border-black/30 rounded-lg">
-        <h2 className="text-md font-bold mb-4">
-          External API Key
-        </h2>
+      <section className="mb-8 rounded-lg border border-black/30 p-4">
+        <h2 className="text-md mb-4 font-bold">External API Key</h2>
 
-        <p className="text-xs mb-4 text-black/70">
+        <p className="mb-4 text-xs text-black/70">
           Enter your custom AI provider API key to lift usage restrictions.
         </p>
 
@@ -333,9 +344,7 @@ const Management = () => {
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
             placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-            className="w-full p-3 text-xs border border-black/50 rounded-md
-                       focus:ring-1 focus:ring-black/80 focus:border-black transition duration-150
-                       text-black placeholder-black/50 outline-none"
+            className="w-full rounded-md border border-black/50 p-3 text-xs text-black placeholder-black/50 transition duration-150 outline-none focus:border-black focus:ring-1 focus:ring-black/80"
             aria-label="API Key input field"
           />
 
@@ -343,15 +352,15 @@ const Management = () => {
           <div className="flex items-center justify-between pt-2">
             <button
               onClick={handleSave}
-              className="px-6 py-2  text-xs bg-black text-white font-semibold rounded-lg
-                         hover:bg-gray-800 transition duration-150 shadow-sm
-                         focus:outline-none focus:ring-4 focus:ring-black/50 active:bg-gray-900"
+              className="rounded-lg bg-black px-6 py-2 text-xs font-semibold text-white shadow-sm transition duration-150 hover:bg-gray-800 focus:ring-4 focus:ring-black/50 focus:outline-none active:bg-gray-900"
             >
               Save Key
             </button>
 
             {saveStatus && (
-              <p className={`text-xs font-medium transition-opacity ${saveStatus.includes('saved') ? 'text-black' : 'text-gray-600'} opacity-100`}>
+              <p
+                className={`text-xs font-medium transition-opacity ${saveStatus.includes('saved') ? 'text-black' : 'text-gray-600'} opacity-100`}
+              >
                 {saveStatus}
               </p>
             )}
@@ -360,27 +369,29 @@ const Management = () => {
       </section>
 
       {/* Additional Settings (Placeholder) */}
-      <section className="mb-8 p-4 border border-black/30 rounded-lg opacity-70">
-        <h2 className="text-md font-bold mb-4">
-          Future Settings
-        </h2>
+      <section className="mb-8 rounded-lg border border-black/30 p-4 opacity-70">
+        <h2 className="text-md mb-4 font-bold">Future Settings</h2>
         <div className="space-y-3 text-sm">
-          <div className="flex text-xs  items-center justify-between py-1 border-b border-black/10">
+          <div className="flex items-center justify-between border-b border-black/10 py-1 text-xs">
             <span>Toggle Feature X</span>
-            <div className="w-10 h-6 bg-gray-200 rounded-full"></div> {/* Placeholder switch */}
+            <div className="h-6 w-10 rounded-full bg-gray-200"></div> {/* Placeholder switch */}
           </div>
-          <div className="flex  text-xs items-center justify-between py-1">
+          <div className="flex items-center justify-between py-1 text-xs">
             <span>Max Tokens Limit</span>
-            <input type="number" defaultValue="2048" className="w-20 p-1 text-xs border border-black/50 rounded-md text-center" />
+            <input
+              type="number"
+              defaultValue="2048"
+              className="w-20 rounded-md border border-black/50 p-1 text-center text-xs"
+            />
           </div>
         </div>
-        <p className="text-xs mt-3 italic text-black/50">
+        <p className="mt-3 text-xs text-black/50 italic">
           These settings are currently read-only placeholders.
         </p>
       </section>
 
       {/* Footer */}
-      <footer className="text-xs text-center text-black/50 mt-10 pt-4 border-t border-black/10">
+      <footer className="mt-10 border-t border-black/10 pt-4 text-center text-xs text-black/50">
         <p>&copy; 2025 Application Management</p>
       </footer>
     </ScrollArea>

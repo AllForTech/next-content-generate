@@ -1,5 +1,5 @@
-import { createClient } from "@/utils/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
+import { createClient } from '@/utils/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   const supabase = await createClient();
@@ -9,12 +9,12 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (user) {
-    if (pathname === "/sign-in" || pathname === "/sign-up" ) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    if (pathname === '/sign-in' || pathname === '/sign-up') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   } else {
-    if (pathname.startsWith("/dashboard")) {
-      return NextResponse.redirect(new URL("/sign-in", request.url));
+    if (pathname.startsWith('/dashboard')) {
+      return NextResponse.redirect(new URL('/sign-in', request.url));
     }
   }
 
@@ -30,6 +30,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * Feel free to modify this pattern to include more paths.
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

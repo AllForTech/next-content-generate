@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
-import { cn, generateCronString } from "@/lib/utils";
-import { toast } from "sonner";
+import { cn, generateCronString } from '@/lib/utils';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -12,20 +12,32 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Clock, Plus, Repeat, Settings, Trash2, Link as LinkIcon, Briefcase, Smile, BookOpen, Cpu, User } from 'lucide-react';
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import {
+  Clock,
+  Plus,
+  Repeat,
+  Settings,
+  Trash2,
+  Link as LinkIcon,
+  Briefcase,
+  Smile,
+  BookOpen,
+  Cpu,
+  User,
+} from 'lucide-react';
 import { saveNewSchedule } from '@/lib/db/content';
 import { useContent } from '@/context/GenerationContext';
 import { useAuth } from '@/context/AuthContext';
@@ -40,7 +52,7 @@ const TIME_SLOTS = [
 
 // Helper to get the HH:MM string from the slot slug
 const getTimeStringFromSlug = (slug) => {
-  return TIME_SLOTS.find(slot => slot.slug === slug)?.timeString || '09:00';
+  return TIME_SLOTS.find((slot) => slot.slug === slug)?.timeString || '09:00';
 };
 
 // Define the tone options
@@ -85,30 +97,30 @@ export function ScheduleNewJobDialog() {
   const handleAddUrl = () => {
     const trimmedUrl = urlInput.trim();
     if (!trimmedUrl) {
-      toast.warning("URL field cannot be empty.");
+      toast.warning('URL field cannot be empty.');
       return;
     }
     if (!isValidUrl(trimmedUrl)) {
-      toast.error("Please enter a valid URL (e.g., https://example.com).");
+      toast.error('Please enter a valid URL (e.g., https://example.com).');
       return;
     }
     if (urls.includes(trimmedUrl)) {
-      toast.info("This URL has already been added.");
+      toast.info('This URL has already been added.');
       return;
     }
 
-    setUrls(prev => [...prev, trimmedUrl]);
+    setUrls((prev) => [...prev, trimmedUrl]);
     setUrlInput(''); // Clear the input field
   };
 
   const handleRemoveUrl = (urlToRemove) => {
-    setUrls(prev => prev.filter(url => url !== urlToRemove));
+    setUrls((prev) => prev.filter((url) => url !== urlToRemove));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!user) {
-      toast.error("Authentication required.");
+      toast.error('Authentication required.');
       return;
     }
 
@@ -132,34 +144,37 @@ export function ScheduleNewJobDialog() {
       tone, // <-- Include the new tone state
     };
 
-    const toastId = toast.loading("Saving new schedule...");
+    const toastId = toast.loading('Saving new schedule...');
 
     try {
       const newJob = await saveNewSchedule(jobData);
 
-      if (newJob?.error){
+      if (newJob?.error) {
         console.error(newJob?.error);
-        throw new Error("Database save failed.");
+        throw new Error('Database save failed.');
       }
 
       const savedData = newJob.schedule || jobData;
 
       // Update state with new job data, ensuring 'tone' is included
-      setScheduledJobs(prev => ([{
-        job_type: savedData.job_type,
-        user_id: user.id,
-        prompt: savedData.prompt,
-        job_id: savedData.job_id,
-        frequency: savedData.frequency,
-        run_slot: savedData.run_slot,
-        time: savedData.time,
-        reference_urls: savedData.reference_urls,
-        cron_schedule: savedData.cron_schedule,
-        is_active: savedData.is_active,
-        tone: savedData.tone, // <-- Include the new tone field
-      },...prev]))
+      setScheduledJobs((prev) => [
+        {
+          job_type: savedData.job_type,
+          user_id: user.id,
+          prompt: savedData.prompt,
+          job_id: savedData.job_id,
+          frequency: savedData.frequency,
+          run_slot: savedData.run_slot,
+          time: savedData.time,
+          reference_urls: savedData.reference_urls,
+          cron_schedule: savedData.cron_schedule,
+          is_active: savedData.is_active,
+          tone: savedData.tone, // <-- Include the new tone field
+        },
+        ...prev,
+      ]);
 
-      toast.success("New schedule created!", {
+      toast.success('New schedule created!', {
         id: toastId,
         description: `Job set for the '${time}' run slot.`,
       });
@@ -172,11 +187,10 @@ export function ScheduleNewJobDialog() {
       setTone(TONE_OPTIONS[0].slug); // Reset tone
       setUrls([]); // Reset array
       setUrlInput(''); // Reset single input
-
     } catch (error) {
-      toast.error("Failed to save schedule", {
+      toast.error('Failed to save schedule', {
         id: toastId,
-        description: error instanceof Error ? error.message : "An unknown error occurred.",
+        description: error instanceof Error ? error.message : 'An unknown error occurred.',
       });
     } finally {
       setIsSaving(false);
@@ -186,13 +200,13 @@ export function ScheduleNewJobDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-black p-3 text-white hover:bg-neutral-800 shadow-md">
-          <Plus className="h-4 w-4 mr-2" />
+        <Button className="bg-black p-3 text-white shadow-md hover:bg-neutral-800">
+          <Plus className="mr-2 h-4 w-4" />
           Schedule New Job
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-white text-black w-[90%] sm:w-[400px] md:w-[650px] lg:max-w-[700px] rounded-lg shadow-2xl">
+      <DialogContent className="w-[90%] rounded-lg bg-white text-black shadow-2xl sm:w-[400px] md:w-[650px] lg:max-w-[700px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-extrabold text-black">
             Configure New Automation
@@ -204,10 +218,8 @@ export function ScheduleNewJobDialog() {
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6 py-4">
-
             {/* NEW ROW: Job Type and Tone Selector (Side-by-Side) */}
-            <div className="grid md:grid-cols-2 gap-6">
-
+            <div className="grid gap-6 md:grid-cols-2">
               {/* Job Type Select */}
               <div className="grid grid-cols-[80px_1fr] items-center gap-16">
                 <Label htmlFor="job-type" className="text-right text-xs font-semibold">
@@ -217,7 +229,7 @@ export function ScheduleNewJobDialog() {
                   <SelectTrigger id="job-type" className="col-span-1 border-black/30 text-xs">
                     <SelectValue placeholder="Select a job type" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white text-black rounded-lg shadow-lg">
+                  <SelectContent className="rounded-lg bg-white text-black shadow-lg">
                     <SelectItem value="content_generation">
                       <div className="flex items-center gap-2">
                         <Settings className="h-4 w-4 text-neutral-500" />
@@ -235,7 +247,7 @@ export function ScheduleNewJobDialog() {
               </div>
 
               {/* Tone Select (New Component) */}
-              <div className="grid grid-cols-[80px_1fr] items-center ml-10 !gap-0">
+              <div className="ml-10 grid grid-cols-[80px_1fr] items-center !gap-0">
                 <Label htmlFor="tone-select" className="text-right text-xs font-semibold">
                   Tone
                 </Label>
@@ -243,7 +255,7 @@ export function ScheduleNewJobDialog() {
                   <SelectTrigger id="tone-select" className="col-span-1 border-black/30 text-xs">
                     <SelectValue placeholder="Select tone" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white text-black rounded-lg shadow-lg">
+                  <SelectContent className="rounded-lg bg-white text-black shadow-lg">
                     {TONE_OPTIONS.map((option) => {
                       const Icon = option.icon;
                       return (
@@ -261,10 +273,9 @@ export function ScheduleNewJobDialog() {
             </div>
             {/* END NEW ROW */}
 
-
             {/* Master Prompt Textarea */}
             <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="prompt" className="text-right text-xs font-semibold pt-2">
+              <Label htmlFor="prompt" className="pt-2 text-right text-xs font-semibold">
                 Master Prompt
               </Label>
               <Textarea
@@ -272,14 +283,14 @@ export function ScheduleNewJobDialog() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="e.g., 'Write a 500-word blog post about the top 3 trends in AI this week...'"
-                className="col-span-3 text-xs min-h-[100px] border-black/30 rounded-md shadow-sm focus:border-neutral-500"
+                className="col-span-3 min-h-[100px] rounded-md border-black/30 text-xs shadow-sm focus:border-neutral-500"
                 required
               />
             </div>
 
             {/* Reference URLs Input / List */}
             <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="url-input" className="text-right text-xs font-semibold pt-2">
+              <Label htmlFor="url-input" className="pt-2 text-right text-xs font-semibold">
                 Reference URLs
               </Label>
               <div className="col-span-3 flex flex-col gap-2">
@@ -292,13 +303,13 @@ export function ScheduleNewJobDialog() {
                     onChange={(e) => setUrlInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddUrl())}
                     placeholder="Enter URL and click 'Add'"
-                    className="flex-grow text-xs border-black/30 rounded-md shadow-sm"
+                    className="flex-grow rounded-md border-black/30 text-xs shadow-sm"
                   />
                   <Button
                     type="button"
                     onClick={handleAddUrl}
                     variant="secondary"
-                    className="bg-neutral-600 text-white hover:bg-neutral-700 text-xs px-3 py-1 h-auto shadow-md"
+                    className="h-auto bg-neutral-600 px-3 py-1 text-xs text-white shadow-md hover:bg-neutral-700"
                   >
                     Add
                   </Button>
@@ -306,14 +317,19 @@ export function ScheduleNewJobDialog() {
 
                 {/* List of URLs */}
                 {urls.length > 0 && (
-                  <div id={'hide-scrollbar'} className="bg-neutral-50 overflow-x-auto w-full center !justify-start border border-gray-200 rounded-md p-2 max-h-40 overflow-y-auto">
+                  <div
+                    id={'hide-scrollbar'}
+                    className="center max-h-40 w-full !justify-start overflow-x-auto overflow-y-auto rounded-md border border-gray-200 bg-neutral-50 p-2"
+                  >
                     {urls.map((url, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between text-xs py-1 px-2 mr-1 rounded-sm bg-white hover:bg-neutral-200 transition-colors"
+                        className="mr-1 flex items-center justify-between rounded-sm bg-white px-2 py-1 text-xs transition-colors hover:bg-neutral-200"
                       >
-                        <LinkIcon className="h-3 w-3 mr-2 text-neutral-500 shrink-0" />
-                        <span className="truncate flex-grow text-neutral-700">{url?.substring(0, 30)}</span>
+                        <LinkIcon className="mr-2 h-3 w-3 shrink-0 text-neutral-500" />
+                        <span className="flex-grow truncate text-neutral-700">
+                          {url?.substring(0, 30)}
+                        </span>
                         <Button
                           type="button"
                           onClick={() => handleRemoveUrl(url)}
@@ -328,15 +344,13 @@ export function ScheduleNewJobDialog() {
                   </div>
                 )}
                 {urls.length === 0 && (
-                  <p className="text-xs text-gray-500 italic mt-1">No URLs added yet.</p>
+                  <p className="mt-1 text-xs text-gray-500 italic">No URLs added yet.</p>
                 )}
               </div>
             </div>
 
-
             {/* Frequency Select and Active Switch (Side-by-Side) */}
-            <div className="w-full center !justify-start gap-14">
-
+            <div className="center w-full !justify-start gap-14">
               {/* Frequency Select */}
               <div className="grid grid-cols-[80px_1fr] items-center gap-16">
                 <Label htmlFor="frequency" className="text-right text-xs font-semibold">
@@ -346,7 +360,7 @@ export function ScheduleNewJobDialog() {
                   <SelectTrigger id="frequency" className="col-span-1 border-black/30 text-xs">
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white text-black rounded-lg shadow-lg">
+                  <SelectContent className="rounded-lg bg-white text-black shadow-lg">
                     <SelectItem value="daily">
                       <div className="flex items-center gap-2">
                         <Repeat className="h-4 w-4 text-neutral-600" />
@@ -374,19 +388,14 @@ export function ScheduleNewJobDialog() {
                 <Label htmlFor="is-active" className="text-right text-xs font-semibold">
                   Status
                 </Label>
-                <div className="col-span-1 flex items-center !text-xs space-x-2">
-                  <Switch
-                    id="is-active"
-                    checked={isActive}
-                    onCheckedChange={setIsActive}
-                  />
+                <div className="col-span-1 flex items-center space-x-2 !text-xs">
+                  <Switch id="is-active" checked={isActive} onCheckedChange={setIsActive} />
                   <Label htmlFor="is-active" className="text-xs font-medium text-black/80">
-                    {isActive ? "Enabled" : "Disabled"}
+                    {isActive ? 'Enabled' : 'Disabled'}
                   </Label>
                 </div>
               </div>
             </div>
-
 
             {/* Run Slot Select */}
             <div className="grid grid-cols-4 items-center gap-4">
@@ -397,7 +406,7 @@ export function ScheduleNewJobDialog() {
                 <SelectTrigger id="time-slot" className="col-span-3 border-black/30 text-xs">
                   <SelectValue placeholder="Select run time" />
                 </SelectTrigger>
-                <SelectContent className="bg-white text-black rounded-lg shadow-lg">
+                <SelectContent className="rounded-lg bg-white text-black shadow-lg">
                   {TIME_SLOTS.map((slot) => (
                     <SelectItem key={slot.slug} value={slot.slug}>
                       <div className="flex items-center gap-2">
@@ -411,7 +420,7 @@ export function ScheduleNewJobDialog() {
             </div>
           </div>
 
-          <DialogFooter className="pt-6 border-t border-gray-100">
+          <DialogFooter className="border-t border-gray-100 pt-6">
             <DialogClose asChild>
               <Button type="button" variant="outline" className="border-black/30 text-xs shadow-sm">
                 Cancel
@@ -420,15 +429,15 @@ export function ScheduleNewJobDialog() {
             <Button
               type="submit"
               disabled={isSaving}
-              className="bg-black text-white hover:bg-neutral-800 text-xs shadow-md"
+              className="bg-black text-xs text-white shadow-md hover:bg-neutral-800"
             >
               {isSaving ? (
                 <>
-                  <Clock className="h-4 w-4 mr-2 animate-spin" />
+                  <Clock className="mr-2 h-4 w-4 animate-spin" />
                   Saving...
                 </>
               ) : (
-                "Save Schedule"
+                'Save Schedule'
               )}
             </Button>
           </DialogFooter>

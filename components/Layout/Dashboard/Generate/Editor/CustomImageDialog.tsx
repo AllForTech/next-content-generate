@@ -49,7 +49,6 @@ const CustomImageDialog: React.FC<CustomImageDialogProps> = ({ onImageUpload, on
           // You could fetch dimensions from the server response here if needed
         });
         onClose();
-
       } catch (error) {
         console.error('Image upload failed:', error);
         alert('Failed to upload image. Check console for details.');
@@ -80,14 +79,13 @@ const CustomImageDialog: React.FC<CustomImageDialogProps> = ({ onImageUpload, on
     return result.publicUrl;
   };
 
-
   return (
-    <div className="p-4 bg-white border border-black rounded shadow-lg max-w-sm mx-auto">
-      <h2 className="text-lg font-bold mb-4">Insert Image</h2>
+    <div className="mx-auto max-w-sm rounded border border-black bg-white p-4 shadow-lg">
+      <h2 className="mb-4 text-lg font-bold">Insert Image</h2>
 
       {/* File Upload Section */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Upload File</label>
+        <label className="mb-1 block text-sm font-medium">Upload File</label>
         <Input
           type="file"
           accept="image/*"
@@ -97,12 +95,12 @@ const CustomImageDialog: React.FC<CustomImageDialogProps> = ({ onImageUpload, on
             setUrl('');
           }}
         />
-        <p className="text-xs text-gray-500 mt-1">or enter a URL below</p>
+        <p className="mt-1 text-xs text-gray-500">or enter a URL below</p>
       </div>
 
       {/* URL Input Section */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Image URL</label>
+        <label className="mb-1 block text-sm font-medium">Image URL</label>
         <Input
           type="url"
           placeholder="https://example.com/image.png"
@@ -117,7 +115,7 @@ const CustomImageDialog: React.FC<CustomImageDialogProps> = ({ onImageUpload, on
 
       {/* Alt Text Input */}
       <div className="mb-6">
-        <label className="block text-sm font-medium mb-1">Alt Text</label>
+        <label className="mb-1 block text-sm font-medium">Alt Text</label>
         <Input
           placeholder="Description for accessibility"
           value={altText}

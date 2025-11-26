@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { basicSetup } from 'codemirror';
 import { EditorView } from '@codemirror/view'; // Core view and basic features
@@ -9,38 +9,38 @@ import { useEffect, useRef, useState } from 'react';
 
 const basicMarkdownTheme = EditorView.theme({
   // Sets the overall background and text color to match your dark theme
-  "&": {
-    backgroundColor: "#1e1e1e", // A dark gray for the background
-    color: "#efefef",           // Light text color
-    fontSize: "11px",           // text-xs equivalent
-    height: "100%",             // Ensures full height within parent
-    width: "100%",              // Ensures full width
+  '&': {
+    backgroundColor: '#1e1e1e', // A dark gray for the background
+    color: '#efefef', // Light text color
+    fontSize: '11px', // text-xs equivalent
+    height: '100%', // Ensures full height within parent
+    width: '100%', // Ensures full width
   },
   // Optional: Style for the active line highlight
-  ".cm-activeLine": {
-    backgroundColor: "#37415180" // Slightly lighter background for current line
+  '.cm-activeLine': {
+    backgroundColor: '#37415180', // Slightly lighter background for current line
   },
 
-  ".cm-gutters": {
-    backgroundColor: "#171717",
-    borderRight: "1px solid #333", // Subtle line separating gutter from content
+  '.cm-gutters': {
+    backgroundColor: '#171717',
+    borderRight: '1px solid #333', // Subtle line separating gutter from content
   },
 
   // --- Active Line/Cursor ---
-  ".cm-activeLineGutter": {
-    backgroundColor: "transparent", // Don't highlight the line number gutter
+  '.cm-activeLineGutter': {
+    backgroundColor: 'transparent', // Don't highlight the line number gutter
   },
-  ".cm-cursor": {
-    borderLeft: "2px solid #5C7AFF", // Custom blue cursor color
+  '.cm-cursor': {
+    borderLeft: '2px solid #5C7AFF', // Custom blue cursor color
   },
 
   // --- Selection and Highlighting ---
-  "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": {
-    backgroundColor: "#2c3e5080", // Custom selection background color
-  }
+  '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
+    backgroundColor: '#2c3e5080', // Custom selection background color
+  },
 });
 
-export default function EditorHighlight(){
+export default function EditorHighlight() {
   const { generatedContent, setGeneratedContent } = useContent();
 
   const editorRef = useRef(null);
@@ -69,9 +69,9 @@ export default function EditorHighlight(){
         if (update.docChanged) {
           timer = setTimeout(() => {
             setGeneratedContent(update.state.doc.toString());
-          }, 1000)
+          }, 1000);
         }
-      })
+      }),
     ];
 
     // --- 2. Create Editor Instance ---
@@ -102,7 +102,7 @@ export default function EditorHighlight(){
     <div
       ref={editorRef}
       id={'hide-scrollbar'}
-      className="w-full h-full absolute inset-0 border border-gray-700 rounded-md overflow-hidden"
+      className="absolute inset-0 h-full w-full overflow-hidden rounded-md border border-gray-700"
     />
   );
 }
