@@ -37,20 +37,27 @@ export const Content: React.FC<ContentRendererProps> = ({ isLoading }: { isLoadi
 
   return (
     <div
-      className={cn('center relative h-full w-full flex-col !justify-start rounded-2xl bg-white')}
+      className={cn('center overflow-hidden flex-1 relative h-full w-full flex-col !justify-start rounded-2xl bg-white')}
     >
       <ScrollArea
         ref={scrollAreaRef}
+        // SCROLLAREA:
+        // - h-full: Now correctly references the fixed height of its parent div.
+        // - w-full: Takes full width.
+        // - Removed container-full, center, and unnecessary flex-col, !justify-start
         className={cn(
-          'container-full center absolute inset-0 flex-col !justify-start px-1 py-2.5 md:px-4',
+          'h-full w-full relative inset-0 px-4 py-2.5 md:px-8',
         )}
         id={'hide-scrollbar'}
       >
         {isLoading ? (
           <ContentLoadingSkeleton />
         ) : (
+          // ARTICLE CONTAINER: This is where we control the content's width.
+          // - max-w-4xl mx-auto: Limits content to a readable width (e.g., 56rem) and centers it.
+          // - flex-col: Ensures Markdown content stacks vertically.
           <article
-            className={cn('container-full markdown prose !m-0 flex flex-col !justify-start')}
+            className={cn('h-fit flex-1 markdown inset-0 max-w-4xl mx-auto prose !m-0 flex flex-col !justify-start')}
           >
             <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight, rehypeRaw]}>
               {generatedContent}

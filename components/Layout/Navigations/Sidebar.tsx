@@ -37,7 +37,9 @@ const navigation = [
   },
   {
     title: 'Other',
-    items: [{ href: '/dashboard/explore', icon: Globe, label: 'Explore Tools' }],
+    items: [
+      { href: '/dashboard/explore', icon: Globe, label: 'Explore Tools' },
+    ],
   },
 ];
 
@@ -205,7 +207,7 @@ export function Sidebar() {
         <div className="w-full space-y-1">
           {/* History is now included in the main navigation */}
           <NavLink
-            href="/settings"
+            href="/dashboard/settings"
             icon={Settings}
             label="Settings"
             pathname={pathname}

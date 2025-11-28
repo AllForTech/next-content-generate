@@ -188,7 +188,6 @@
   line-height: 1.75; /* Improved line spacing for readability */
   color: #374151; /* Dark gray for soft contrast */
   padding: 20px;
-  max-width: 900px; /* Optimal line length for desktop */
   margin: 0 auto; /* Center the content */
 }
 
@@ -337,24 +336,35 @@ image {
 /* --- 5. CODE AND INLINE FORMATTING --- */
 
 .markdown code {
-  background-color: #f3f4f6;
-  color: #b91c1c; /* Red for high visibility inline code */
+  background-color: transparent;
+  color: #333333;
   padding: 0.2em 0.4em;
   border-radius: 4px;
   font-size: 0.9rem;
 }
 
 .dark .markdown code {
-  background-color: #1f2937;
   color: #fca5a5;
 }
 
 .markdown pre {
-  background-color: #f3f4f6;
-  padding: 1.5rem;
-  border-radius: 8px;
-  overflow-x: auto;
-  margin: 1.5rem 0;
+    background-color: #ededed;
+    padding: 1.5rem;
+    border-radius: 8px;
+    max-width: 100%;
+    overflow-x: auto !important;
+    margin: 1.5rem 0;
+    word-wrap: normal;
+    word-break: normal;
+}
+
+.markdown pre > code {
+    /* Forces very long, non-breakable strings (like URLs or hashes) to wrap */
+    word-wrap: break-word;
+    word-break: break-all;
+
+    /* Ensure the content itself respects the padding of the pre block */
+    white-space: pre-wrap;
 }
 
 .dark .markdown pre {
