@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import { contents } from '@/drizzle/schema';
 import { and, eq } from 'drizzle-orm';
+import axios from 'axios';
 
 export async function deleteContent(contentId: string) {
   const supabase = await createClient();
@@ -67,5 +68,15 @@ export async function updateContent(contentId: string, newContent: string) {
   } catch (error) {
     console.error('Error updating content with Drizzle:', error);
     return { error: 'Failed to update content.' };
+  }
+}
+
+export async function makeRequest(url: string, options: any) {
+
+  try {
+    return await axios.post(url, options);
+  }catch (e) {
+    console.log(e);
+    throw e;
   }
 }

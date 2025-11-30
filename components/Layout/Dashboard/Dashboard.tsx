@@ -61,7 +61,7 @@ export default function Dashboard() {
 
     // 3. Empty State: Show No Content Message
     return (
-      <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-16 text-center">
+      <div className="rounded-xl border w-full border-indigo-200 bg-indigo-50 p-16 text-center">
         <p className="mb-2 text-2xl font-bold text-black">No content found.</p>
         <p className="text-md text-black">
           Start a new search or create your first piece of content!

@@ -11,6 +11,7 @@ import { MarkdownViewer } from '@/components/Layout/Dashboard/Generate/content/M
 import { Source } from '../RightSidebarPanel';
 import EditorLoader from '@/components/Layout/Dashboard/Generate/Editor/EditorLoader';
 import { FileText, PenLine, Link as LinkIcon, Code } from 'lucide-react';
+import { PromptSelector } from '@/components/Layout/Dashboard/Generate/PromptSelector';
 
 const Editor = dynamic(() => import('../Editor/Editor'), {
   // Make sure we turn SSR off
@@ -54,6 +55,12 @@ export default function Renderer() {
           >
             <MarkdownViewer />
           </TabsContent>
+          <TabsContent
+            className={'container-full overflow-hidden'}
+            value={contentRendererTabsState.templates}
+          >
+            <PromptSelector/>
+          </TabsContent>
         </div>
       </Tabs>
     </div>
@@ -68,6 +75,7 @@ const RendererTabs = () => {
     [contentRendererTabsState.editor]: PenLine,
     [contentRendererTabsState.sources]: LinkIcon,
     [contentRendererTabsState.markdown]: Code,
+    [contentRendererTabsState.templates]: Code,
   };
 
   return (

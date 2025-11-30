@@ -10,6 +10,7 @@ import '@mdxeditor/editor/style.css';
 import rehypeRaw from 'rehype-raw';
 import { useGlobalState } from '@/context/GlobalStateContext';
 import { useContent } from '@/context/GenerationContext';
+import { PromptSelector } from '@/components/Layout/Dashboard/Generate/PromptSelector';
 
 interface ContentRendererProps {
   isLoading: boolean;
@@ -52,7 +53,7 @@ export const Content: React.FC<ContentRendererProps> = ({ isLoading }: { isLoadi
       >
         {isLoading ? (
           <ContentLoadingSkeleton />
-        ) : (
+        ) : !generatedContent && !isLoading ? (<PromptSelector/>) : (
           // ARTICLE CONTAINER: This is where we control the content's width.
           // - max-w-4xl mx-auto: Limits content to a readable width (e.g., 56rem) and centers it.
           // - flex-col: Ensures Markdown content stacks vertically.

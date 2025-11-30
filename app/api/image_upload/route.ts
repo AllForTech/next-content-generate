@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server'; // Supabase client utility
-import { randomUUID } from 'crypto'; // For unique file names
+import { createClient } from '@/utils/supabase/server';
+import { randomUUID } from 'crypto';
 
 export async function POST(req: Request) {
   const supabase = await createClient();
