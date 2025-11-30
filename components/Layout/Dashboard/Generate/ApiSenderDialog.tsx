@@ -24,6 +24,7 @@ import { useContent } from '@/context/GenerationContext';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
+import { makeRequest } from '@/lib/actions/content.actions';
 
 export const ApiSenderDialog = ({ isOpen, onClose }) => {
   // Mock hook usage
@@ -106,20 +107,13 @@ export const ApiSenderDialog = ({ isOpen, onClose }) => {
     setErrorDetails('');
     setApiResult(null);
 
-    // --- Start Mock API Call (Replace this section with actual fetch in a real environment) ---
     try {
-      // Implement exponential backoff for resilience (optional but good practice)
       const maxRetries = 3;
       let delay = 1000;
 
       for (let i = 0; i < maxRetries; i++) {
         try {
-          // Simulate successful response
-          const mockResponse = {
-            id: 'post-' + Math.floor(Math.random() * 10000),
-            status: 'published',
-            url: 'https://preview.yourcms.com/article/' + Math.floor(Math.random() * 10000),
-          };
+          const mockResponse = await makeRequest(apiEndpoint, customBody);
 
           setApiResult(mockResponse);
           setStatus('success');

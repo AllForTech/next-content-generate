@@ -40,6 +40,7 @@ export const contentRendererTabsState = {
   editor: 'editor',
   sources: 'sources',
   markdown: 'markdown',
+  templates: 'templates'
 };
 
 // --- 1. Define the Context Interface (What components can access) ---
@@ -211,6 +212,7 @@ export function ContextProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     setGeneratedContent('');
+    setPrompt('');
     setChatHistory((prev) => [...prev, { id, role: 'user', content: prompt }]);
 
     try {
